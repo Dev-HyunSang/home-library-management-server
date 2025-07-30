@@ -1,4 +1,4 @@
 dev:
 	go run ./cmd/gocore/main.go dev
 docker-run:
-	docker-compose up
+	docker compose --env-file ./config/.env.dev up
