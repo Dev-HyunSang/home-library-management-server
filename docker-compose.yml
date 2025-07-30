@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:latest
+    container_name: redis
+    command: "redis-server --requirepass ${db.redis.password} --port 6379"
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:leatest
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${db.mysql.password}
+      MYSQL_DATABASE: homelibrary
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    restart: unless-stopped
+
+volumes:
+  mysql_data:

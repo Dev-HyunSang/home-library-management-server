@@ -1,0 +1,15 @@
+###
+POST http://localhost:3000/user/
+Content-Type: application/json
+
+{
+  "nick_name": "testuser",
+  "email": "testuser@example.com",
+  "password": "testpassword"
+}
+
+###
+GET http://localhost:3000/user/31313e84-69e3-11f0-b034-acde48001122
+
+###
+DELETE http://localhost:3000/user/31313e84-69e3-11f0-b034-acde48001122

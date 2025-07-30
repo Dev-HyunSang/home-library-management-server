@@ -1,0 +1,59 @@
+package usecase
+
+import (
+	"github.com/dev-hyunsang/home-library/internal/domain"
+	repository "github.com/dev-hyunsang/home-library/internal/repository/mysql"
+	redisRepository "github.com/dev-hyunsang/home-library/internal/repository/redis"
+	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
+)
+
+type userUseCase struct {
+	userRepo domain.UserRepository
+	authRepo domain.AuthRepository
+}
+
+func NewUserUseCase(userRepo *repository.UserRepository, authRepo *redisRepository.AuthRepository) *userUseCase {
+	return &userUseCase{userRepo: userRepo, authRepo: authRepo}
+}
+
+func ErrResponse(err error) map[string]string {
+	return map[string]string{"error": err.Error()}
+}
+
+func (uc *userUseCase) CreateUser(user *domain.User) (*domain.User, error) {
+	if user.NickName == "" || user.Email == "" || user.Password == "" {
+		return nil, domain.ErrInvalidInput
+	}
+
+	return uc.userRepo.Save(user)
+}
+
+func (uc *userUseCase) GetByID(id uuid.UUID) (*domain.User, error) {
+	return uc.userRepo.GetByID(id)
+}
+
+func (uc *userUseCase) GetAll() ([]domain.User, error) {
+	return uc.userRepo.GetAll()
+}
+
+func (uc *userUseCase) Edit(user *domain.User) (*domain.User, error) {
+	return uc.userRepo.Edit(user)
+
+}
+
+func (uc *userUseCase) Delete(id uuid.UUID) error {
+	return uc.userRepo.Delete(id)
+}
+
+func (uc *userUseCase) SetSession(userID string, ctx *fiber.Ctx) error {
+	return uc.authRepo.SetSession(userID, ctx)
+}
+
+func (uc *userUseCase) GetSessionByID(userID string, ctx *fiber.Ctx) (string, error) {
+	return uc.authRepo.GetSessionByID(userID, ctx)
+}
+
+func (uc *userUseCase) DeleteSession(ctx *fiber.Ctx) error {
+	return uc.authRepo.DeleteSession(ctx)
+}
