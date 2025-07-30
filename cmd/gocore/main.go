@@ -16,6 +16,7 @@ import (
 	"github.com/dev-hyunsang/home-library/internal/usecase"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/encryptcookie"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/gofiber/storage/redis/v3"
 )
@@ -49,9 +50,9 @@ func main() {
 	app := fiber.New()
 	// 안전한 쿠키 사용을 위해 쿠키를 암호화 함.
 	// Key는 32자의 문자열이며, 무작위 값으로 생성됨.
-	// app.Use(encryptcookie.New(encryptcookie.Config{
-	// 	Key: encryptcookie.GenerateKey(),
-	// }))
+	app.Use(encryptcookie.New(encryptcookie.Config{
+		Key: encryptcookie.GenerateKey(),
+	}))
 
 	app.Use(cors.New(cors.Config{
 		// TODO: production 에서 수정
