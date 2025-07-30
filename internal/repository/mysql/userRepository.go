@@ -87,6 +87,31 @@ func (r *UserRepository) GetByID(id uuid.UUID) (*domain.User, error) {
 	}
 }
 
+func (r *UserRepository) GetByEmail(email string) (*domain.User, error) {
+	client := r.client
+
+	u, err := client.User.Query().
+		Where(user.Email(email)).
+		Only(context.Background())
+	if err == nil {
+		return &domain.User{
+			ID:        u.ID,
+			NickName:  u.NickName,
+			Email:     u.Email,
+			Password:  u.Password,
+			CreatedAt: u.CreatedAt,
+			UpdatedAt: u.UpdatedAt,
+		}, nil
+	}
+
+	switch {
+	case ent.IsNotFound(err):
+		return nil, fmt.Errorf("not found user with email %s: %w", email, err)
+	default:
+		return nil, fmt.Errorf("failed to get user by email: %w", err)
+	}
+}
+
 func (r *UserRepository) GetAll() ([]domain.User, error) {
 	client := r.client
 

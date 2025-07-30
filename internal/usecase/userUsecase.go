@@ -33,6 +33,14 @@ func (uc *userUseCase) GetByID(id uuid.UUID) (*domain.User, error) {
 	return uc.userRepo.GetByID(id)
 }
 
+func (uc *userUseCase) GetByEmail(email string) (*domain.User, error) {
+	if email == "" {
+		return nil, domain.ErrInvalidInput
+	}
+
+	return uc.userRepo.GetByEmail(email)
+}
+
 func (uc *userUseCase) GetAll() ([]domain.User, error) {
 	return uc.userRepo.GetAll()
 }

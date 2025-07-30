@@ -19,6 +19,7 @@ type User struct {
 type UserRepository interface {
 	Save(user *User) (*User, error)
 	GetByID(id uuid.UUID) (*User, error)
+	GetByEmail(email string) (*User, error)
 	GetAll() ([]User, error)
 	Edit(user *User) (*User, error)
 	Delete(id uuid.UUID) error
@@ -27,6 +28,7 @@ type UserRepository interface {
 type UserUseCase interface {
 	CreateUser(user *User) (*User, error)
 	GetByID(id uuid.UUID) (*User, error)
+	GetByEmail(email string) (*User, error)
 	GetAll() ([]User, error)
 	Edit(user *User) (*User, error)
 	Delete(id uuid.UUID) error

@@ -2,6 +2,7 @@ package memory
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
@@ -23,7 +24,7 @@ func (repo *AuthRepository) SetSession(userID string, ctx *fiber.Ctx) error {
 		return fmt.Errorf("failed to get session: %w", err)
 	}
 
-	sess.Set("user", userID)
+	sess.Set("user_id", userID)
 
 	err = sess.Save()
 	if err != nil {
@@ -39,16 +40,28 @@ func (repo *AuthRepository) GetSessionByID(userID string, ctx *fiber.Ctx) (strin
 		return "", fmt.Errorf("failed to get session: %w", err)
 	}
 
-	raw := sess.Get("user")
+	raw := sess.Get("user_id")
 	if raw == nil {
 		return "", fmt.Errorf("user not logged in: %s", userID)
 	}
+
 	userID, ok := raw.(string)
+	log.Println(userID)
+
 	if !ok {
 		return "", fmt.Errorf("invalid user ID type: %T", raw)
 	}
 
 	return userID, nil
+}
+
+func (repo *AuthRepository) GetAllSession(ctx *fiber.Ctx) ([]string, error) {
+	sess, err := repo.store.Get(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get session: %w", err)
+	}
+
+	return sess.Keys(), nil
 }
 
 func (repo *AuthRepository) DeleteSession(ctx *fiber.Ctx) error {

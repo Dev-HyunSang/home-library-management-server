@@ -7,10 +7,9 @@ import (
 )
 
 type Config struct {
-	App AppConfig `yaml:"app"`
-	DB  DBConfig  `yaml:"db"`
-	RedisConfig
-	Jwt JwtConfig `yaml:"jwt"`
+	App  AppConfig  `yaml:"app"`
+	DB   DBConfig   `yaml:"db"`
+	Auth AuthConfig `yaml:"auth"`
 }
 
 type AppConfig struct {
@@ -42,9 +41,8 @@ type RedisConfig struct {
 	DB       int    `yaml:"db"`
 }
 
-type JwtConfig struct {
-	AccessToken  string `yaml:"access_token"`
-	RefreshToken string `yaml:"refresh_token"`
+type AuthConfig struct {
+	CookieKey string `yaml:"cookie_key"`
 }
 
 func LoadConfig(env string) (*Config, error) {
