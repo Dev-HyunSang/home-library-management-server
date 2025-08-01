@@ -42,7 +42,7 @@ func ErrResponse(err error) map[string]string {
 	}
 }
 
-func (h *UserHandler) Register(ctx *fiber.Ctx) error {
+func (h *UserHandler) UserRegisterHandler(ctx *fiber.Ctx) error {
 	user := new(RegisterationRequest)
 	if err := ctx.BodyParser(user); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrResponse(domain.ErrInvalidInput))
@@ -74,7 +74,7 @@ func (h *UserHandler) Register(ctx *fiber.Ctx) error {
 	}
 }
 
-func (h *UserHandler) Login(ctx *fiber.Ctx) error {
+func (h *UserHandler) UserLoginHandler(ctx *fiber.Ctx) error {
 	user := new(LoginRequest)
 	log.Println(user)
 	if err := ctx.BodyParser(user); err != nil {
@@ -121,9 +121,9 @@ func (h *UserHandler) Login(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(result)
 }
 
-func (h *UserHandler) GetByID(ctx *fiber.Ctx) error {
+func (h *UserHandler) UserGetByIdHandler(ctx *fiber.Ctx) error {
 	id := ctx.Params("id")
-	if id == "" {
+	if len(id) == 0 {
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrResponse(domain.ErrInvalidInput))
 	}
 
@@ -153,7 +153,7 @@ func (h *UserHandler) GetByID(ctx *fiber.Ctx) error {
 	}
 }
 
-func (h *UserHandler) GetAll(ctx *fiber.Ctx) error {
+func (h *UserHandler) GetAllHandler(ctx *fiber.Ctx) error {
 	users, err := h.userUseCase.GetAll()
 	if err == nil {
 		return ctx.Status(fiber.StatusOK).JSON(users)
@@ -167,9 +167,9 @@ func (h *UserHandler) GetAll(ctx *fiber.Ctx) error {
 	}
 }
 
-func (h *UserHandler) Edit(ctx *fiber.Ctx) error {
+func (h *UserHandler) UserEditHandler(ctx *fiber.Ctx) error {
 	id := ctx.Params("id")
-	if id == "" {
+	if len(id) == 0 {
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrResponse(domain.ErrInvalidInput))
 	}
 
@@ -191,9 +191,9 @@ func (h *UserHandler) Edit(ctx *fiber.Ctx) error {
 	}
 }
 
-func (h *UserHandler) Delete(ctx *fiber.Ctx) error {
+func (h *UserHandler) UserDeleteHandler(ctx *fiber.Ctx) error {
 	id := ctx.Params("id")
-	if id == "" {
+	if len(id) == 0 {
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrResponse(domain.ErrInvalidInput))
 	}
 

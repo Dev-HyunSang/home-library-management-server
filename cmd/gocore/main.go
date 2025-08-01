@@ -101,17 +101,17 @@ func main() {
 	bookHandler := handler.NewBookHandler(bookUseCase, authRepo)
 
 	user := app.Group("/user")
-	user.Post("/register", userHandler.Register)
-	user.Post("/login", userHandler.Login)
-	user.Get("/:id", userHandler.GetByID)
-	user.Put("/:id", userHandler.Edit)
-	user.Delete("/:id", userHandler.Delete)
+	user.Post("/register", userHandler.UserRegisterHandler)
+	user.Post("/login", userHandler.UserLoginHandler)
+	user.Get("/:id", userHandler.UserGetByIdHandler)
+	user.Put("/:id", userHandler.UserEditHandler)
+	user.Delete("/:id", userHandler.UserDeleteHandler)
 
 	book := app.Group("/book")
-	book.Post("/", bookHandler.SaveBook)
-	book.Get("/", bookHandler.GetBooks)
+	book.Post("/", bookHandler.SaveBookHandler)
+	book.Get("/", bookHandler.GetBooksHandler)
 	book.Delete("/:id", bookHandler.DeleteHandler)
-	book.Get("/:name", bookHandler.GetBooksByUserName)
+	book.Get("/:name", bookHandler.GetBooksByUserNameHandler)
 
 	if err := app.Listen(":3000"); err != nil {
 		panic(err)
