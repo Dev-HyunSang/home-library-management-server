@@ -48,6 +48,7 @@ func NewSessionStore(cfg *config.Config) *session.Store {
 
 func main() {
 	app := fiber.New()
+
 	// 안전한 쿠키 사용을 위해 쿠키를 암호화 함.
 	// Key는 32자의 문자열이며, 무작위 값으로 생성됨.
 	app.Use(encryptcookie.New(encryptcookie.Config{
@@ -94,12 +95,23 @@ func main() {
 	userUseCase := usecase.NewUserUseCase(userRepo, authRepo)
 	userHandler := handler.NewUserHandler(userUseCase, userUseCase)
 
+	// 책 관련 의존성 주입
+	bookRepo := repository.NewBookRepository(dbConn)
+	bookUseCase := usecase.NewBookUseCase(bookRepo)
+	bookHandler := handler.NewBookHandler(bookUseCase, authRepo)
+
 	user := app.Group("/user")
 	user.Post("/register", userHandler.Register)
 	user.Post("/login", userHandler.Login)
 	user.Get("/:id", userHandler.GetByID)
 	user.Put("/:id", userHandler.Edit)
 	user.Delete("/:id", userHandler.Delete)
+
+	book := app.Group("/book")
+	book.Post("/", bookHandler.SaveBook)
+	book.Get("/", bookHandler.GetBooks)
+	book.Delete("/:id", bookHandler.DeleteHandler)
+	book.Get("/:name", bookHandler.GetBooksByUserName)
 
 	if err := app.Listen(":3000"); err != nil {
 		panic(err)

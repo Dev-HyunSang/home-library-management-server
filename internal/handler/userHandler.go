@@ -36,7 +36,8 @@ func NewUserHandler(userUseCase domain.UserUseCase, authUseCase domain.AuthUseCa
 
 func ErrResponse(err error) map[string]string {
 	return map[string]string{
-		"error": err.Error(),
+		"status":  "error",
+		"message": err.Error(),
 	}
 }
 

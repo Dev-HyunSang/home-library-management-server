@@ -8,6 +8,30 @@ import (
 )
 
 var (
+	// BooksColumns holds the columns for the "books" table.
+	BooksColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "book_title", Type: field.TypeString},
+		{Name: "author", Type: field.TypeString},
+		{Name: "book_isbn", Type: field.TypeInt, Nullable: true},
+		{Name: "registered_at", Type: field.TypeTime},
+		{Name: "complated_at", Type: field.TypeTime},
+		{Name: "user_books", Type: field.TypeUUID},
+	}
+	// BooksTable holds the schema information for the "books" table.
+	BooksTable = &schema.Table{
+		Name:       "books",
+		Columns:    BooksColumns,
+		PrimaryKey: []*schema.Column{BooksColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "books_users_books",
+				Columns:    []*schema.Column{BooksColumns[6]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -25,9 +49,11 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		BooksTable,
 		UsersTable,
 	}
 )
 
 func init() {
+	BooksTable.ForeignKeys[0].RefTable = UsersTable
 }

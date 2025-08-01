@@ -5,6 +5,7 @@ package ent
 import (
 	"time"
 
+	"github.com/dev-hyunsang/home-library/lib/ent/book"
 	"github.com/dev-hyunsang/home-library/lib/ent/schema"
 	"github.com/dev-hyunsang/home-library/lib/ent/user"
 )
@@ -13,6 +14,24 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	bookFields := schema.Book{}.Fields()
+	_ = bookFields
+	// bookDescBookTitle is the schema descriptor for book_title field.
+	bookDescBookTitle := bookFields[1].Descriptor()
+	// book.BookTitleValidator is a validator for the "book_title" field. It is called by the builders before save.
+	book.BookTitleValidator = bookDescBookTitle.Validators[0].(func(string) error)
+	// bookDescAuthor is the schema descriptor for author field.
+	bookDescAuthor := bookFields[2].Descriptor()
+	// book.AuthorValidator is a validator for the "author" field. It is called by the builders before save.
+	book.AuthorValidator = bookDescAuthor.Validators[0].(func(string) error)
+	// bookDescRegisteredAt is the schema descriptor for registered_at field.
+	bookDescRegisteredAt := bookFields[4].Descriptor()
+	// book.DefaultRegisteredAt holds the default value on creation for the registered_at field.
+	book.DefaultRegisteredAt = bookDescRegisteredAt.Default.(time.Time)
+	// bookDescComplatedAt is the schema descriptor for complated_at field.
+	bookDescComplatedAt := bookFields[5].Descriptor()
+	// book.DefaultComplatedAt holds the default value on creation for the complated_at field.
+	book.DefaultComplatedAt = bookDescComplatedAt.Default.(time.Time)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescNickName is the schema descriptor for nick_name field.

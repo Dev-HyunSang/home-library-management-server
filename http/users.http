@@ -1,5 +1,5 @@
 ###
-POST http://localhost:3000/user/
+POST http://localhost:3000/user/register
 Content-Type: application/json
 
 {
@@ -9,7 +9,18 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:3000/user/31313e84-69e3-11f0-b034-acde48001122
+POST http://localhost:3000/user/login
+Content-Type: application/json
+
+{
+  "email": "testuser@example.com",
+  "password": "testpassword"
+}
+
+
+###
+GET http://localhost:3000/user/f4a5e52c-6d0d-11f0-85af-acde48001122
+Cookie: session=qIZM9qH2pUEb8wAoiC5oYQ/hXUrklspUXoR988n5Ny8hgh52BqZhyZz5z2moEZ9Z1qpTs77+FqyZ/996qB+hBg==
 
 ###
 DELETE http://localhost:3000/user/31313e84-69e3-11f0-b034-acde48001122

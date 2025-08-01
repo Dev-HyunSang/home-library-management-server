@@ -39,15 +39,14 @@ func NewDBConnection(config *config.Config) (*ent.Client, error) {
 	// sql.open을 ent.Client으로 변환함.
 	drv := entsql.OpenDB(config.DB.MySQL.Driver, db)
 
-	if err := NewUserTable(ent.NewClient(ent.Driver(drv))); err != nil {
+	if err := CreateTable(ent.NewClient(ent.Driver(drv))); err != nil {
 		return nil, fmt.Errorf("failed to create user table: %w", err)
 	}
 
 	return ent.NewClient(ent.Driver(drv)), nil
 }
 
-// DB 생성 시 User 테이블을 생성하는 함수 / User 테이블이 존재하지 않은 경우에만 작동
-func NewUserTable(client *ent.Client) error {
+func CreateTable(client *ent.Client) error {
 	if err := client.Schema.Create(context.Background()); err != nil {
 		return fmt.Errorf("failed to create user table: %w", err)
 	}

@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/dev-hyunsang/home-library/lib/ent/book"
 	"github.com/dev-hyunsang/home-library/lib/ent/user"
 	"github.com/google/uuid"
 )
@@ -71,6 +72,21 @@ func (uc *UserCreate) SetNillableUpdatedAt(t *time.Time) *UserCreate {
 func (uc *UserCreate) SetID(u uuid.UUID) *UserCreate {
 	uc.mutation.SetID(u)
 	return uc
+}
+
+// AddBookIDs adds the "books" edge to the Book entity by IDs.
+func (uc *UserCreate) AddBookIDs(ids ...uuid.UUID) *UserCreate {
+	uc.mutation.AddBookIDs(ids...)
+	return uc
+}
+
+// AddBooks adds the "books" edges to the Book entity.
+func (uc *UserCreate) AddBooks(b ...*Book) *UserCreate {
+	ids := make([]uuid.UUID, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return uc.AddBookIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -204,6 +220,22 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.UpdatedAt(); ok {
 		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
+	}
+	if nodes := uc.mutation.BooksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.BooksTable,
+			Columns: []string{user.BooksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(book.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
