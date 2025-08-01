@@ -713,6 +713,7 @@ type UserMutation struct {
 	nick_name     *string
 	email         *string
 	password      *string
+	is_published  *bool
 	created_at    *time.Time
 	updated_at    *time.Time
 	clearedFields map[string]struct{}
@@ -936,6 +937,42 @@ func (m *UserMutation) ResetPassword() {
 	m.password = nil
 }
 
+// SetIsPublished sets the "is_published" field.
+func (m *UserMutation) SetIsPublished(b bool) {
+	m.is_published = &b
+}
+
+// IsPublished returns the value of the "is_published" field in the mutation.
+func (m *UserMutation) IsPublished() (r bool, exists bool) {
+	v := m.is_published
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsPublished returns the old "is_published" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldIsPublished(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsPublished is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsPublished requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsPublished: %w", err)
+	}
+	return oldValue.IsPublished, nil
+}
+
+// ResetIsPublished resets all changes to the "is_published" field.
+func (m *UserMutation) ResetIsPublished() {
+	m.is_published = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *UserMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -1096,7 +1133,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
 	if m.nick_name != nil {
 		fields = append(fields, user.FieldNickName)
 	}
@@ -1105,6 +1142,9 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.password != nil {
 		fields = append(fields, user.FieldPassword)
+	}
+	if m.is_published != nil {
+		fields = append(fields, user.FieldIsPublished)
 	}
 	if m.created_at != nil {
 		fields = append(fields, user.FieldCreatedAt)
@@ -1126,6 +1166,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.Email()
 	case user.FieldPassword:
 		return m.Password()
+	case user.FieldIsPublished:
+		return m.IsPublished()
 	case user.FieldCreatedAt:
 		return m.CreatedAt()
 	case user.FieldUpdatedAt:
@@ -1145,6 +1187,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldEmail(ctx)
 	case user.FieldPassword:
 		return m.OldPassword(ctx)
+	case user.FieldIsPublished:
+		return m.OldIsPublished(ctx)
 	case user.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case user.FieldUpdatedAt:
@@ -1178,6 +1222,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPassword(v)
+		return nil
+	case user.FieldIsPublished:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsPublished(v)
 		return nil
 	case user.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -1250,6 +1301,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldPassword:
 		m.ResetPassword()
+		return nil
+	case user.FieldIsPublished:
+		m.ResetIsPublished()
 		return nil
 	case user.FieldCreatedAt:
 		m.ResetCreatedAt()

@@ -40,6 +40,20 @@ func (uc *UserCreate) SetPassword(s string) *UserCreate {
 	return uc
 }
 
+// SetIsPublished sets the "is_published" field.
+func (uc *UserCreate) SetIsPublished(b bool) *UserCreate {
+	uc.mutation.SetIsPublished(b)
+	return uc
+}
+
+// SetNillableIsPublished sets the "is_published" field if the given value is not nil.
+func (uc *UserCreate) SetNillableIsPublished(b *bool) *UserCreate {
+	if b != nil {
+		uc.SetIsPublished(*b)
+	}
+	return uc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (uc *UserCreate) SetCreatedAt(t time.Time) *UserCreate {
 	uc.mutation.SetCreatedAt(t)
@@ -124,6 +138,10 @@ func (uc *UserCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (uc *UserCreate) defaults() {
+	if _, ok := uc.mutation.IsPublished(); !ok {
+		v := user.DefaultIsPublished
+		uc.mutation.SetIsPublished(v)
+	}
 	if _, ok := uc.mutation.CreatedAt(); !ok {
 		v := user.DefaultCreatedAt()
 		uc.mutation.SetCreatedAt(v)
@@ -159,6 +177,9 @@ func (uc *UserCreate) check() error {
 		if err := user.PasswordValidator(v); err != nil {
 			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "User.password": %w`, err)}
 		}
+	}
+	if _, ok := uc.mutation.IsPublished(); !ok {
+		return &ValidationError{Name: "is_published", err: errors.New(`ent: missing required field "User.is_published"`)}
 	}
 	if _, ok := uc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "User.created_at"`)}
@@ -212,6 +233,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.Password(); ok {
 		_spec.SetField(user.FieldPassword, field.TypeString, value)
 		_node.Password = value
+	}
+	if value, ok := uc.mutation.IsPublished(); ok {
+		_spec.SetField(user.FieldIsPublished, field.TypeBool, value)
+		_node.IsPublished = value
 	}
 	if value, ok := uc.mutation.CreatedAt(); ok {
 		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)

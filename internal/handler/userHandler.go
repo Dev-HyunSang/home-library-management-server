@@ -17,9 +17,10 @@ type UserHandler struct {
 }
 
 type RegisterationRequest struct {
-	NickName string `json:"nick_name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	NickName    string `json:"nick_name"`
+	Email       string `json:"email"`
+	Password    string `json:"password"`
+	IsPublished bool   `json:"is_published"`
 }
 
 type LoginRequest struct {
@@ -50,11 +51,15 @@ func (h *UserHandler) Register(ctx *fiber.Ctx) error {
 	if user.NickName == "" || user.Email == "" || user.Password == "" {
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrResponse(domain.ErrInvalidInput))
 	}
+
 	result, err := h.userUseCase.CreateUser(&domain.User{
-		NickName: user.NickName,
-		Email:    user.Email,
-		Password: user.Password,
+		NickName:    user.NickName,
+		Email:       user.Email,
+		Password:    user.Password,
+		IsPublished: user.IsPublished,
 	})
+	log.Println(result)
+
 	if err == nil {
 		return ctx.Status(fiber.StatusCreated).JSON(result)
 	}

@@ -46,12 +46,16 @@ func init() {
 	userDescPassword := userFields[3].Descriptor()
 	// user.PasswordValidator is a validator for the "password" field. It is called by the builders before save.
 	user.PasswordValidator = userDescPassword.Validators[0].(func(string) error)
+	// userDescIsPublished is the schema descriptor for is_published field.
+	userDescIsPublished := userFields[4].Descriptor()
+	// user.DefaultIsPublished holds the default value on creation for the is_published field.
+	user.DefaultIsPublished = userDescIsPublished.Default.(bool)
 	// userDescCreatedAt is the schema descriptor for created_at field.
-	userDescCreatedAt := userFields[4].Descriptor()
+	userDescCreatedAt := userFields[5].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
 	// userDescUpdatedAt is the schema descriptor for updated_at field.
-	userDescUpdatedAt := userFields[5].Descriptor()
+	userDescUpdatedAt := userFields[6].Descriptor()
 	// user.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() time.Time)
 }

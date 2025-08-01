@@ -112,13 +112,13 @@ func (rc *BookRepository) GetBooksByUserID(userID uuid.UUID) ([]*domain.Book, er
 }
 
 // 사용자 이름을 통해 책의 목록을 가져옵니다.
-// TODO: 추후에 공개계정과 비공개 계정을 나눌 예정
 func (bc *BookRepository) GetBooksByUserName(name string) ([]*domain.Book, error) {
 	client := bc.client
 
 	books, err := client.Book.
 		Query().
 		Where(book.HasOwnerWith(user.NickName(name))).
+		Where(book.HasOwnerWith(user.IsPublished(true))).
 		All(context.Background())
 	if err != nil {
 		return nil, domain.ErrNotFound
@@ -135,6 +135,10 @@ func (bc *BookRepository) GetBooksByUserName(name string) ([]*domain.Book, error
 			RegisteredAt: b.RegisteredAt,
 			ComplatedAt:  b.ComplatedAt,
 		})
+	}
+
+	if len(result) == 0 {
+		return nil, domain.ErrPrivateAccount
 	}
 
 	return result, nil

@@ -44,7 +44,8 @@ func (r *UserRepository) Save(user *domain.User) (*domain.User, error) {
 		SetID(userID).
 		SetNickName(user.NickName).
 		SetEmail(user.Email).
-		SetPassword(string(hashedPw)). // 절대 평문 비밀번호를 저장하지 마시오.
+		SetPassword(string(hashedPw)).    // 절대 평문 비밀번호를 저장하지 마시오.
+		SetIsPublished(user.IsPublished). // 기본값은 비공개인 false로 설정
 		SetUpdatedAt(time.Now()).
 		SetCreatedAt(time.Now()).
 		Save(context.Background())

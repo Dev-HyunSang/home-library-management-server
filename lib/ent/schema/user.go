@@ -28,6 +28,9 @@ func (User) Fields() []ent.Field {
 		field.String("password").
 			NotEmpty().
 			Comment("사용자 비밀번호"),
+		field.Bool("is_published").
+			Default(false).
+			Comment("사용자 계정의 책 공개 여부"),
 		field.Time("created_at").
 			Immutable().
 			Default(time.Now).

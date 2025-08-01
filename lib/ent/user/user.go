@@ -20,6 +20,8 @@ const (
 	FieldEmail = "email"
 	// FieldPassword holds the string denoting the password field in the database.
 	FieldPassword = "password"
+	// FieldIsPublished holds the string denoting the is_published field in the database.
+	FieldIsPublished = "is_published"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -43,6 +45,7 @@ var Columns = []string{
 	FieldNickName,
 	FieldEmail,
 	FieldPassword,
+	FieldIsPublished,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
@@ -64,6 +67,8 @@ var (
 	EmailValidator func(string) error
 	// PasswordValidator is a validator for the "password" field. It is called by the builders before save.
 	PasswordValidator func(string) error
+	// DefaultIsPublished holds the default value on creation for the "is_published" field.
+	DefaultIsPublished bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
@@ -91,6 +96,11 @@ func ByEmail(opts ...sql.OrderTermOption) OrderOption {
 // ByPassword orders the results by the password field.
 func ByPassword(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPassword, opts...).ToFunc()
+}
+
+// ByIsPublished orders the results by the is_published field.
+func ByIsPublished(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsPublished, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

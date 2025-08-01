@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/dev-hyunsang/home-library/internal/domain"
@@ -88,9 +90,13 @@ func (h *BookHandler) GetBooksByUserName(ctx *fiber.Ctx) error {
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrResponse(err))
 	}
-
 	if len(books) == 0 {
 		return ctx.Status(fiber.StatusNotFound).JSON(ErrResponse(fmt.Errorf("%s", "등록되어 있는 책을 찾을 수 없습니다.")))
+	}
+
+	switch {
+	case errors.Is(err, domain.ErrPrivateAccount):
+		return ctx.Status(fiber.StatusForbidden).JSON(ErrResponse(domain.ErrPrivateAccount))
 	}
 
 	return ctx.Status(fiber.StatusOK).JSON(books)
@@ -101,6 +107,7 @@ func (h *BookHandler) DeleteHandler(ctx *fiber.Ctx) error {
 
 	userID, err := h.AuthHandler.GetSessionByID(sessionID, ctx)
 	if err != nil {
+		log.Println(err)
 		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrResponse(err))
 	}
 

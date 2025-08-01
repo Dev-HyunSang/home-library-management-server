@@ -10,4 +10,5 @@ var (
 	ErrUserNotLoggedIn    = errors.New("user not logged in")
 	ErrInvalidCredentials = errors.New("invalid credentials")
 	ErrPermissionDenied   = errors.New("permission denied")
+	ErrPrivateAccount     = errors.New("private account")
 )

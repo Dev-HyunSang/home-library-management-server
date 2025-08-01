@@ -72,6 +72,20 @@ func (uu *UserUpdate) SetNillablePassword(s *string) *UserUpdate {
 	return uu
 }
 
+// SetIsPublished sets the "is_published" field.
+func (uu *UserUpdate) SetIsPublished(b bool) *UserUpdate {
+	uu.mutation.SetIsPublished(b)
+	return uu
+}
+
+// SetNillableIsPublished sets the "is_published" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableIsPublished(b *bool) *UserUpdate {
+	if b != nil {
+		uu.SetIsPublished(*b)
+	}
+	return uu
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (uu *UserUpdate) SetUpdatedAt(t time.Time) *UserUpdate {
 	uu.mutation.SetUpdatedAt(t)
@@ -195,6 +209,9 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := uu.mutation.Password(); ok {
 		_spec.SetField(user.FieldPassword, field.TypeString, value)
 	}
+	if value, ok := uu.mutation.IsPublished(); ok {
+		_spec.SetField(user.FieldIsPublished, field.TypeBool, value)
+	}
 	if value, ok := uu.mutation.UpdatedAt(); ok {
 		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
 	}
@@ -301,6 +318,20 @@ func (uuo *UserUpdateOne) SetPassword(s string) *UserUpdateOne {
 func (uuo *UserUpdateOne) SetNillablePassword(s *string) *UserUpdateOne {
 	if s != nil {
 		uuo.SetPassword(*s)
+	}
+	return uuo
+}
+
+// SetIsPublished sets the "is_published" field.
+func (uuo *UserUpdateOne) SetIsPublished(b bool) *UserUpdateOne {
+	uuo.mutation.SetIsPublished(b)
+	return uuo
+}
+
+// SetNillableIsPublished sets the "is_published" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableIsPublished(b *bool) *UserUpdateOne {
+	if b != nil {
+		uuo.SetIsPublished(*b)
 	}
 	return uuo
 }
@@ -457,6 +488,9 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if value, ok := uuo.mutation.Password(); ok {
 		_spec.SetField(user.FieldPassword, field.TypeString, value)
+	}
+	if value, ok := uuo.mutation.IsPublished(); ok {
+		_spec.SetField(user.FieldIsPublished, field.TypeBool, value)
 	}
 	if value, ok := uuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
