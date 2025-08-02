@@ -193,21 +193,19 @@ func (h *UserHandler) UserEditHandler(ctx *fiber.Ctx) error {
 
 func (h *UserHandler) UserDeleteHandler(ctx *fiber.Ctx) error {
 	id := ctx.Params("id")
+
+	log.Println("User ID :", id)
+
 	if len(id) == 0 {
+		log.Println("UserID is empty")
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrResponse(domain.ErrInvalidInput))
 	}
 
 	err := h.userUseCase.Delete(uuid.MustParse(id))
-	if err == nil {
-		return ctx.Status(fiber.StatusNoContent).JSON("successfully deleted")
-	}
-
-	switch {
-	case errors.Is(err, domain.ErrInvalidInput):
-		return ctx.Status(fiber.StatusBadRequest).JSON(ErrResponse(err))
-	case errors.Is(err, domain.ErrNotFound):
-		return ctx.Status(fiber.StatusBadRequest).JSON(ErrResponse(err))
-	default:
+	if err != nil {
+		log.Println(err)
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrResponse(domain.ErrInternal))
 	}
+
+	return ctx.Status(fiber.StatusNoContent).JSON("successfully deleted")
 }

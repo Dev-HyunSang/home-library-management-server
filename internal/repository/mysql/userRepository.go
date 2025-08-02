@@ -3,10 +3,12 @@ package memory
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/dev-hyunsang/home-library/internal/domain"
 	"github.com/dev-hyunsang/home-library/lib/ent"
+	"github.com/dev-hyunsang/home-library/lib/ent/book"
 	"github.com/dev-hyunsang/home-library/lib/ent/user"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/google/uuid"
@@ -171,10 +173,19 @@ func (r *UserRepository) Edit(user *domain.User) (*domain.User, error) {
 func (r *UserRepository) Delete(id uuid.UUID) error {
 	client := r.client
 
-	err := client.User.DeleteOneID(id).Exec(context.Background())
+	// 사용자가 등록한 책을 먼저 삭제합니다.
+	_, err := client.Book.Delete().Where(book.HasOwnerWith(user.ID(id))).Exec(context.Background())
+	if err != nil {
+		return fmt.Errorf("failed to delete books for user: %w", err)
+	}
+
+	// 책이 성공적으로 삭제되었다면, 사용자를 삭제합니다.
+	err = client.User.DeleteOneID(id).Exec(context.Background())
 	if err != nil {
 		return fmt.Errorf("failed to delete user: %w", err)
 	}
+
+	log.Println("Successfully deleted user with ID:", id)
 
 	return nil
 }
