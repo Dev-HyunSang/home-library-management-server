@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 	"log"
+	"regexp"
 
 	"github.com/dev-hyunsang/home-library/internal/domain"
 	"github.com/dev-hyunsang/home-library/lib/ent"
@@ -34,6 +35,10 @@ func NewUserHandler(userUseCase domain.UserUseCase, authUseCase domain.AuthUseCa
 		AuthHandler: authUseCase,
 	}
 }
+func IsValidNickname(nickname string) bool {
+	matched, _ := regexp.MatchString(`^[a-z._]+$`, nickname)
+	return matched
+}
 
 func ErrResponse(err error) map[string]string {
 	return map[string]string{
@@ -52,26 +57,24 @@ func (h *UserHandler) UserRegisterHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrResponse(domain.ErrInvalidInput))
 	}
 
+	if !IsValidNickname(user.NickName) {
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrResponse(errors.New("invalid nickname")))
+	}
+
 	result, err := h.userUseCase.CreateUser(&domain.User{
 		NickName:    user.NickName,
 		Email:       user.Email,
 		Password:    user.Password,
 		IsPublished: user.IsPublished,
 	})
+	if err != nil {
+		log.Println(err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrResponse(err))
+	}
+
 	log.Println(result)
 
-	if err == nil {
-		return ctx.Status(fiber.StatusCreated).JSON(result)
-	}
-
-	switch {
-	case errors.Is(err, domain.ErrInvalidInput):
-		return ctx.Status(fiber.StatusBadRequest).JSON(ErrResponse(err))
-	case errors.Is(err, domain.ErrAlreadyExists):
-		return ctx.Status(fiber.StatusConflict).JSON(ErrResponse(err))
-	default:
-		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrResponse(domain.ErrInternal))
-	}
+	return ctx.Status(fiber.StatusCreated).JSON(result)
 }
 
 func (h *UserHandler) UserLoginHandler(ctx *fiber.Ctx) error {

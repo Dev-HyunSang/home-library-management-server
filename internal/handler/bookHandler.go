@@ -29,7 +29,7 @@ func NewBookHandler(bookUseCase domain.BookUseCase, AuthHandler domain.AuthUseCa
 	}
 }
 
-func (h *BookHandler) SaveBook(ctx *fiber.Ctx) error {
+func (h *BookHandler) SaveBookHandler(ctx *fiber.Ctx) error {
 	sessionID := ctx.Cookies("user")
 
 	userID, err := h.AuthHandler.GetSessionByID(sessionID, ctx)
@@ -60,7 +60,7 @@ func (h *BookHandler) SaveBook(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusCreated).JSON(result)
 }
 
-func (h *BookHandler) GetBooks(ctx *fiber.Ctx) error {
+func (h *BookHandler) GetBooksHandler(ctx *fiber.Ctx) error {
 	sessionID := ctx.Cookies("user")
 
 	result, err := h.AuthHandler.GetSessionByID(sessionID, ctx)
@@ -80,7 +80,7 @@ func (h *BookHandler) GetBooks(ctx *fiber.Ctx) error {
 	return ctx.JSON(books)
 }
 
-func (h *BookHandler) GetBooksByUserName(ctx *fiber.Ctx) error {
+func (h *BookHandler) GetBooksByUserNameHandler(ctx *fiber.Ctx) error {
 	name := ctx.Params("name")
 	if len(name) == 0 {
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrResponse(domain.ErrInvalidInput))
@@ -102,7 +102,7 @@ func (h *BookHandler) GetBooksByUserName(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(books)
 }
 
-func (h *BookHandler) DeleteHandler(ctx *fiber.Ctx) error {
+func (h *BookHandler) BookDeleteHandler(ctx *fiber.Ctx) error {
 	sessionID := ctx.Cookies("user")
 
 	userID, err := h.AuthHandler.GetSessionByID(sessionID, ctx)

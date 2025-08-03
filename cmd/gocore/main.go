@@ -16,6 +16,7 @@ import (
 	"github.com/dev-hyunsang/home-library/internal/usecase"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/csrf"
 	"github.com/gofiber/fiber/v2/middleware/encryptcookie"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/gofiber/storage/redis/v3"
@@ -57,7 +58,7 @@ func main() {
 
 	app.Use(cors.New(cors.Config{
 		// TODO: production 에서 수정
-		AllowOrigins: "https://localhost:3000",
+		AllowOrigins: "http://localhost:3000, http://localhost:8080",
 		AllowMethods: strings.Join([]string{
 			fiber.MethodGet,
 			fiber.MethodPost,
@@ -66,6 +67,8 @@ func main() {
 		}, ","),
 		AllowCredentials: true,
 	}))
+
+	app.Use(csrf.New())
 
 	env := flag.String("env", "dev", "Environment (dev, qa, stg, prod)")
 	flag.Parse()
@@ -100,17 +103,19 @@ func main() {
 	bookUseCase := usecase.NewBookUseCase(bookRepo)
 	bookHandler := handler.NewBookHandler(bookUseCase, authRepo)
 
-	user := app.Group("/user")
+	api := app.Group("/api")
+	user := api.Group("/user")
 	user.Post("/register", userHandler.UserRegisterHandler)
 	user.Post("/login", userHandler.UserLoginHandler)
+	user.Post("/verify", userHandler.UserVerifyHandler)
 	user.Get("/:id", userHandler.UserGetByIdHandler)
 	user.Put("/:id", userHandler.UserEditHandler)
 	user.Delete("/:id", userHandler.UserDeleteHandler)
 
-	book := app.Group("/book")
+	book := api.Group("/book")
 	book.Post("/", bookHandler.SaveBookHandler)
 	book.Get("/", bookHandler.GetBooksHandler)
-	book.Delete("/:id", bookHandler.DeleteHandler)
+	book.Delete("/:id", bookHandler.BookDeleteHandler)
 	book.Get("/:name", bookHandler.GetBooksByUserNameHandler)
 
 	if err := app.Listen(":3000"); err != nil {

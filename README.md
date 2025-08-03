@@ -24,3 +24,8 @@
   >
   > Unless you work on a Reddit-scale application, there's no reason to be using JWT tokens as a session mechanism. Just use sessions.  
   > [Stop using JWT for sessions](http://cryto.net/~joepie91/blog/2016/06/13/stop-using-jwt-for-sessions/)
+
+## 로깅 방법
+
+- Golang에서 기본적으로 `log` 패키지를 이용합니다
+- Logstash를 이용하여 로깅을 기록합니다.

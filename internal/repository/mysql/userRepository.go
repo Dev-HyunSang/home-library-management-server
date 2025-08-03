@@ -56,12 +56,13 @@ func (r *UserRepository) Save(user *domain.User) (*domain.User, error) {
 	}
 
 	return &domain.User{
-		ID:        u.ID,
-		NickName:  u.NickName,
-		Email:     u.Email,
-		Password:  u.Password,
-		CreatedAt: u.CreatedAt,
-		UpdatedAt: u.UpdatedAt,
+		ID:          u.ID,
+		NickName:    u.NickName,
+		Email:       u.Email,
+		Password:    u.Password,
+		IsPublished: u.IsPublished,
+		CreatedAt:   u.CreatedAt,
+		UpdatedAt:   u.UpdatedAt,
 	}, nil
 }
 
