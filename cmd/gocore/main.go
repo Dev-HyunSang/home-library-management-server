@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"runtime"
 	"strings"
@@ -10,10 +9,13 @@ import (
 
 	"github.com/dev-hyunsang/home-library/internal/config"
 	"github.com/dev-hyunsang/home-library/internal/db"
+	"github.com/dev-hyunsang/home-library/internal/domain"
 	"github.com/dev-hyunsang/home-library/internal/handler"
 	repository "github.com/dev-hyunsang/home-library/internal/repository/mysql"
 	redisRepository "github.com/dev-hyunsang/home-library/internal/repository/redis"
 	"github.com/dev-hyunsang/home-library/internal/usecase"
+	"github.com/dev-hyunsang/home-library/logger"
+	"github.com/gofiber/contrib/fiberzap/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/csrf"
@@ -56,9 +58,13 @@ func main() {
 		Key: encryptcookie.GenerateKey(),
 	}))
 
+	app.Use(fiberzap.New(fiberzap.Config{
+		Logger: logger.Init(),
+	}))
+
 	app.Use(cors.New(cors.Config{
 		// TODO: production 에서 수정
-		AllowOrigins: "http://localhost:3000, http://localhost:8080",
+		AllowOrigins: "http://localhost:3000, http://localhost:5173/",
 		AllowMethods: strings.Join([]string{
 			fiber.MethodGet,
 			fiber.MethodPost,
@@ -67,8 +73,6 @@ func main() {
 		}, ","),
 		AllowCredentials: true,
 	}))
-
-	app.Use(csrf.New())
 
 	env := flag.String("env", "dev", "Environment (dev, qa, stg, prod)")
 	flag.Parse()
@@ -83,14 +87,32 @@ func main() {
 		log.Fatalf("Config load error: %v", err)
 	}
 
-	fmt.Printf("config: %+v\n", cfg)
-
 	dbConn, err := db.NewDBConnection(cfg)
 	if err != nil {
 		log.Fatalf("Database connection error: %v", err)
 	}
 
+	logger.Init().Sugar().Info("성공적으로 데이터베이스(MySQL)에 연결되었습니다.")
+
 	store := NewSessionStore(cfg)
+
+	logger.Init().Sugar().Info("성공적으로 Redis에 세션 저장소가 초기화되었습니다.")
+
+	csrfConfig := csrf.Config{
+		Session:        store,
+		KeyLookup:      "json:csrf",
+		CookieName:     "__Host-csrf",
+		CookieSameSite: "Lax",
+		CookieSecure:   true,
+		CookieHTTPOnly: true,
+		ContextKey:     "csrf",
+		ErrorHandler: func(c *fiber.Ctx, err error) error {
+			return c.Status(fiber.StatusForbidden).JSON(handler.ErrorHandler(domain.ErrInvalidCSRFToken))
+		},
+		Expiration: time.Minute * 30,
+	}
+
+	csrfMiddleware := csrf.New(csrfConfig)
 
 	// 사용자 관련 의존성 주입
 	authRepo := redisRepository.NewAuthRepository(store)
@@ -107,9 +129,9 @@ func main() {
 	user := api.Group("/user")
 	user.Post("/register", userHandler.UserRegisterHandler)
 	user.Post("/login", userHandler.UserLoginHandler)
-	user.Post("/verify", userHandler.UserVerifyHandler)
+	user.Post("/verify", csrfMiddleware, userHandler.UserVerifyHandler)
 	user.Get("/:id", userHandler.UserGetByIdHandler)
-	user.Put("/:id", userHandler.UserEditHandler)
+	user.Put("/:id", csrfMiddleware, userHandler.UserEditHandler)
 	user.Delete("/:id", userHandler.UserDeleteHandler)
 
 	book := api.Group("/book")
@@ -117,8 +139,9 @@ func main() {
 	book.Get("/", bookHandler.GetBooksHandler)
 	book.Delete("/:id", bookHandler.BookDeleteHandler)
 	book.Get("/:name", bookHandler.GetBooksByUserNameHandler)
+	book.Post("/search", bookHandler.SearchBookIsbnHandler)
 
 	if err := app.Listen(":3000"); err != nil {
-		panic(err)
+		logger.Init().Sugar().Fatalf("서버를 시작하는 도중 오류가 발생했습니다: %v", err)
 	}
 }
