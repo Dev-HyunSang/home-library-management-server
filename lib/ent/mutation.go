@@ -38,8 +38,7 @@ type BookMutation struct {
 	id            *uuid.UUID
 	book_title    *string
 	author        *string
-	book_isbn     *int
-	addbook_isbn  *int
+	book_isbn     *string
 	registered_at *time.Time
 	complated_at  *time.Time
 	clearedFields map[string]struct{}
@@ -227,13 +226,12 @@ func (m *BookMutation) ResetAuthor() {
 }
 
 // SetBookIsbn sets the "book_isbn" field.
-func (m *BookMutation) SetBookIsbn(i int) {
-	m.book_isbn = &i
-	m.addbook_isbn = nil
+func (m *BookMutation) SetBookIsbn(s string) {
+	m.book_isbn = &s
 }
 
 // BookIsbn returns the value of the "book_isbn" field in the mutation.
-func (m *BookMutation) BookIsbn() (r int, exists bool) {
+func (m *BookMutation) BookIsbn() (r string, exists bool) {
 	v := m.book_isbn
 	if v == nil {
 		return
@@ -244,7 +242,7 @@ func (m *BookMutation) BookIsbn() (r int, exists bool) {
 // OldBookIsbn returns the old "book_isbn" field's value of the Book entity.
 // If the Book object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BookMutation) OldBookIsbn(ctx context.Context) (v int, err error) {
+func (m *BookMutation) OldBookIsbn(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldBookIsbn is only allowed on UpdateOne operations")
 	}
@@ -258,28 +256,9 @@ func (m *BookMutation) OldBookIsbn(ctx context.Context) (v int, err error) {
 	return oldValue.BookIsbn, nil
 }
 
-// AddBookIsbn adds i to the "book_isbn" field.
-func (m *BookMutation) AddBookIsbn(i int) {
-	if m.addbook_isbn != nil {
-		*m.addbook_isbn += i
-	} else {
-		m.addbook_isbn = &i
-	}
-}
-
-// AddedBookIsbn returns the value that was added to the "book_isbn" field in this mutation.
-func (m *BookMutation) AddedBookIsbn() (r int, exists bool) {
-	v := m.addbook_isbn
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
 // ClearBookIsbn clears the value of the "book_isbn" field.
 func (m *BookMutation) ClearBookIsbn() {
 	m.book_isbn = nil
-	m.addbook_isbn = nil
 	m.clearedFields[book.FieldBookIsbn] = struct{}{}
 }
 
@@ -292,7 +271,6 @@ func (m *BookMutation) BookIsbnCleared() bool {
 // ResetBookIsbn resets all changes to the "book_isbn" field.
 func (m *BookMutation) ResetBookIsbn() {
 	m.book_isbn = nil
-	m.addbook_isbn = nil
 	delete(m.clearedFields, book.FieldBookIsbn)
 }
 
@@ -518,7 +496,7 @@ func (m *BookMutation) SetField(name string, value ent.Value) error {
 		m.SetAuthor(v)
 		return nil
 	case book.FieldBookIsbn:
-		v, ok := value.(int)
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -545,21 +523,13 @@ func (m *BookMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *BookMutation) AddedFields() []string {
-	var fields []string
-	if m.addbook_isbn != nil {
-		fields = append(fields, book.FieldBookIsbn)
-	}
-	return fields
+	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *BookMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	case book.FieldBookIsbn:
-		return m.AddedBookIsbn()
-	}
 	return nil, false
 }
 
@@ -568,13 +538,6 @@ func (m *BookMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *BookMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case book.FieldBookIsbn:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddBookIsbn(v)
-		return nil
 	}
 	return fmt.Errorf("unknown Book numeric field %s", name)
 }

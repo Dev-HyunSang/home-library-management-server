@@ -13,7 +13,7 @@ var (
 		{Name: "id", Type: field.TypeUUID},
 		{Name: "book_title", Type: field.TypeString},
 		{Name: "author", Type: field.TypeString},
-		{Name: "book_isbn", Type: field.TypeInt, Nullable: true},
+		{Name: "book_isbn", Type: field.TypeString, Nullable: true},
 		{Name: "registered_at", Type: field.TypeTime},
 		{Name: "complated_at", Type: field.TypeTime},
 		{Name: "user_books", Type: field.TypeUUID},

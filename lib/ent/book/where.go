@@ -67,7 +67,7 @@ func Author(v string) predicate.Book {
 }
 
 // BookIsbn applies equality check predicate on the "book_isbn" field. It's identical to BookIsbnEQ.
-func BookIsbn(v int) predicate.Book {
+func BookIsbn(v string) predicate.Book {
 	return predicate.Book(sql.FieldEQ(FieldBookIsbn, v))
 }
 
@@ -212,43 +212,58 @@ func AuthorContainsFold(v string) predicate.Book {
 }
 
 // BookIsbnEQ applies the EQ predicate on the "book_isbn" field.
-func BookIsbnEQ(v int) predicate.Book {
+func BookIsbnEQ(v string) predicate.Book {
 	return predicate.Book(sql.FieldEQ(FieldBookIsbn, v))
 }
 
 // BookIsbnNEQ applies the NEQ predicate on the "book_isbn" field.
-func BookIsbnNEQ(v int) predicate.Book {
+func BookIsbnNEQ(v string) predicate.Book {
 	return predicate.Book(sql.FieldNEQ(FieldBookIsbn, v))
 }
 
 // BookIsbnIn applies the In predicate on the "book_isbn" field.
-func BookIsbnIn(vs ...int) predicate.Book {
+func BookIsbnIn(vs ...string) predicate.Book {
 	return predicate.Book(sql.FieldIn(FieldBookIsbn, vs...))
 }
 
 // BookIsbnNotIn applies the NotIn predicate on the "book_isbn" field.
-func BookIsbnNotIn(vs ...int) predicate.Book {
+func BookIsbnNotIn(vs ...string) predicate.Book {
 	return predicate.Book(sql.FieldNotIn(FieldBookIsbn, vs...))
 }
 
 // BookIsbnGT applies the GT predicate on the "book_isbn" field.
-func BookIsbnGT(v int) predicate.Book {
+func BookIsbnGT(v string) predicate.Book {
 	return predicate.Book(sql.FieldGT(FieldBookIsbn, v))
 }
 
 // BookIsbnGTE applies the GTE predicate on the "book_isbn" field.
-func BookIsbnGTE(v int) predicate.Book {
+func BookIsbnGTE(v string) predicate.Book {
 	return predicate.Book(sql.FieldGTE(FieldBookIsbn, v))
 }
 
 // BookIsbnLT applies the LT predicate on the "book_isbn" field.
-func BookIsbnLT(v int) predicate.Book {
+func BookIsbnLT(v string) predicate.Book {
 	return predicate.Book(sql.FieldLT(FieldBookIsbn, v))
 }
 
 // BookIsbnLTE applies the LTE predicate on the "book_isbn" field.
-func BookIsbnLTE(v int) predicate.Book {
+func BookIsbnLTE(v string) predicate.Book {
 	return predicate.Book(sql.FieldLTE(FieldBookIsbn, v))
+}
+
+// BookIsbnContains applies the Contains predicate on the "book_isbn" field.
+func BookIsbnContains(v string) predicate.Book {
+	return predicate.Book(sql.FieldContains(FieldBookIsbn, v))
+}
+
+// BookIsbnHasPrefix applies the HasPrefix predicate on the "book_isbn" field.
+func BookIsbnHasPrefix(v string) predicate.Book {
+	return predicate.Book(sql.FieldHasPrefix(FieldBookIsbn, v))
+}
+
+// BookIsbnHasSuffix applies the HasSuffix predicate on the "book_isbn" field.
+func BookIsbnHasSuffix(v string) predicate.Book {
+	return predicate.Book(sql.FieldHasSuffix(FieldBookIsbn, v))
 }
 
 // BookIsbnIsNil applies the IsNil predicate on the "book_isbn" field.
@@ -259,6 +274,16 @@ func BookIsbnIsNil() predicate.Book {
 // BookIsbnNotNil applies the NotNil predicate on the "book_isbn" field.
 func BookIsbnNotNil() predicate.Book {
 	return predicate.Book(sql.FieldNotNull(FieldBookIsbn))
+}
+
+// BookIsbnEqualFold applies the EqualFold predicate on the "book_isbn" field.
+func BookIsbnEqualFold(v string) predicate.Book {
+	return predicate.Book(sql.FieldEqualFold(FieldBookIsbn, v))
+}
+
+// BookIsbnContainsFold applies the ContainsFold predicate on the "book_isbn" field.
+func BookIsbnContainsFold(v string) predicate.Book {
+	return predicate.Book(sql.FieldContainsFold(FieldBookIsbn, v))
 }
 
 // RegisteredAtEQ applies the EQ predicate on the "registered_at" field.

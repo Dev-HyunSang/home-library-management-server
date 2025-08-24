@@ -59,23 +59,16 @@ func (bu *BookUpdate) SetNillableAuthor(s *string) *BookUpdate {
 }
 
 // SetBookIsbn sets the "book_isbn" field.
-func (bu *BookUpdate) SetBookIsbn(i int) *BookUpdate {
-	bu.mutation.ResetBookIsbn()
-	bu.mutation.SetBookIsbn(i)
+func (bu *BookUpdate) SetBookIsbn(s string) *BookUpdate {
+	bu.mutation.SetBookIsbn(s)
 	return bu
 }
 
 // SetNillableBookIsbn sets the "book_isbn" field if the given value is not nil.
-func (bu *BookUpdate) SetNillableBookIsbn(i *int) *BookUpdate {
-	if i != nil {
-		bu.SetBookIsbn(*i)
+func (bu *BookUpdate) SetNillableBookIsbn(s *string) *BookUpdate {
+	if s != nil {
+		bu.SetBookIsbn(*s)
 	}
-	return bu
-}
-
-// AddBookIsbn adds i to the "book_isbn" field.
-func (bu *BookUpdate) AddBookIsbn(i int) *BookUpdate {
-	bu.mutation.AddBookIsbn(i)
 	return bu
 }
 
@@ -199,13 +192,10 @@ func (bu *BookUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.SetField(book.FieldAuthor, field.TypeString, value)
 	}
 	if value, ok := bu.mutation.BookIsbn(); ok {
-		_spec.SetField(book.FieldBookIsbn, field.TypeInt, value)
-	}
-	if value, ok := bu.mutation.AddedBookIsbn(); ok {
-		_spec.AddField(book.FieldBookIsbn, field.TypeInt, value)
+		_spec.SetField(book.FieldBookIsbn, field.TypeString, value)
 	}
 	if bu.mutation.BookIsbnCleared() {
-		_spec.ClearField(book.FieldBookIsbn, field.TypeInt)
+		_spec.ClearField(book.FieldBookIsbn, field.TypeString)
 	}
 	if value, ok := bu.mutation.RegisteredAt(); ok {
 		_spec.SetField(book.FieldRegisteredAt, field.TypeTime, value)
@@ -291,23 +281,16 @@ func (buo *BookUpdateOne) SetNillableAuthor(s *string) *BookUpdateOne {
 }
 
 // SetBookIsbn sets the "book_isbn" field.
-func (buo *BookUpdateOne) SetBookIsbn(i int) *BookUpdateOne {
-	buo.mutation.ResetBookIsbn()
-	buo.mutation.SetBookIsbn(i)
+func (buo *BookUpdateOne) SetBookIsbn(s string) *BookUpdateOne {
+	buo.mutation.SetBookIsbn(s)
 	return buo
 }
 
 // SetNillableBookIsbn sets the "book_isbn" field if the given value is not nil.
-func (buo *BookUpdateOne) SetNillableBookIsbn(i *int) *BookUpdateOne {
-	if i != nil {
-		buo.SetBookIsbn(*i)
+func (buo *BookUpdateOne) SetNillableBookIsbn(s *string) *BookUpdateOne {
+	if s != nil {
+		buo.SetBookIsbn(*s)
 	}
-	return buo
-}
-
-// AddBookIsbn adds i to the "book_isbn" field.
-func (buo *BookUpdateOne) AddBookIsbn(i int) *BookUpdateOne {
-	buo.mutation.AddBookIsbn(i)
 	return buo
 }
 
@@ -461,13 +444,10 @@ func (buo *BookUpdateOne) sqlSave(ctx context.Context) (_node *Book, err error) 
 		_spec.SetField(book.FieldAuthor, field.TypeString, value)
 	}
 	if value, ok := buo.mutation.BookIsbn(); ok {
-		_spec.SetField(book.FieldBookIsbn, field.TypeInt, value)
-	}
-	if value, ok := buo.mutation.AddedBookIsbn(); ok {
-		_spec.AddField(book.FieldBookIsbn, field.TypeInt, value)
+		_spec.SetField(book.FieldBookIsbn, field.TypeString, value)
 	}
 	if buo.mutation.BookIsbnCleared() {
-		_spec.ClearField(book.FieldBookIsbn, field.TypeInt)
+		_spec.ClearField(book.FieldBookIsbn, field.TypeString)
 	}
 	if value, ok := buo.mutation.RegisteredAt(); ok {
 		_spec.SetField(book.FieldRegisteredAt, field.TypeTime, value)

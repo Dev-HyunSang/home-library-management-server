@@ -23,7 +23,7 @@ func (Book) Fields() []ent.Field {
 			NotEmpty(),
 		field.String("author").
 			NotEmpty(),
-		field.Int("book_isbn").
+		field.String("book_isbn").
 			Optional(),
 		field.Time("registered_at").
 			Default(time.Now()),

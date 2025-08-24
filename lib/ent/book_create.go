@@ -35,15 +35,15 @@ func (bc *BookCreate) SetAuthor(s string) *BookCreate {
 }
 
 // SetBookIsbn sets the "book_isbn" field.
-func (bc *BookCreate) SetBookIsbn(i int) *BookCreate {
-	bc.mutation.SetBookIsbn(i)
+func (bc *BookCreate) SetBookIsbn(s string) *BookCreate {
+	bc.mutation.SetBookIsbn(s)
 	return bc
 }
 
 // SetNillableBookIsbn sets the "book_isbn" field if the given value is not nil.
-func (bc *BookCreate) SetNillableBookIsbn(i *int) *BookCreate {
-	if i != nil {
-		bc.SetBookIsbn(*i)
+func (bc *BookCreate) SetNillableBookIsbn(s *string) *BookCreate {
+	if s != nil {
+		bc.SetBookIsbn(*s)
 	}
 	return bc
 }
@@ -209,7 +209,7 @@ func (bc *BookCreate) createSpec() (*Book, *sqlgraph.CreateSpec) {
 		_node.Author = value
 	}
 	if value, ok := bc.mutation.BookIsbn(); ok {
-		_spec.SetField(book.FieldBookIsbn, field.TypeInt, value)
+		_spec.SetField(book.FieldBookIsbn, field.TypeString, value)
 		_node.BookIsbn = value
 	}
 	if value, ok := bc.mutation.RegisteredAt(); ok {
