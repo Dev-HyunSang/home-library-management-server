@@ -11,7 +11,7 @@ type Book struct {
 	OwnerID      uuid.UUID `json:"owner_id"`
 	Title        string    `json:"title"`
 	Author       string    `json:"author"`
-	BookISBN     int       `json:"book_isbn"`
+	BookISBN     string    `json:"book_isbn"`
 	RegisteredAt time.Time `json:"registered_at"`
 	ComplatedAt  time.Time `json:"complated_at"`
 }

@@ -41,10 +41,6 @@ func (uc *userUseCase) GetByEmail(email string) (*domain.User, error) {
 	return uc.userRepo.GetByEmail(email)
 }
 
-func (uc *userUseCase) GetAll() ([]domain.User, error) {
-	return uc.userRepo.GetAll()
-}
-
 func (uc *userUseCase) Edit(user *domain.User) (*domain.User, error) {
 	return uc.userRepo.Edit(user)
 

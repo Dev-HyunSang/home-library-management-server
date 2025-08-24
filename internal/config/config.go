@@ -2,7 +2,11 @@ package config
 
 import (
 	"fmt"
+	"os"
 
+	"github.com/dev-hyunsang/home-library/logger"
+	"github.com/joho/godotenv"
+	_ "github.com/joho/godotenv/autoload"
 	"github.com/spf13/viper"
 )
 
@@ -45,6 +49,8 @@ type AuthConfig struct {
 	CookieKey string `yaml:"cookie_key"`
 }
 
+// TODO: 추후에 YAML에서 ENV 파일로 통일 예정.
+// 구조체 참고 // https://helicopter55.tistory.com/96
 func LoadConfig(env string) (*Config, error) {
 	viper.SetConfigName(fmt.Sprintf("config.%s", env))
 	viper.AddConfigPath("./config")     // 실행 파일 기준 경로
@@ -62,4 +68,17 @@ func LoadConfig(env string) (*Config, error) {
 	}
 
 	return &config, nil
+}
+
+func LoadEnv(key string) string {
+	if err := godotenv.Load("config/.env.dev"); err != nil {
+		logger.Init().Sugar().Errorf("failed to load env file: %w", err)
+	}
+
+	value := os.Getenv(key)
+	if value == "" || len(value) == 0 {
+		logger.Init().Sugar().Errorf("env variable %s is not set", key)
+	}
+
+	return value
 }
