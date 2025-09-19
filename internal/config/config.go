@@ -136,3 +136,12 @@ func validateConfig(config *Config) error {
 	}
 	return nil
 }
+
+func GetEnv(key string) string {
+	err := godotenv.Load()
+	if err != nil {
+		logger.Init().Sugar().Warnf("Warning: failed to load .env file: %v", err)
+	}
+
+	return os.Getenv(key)
+}
