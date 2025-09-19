@@ -161,15 +161,21 @@ func (h *UserHandler) UserEditHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
 	}
 
+	sessionID := ctx.Cookies("auth_token")
+	if len(sessionID) == 0 {
+		logger.Init().Sugar().Error("클라이언트측 세션 쿠키가 존재하지 않습니다.")
+		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
+	}
+
+	_, err := h.AuthHandler.GetSessionByID(sessionID, ctx)
+	if err != nil {
+		logger.Init().Sugar().Errorf("세션에 해당하는 쿠키 정보를 찾을 수 없습니다: %v", err)
+		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(err))
+	}
+
 	user := new(domain.User)
 	if err := ctx.BodyParser(user); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
-	}
-
-	user, err := h.userUseCase.Edit(user)
-	if err != nil {
-		logger.Init().Sugar().Errorf("사용자 정보를 업데이트하는 도중 오류가 발생했습니다: %v", err)
-		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
 	}
 
 	logger.Init().Sugar().Infof("사용자 정보가 성공적으로 업데이트되었습니다 / 사용자ID: %s", user.ID.String())
@@ -178,7 +184,7 @@ func (h *UserHandler) UserEditHandler(ctx *fiber.Ctx) error {
 }
 
 func (h *UserHandler) UserVerifyHandler(ctx *fiber.Ctx) error {
-	sessionID := ctx.Cookies("user")
+	sessionID := ctx.Cookies("auth_token")
 
 	if len(sessionID) == 0 {
 		logger.Init().Sugar().Error("클라이언트측 세션 쿠키가 존재하지 않습니다.")

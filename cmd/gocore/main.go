@@ -9,7 +9,6 @@ import (
 
 	"github.com/dev-hyunsang/home-library/internal/config"
 	"github.com/dev-hyunsang/home-library/internal/db"
-	"github.com/dev-hyunsang/home-library/internal/domain"
 	"github.com/dev-hyunsang/home-library/internal/handler"
 	repository "github.com/dev-hyunsang/home-library/internal/repository/mysql"
 	redisRepository "github.com/dev-hyunsang/home-library/internal/repository/redis"
@@ -18,7 +17,6 @@ import (
 	"github.com/gofiber/contrib/fiberzap/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/csrf"
 	"github.com/gofiber/fiber/v2/middleware/encryptcookie"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/gofiber/storage/redis/v3"
@@ -64,7 +62,7 @@ func main() {
 
 	app.Use(cors.New(cors.Config{
 		// TODO: production 에서 수정
-		AllowOrigins: "http://localhost:3000, http://localhost:5173/",
+		AllowOrigins: "http://localhost:3000, http://localhost:5173/, http://192.168.0.13:5173/",
 		AllowMethods: strings.Join([]string{
 			fiber.MethodGet,
 			fiber.MethodPost,
@@ -98,21 +96,21 @@ func main() {
 
 	logger.Init().Sugar().Info("성공적으로 Redis에 세션 저장소가 초기화되었습니다.")
 
-	csrfConfig := csrf.Config{
-		Session:        store,
-		KeyLookup:      "json:csrf",
-		CookieName:     "__Host-csrf",
-		CookieSameSite: "Lax",
-		CookieSecure:   true,
-		CookieHTTPOnly: true,
-		ContextKey:     "csrf",
-		ErrorHandler: func(c *fiber.Ctx, err error) error {
-			return c.Status(fiber.StatusForbidden).JSON(handler.ErrorHandler(domain.ErrInvalidCSRFToken))
-		},
-		Expiration: time.Minute * 30,
-	}
+	// csrfConfig := csrf.Config{
+	// 	Session:        store,
+	// 	KeyLookup:      "json:csrf",
+	// 	CookieName:     "__Host-csrf",
+	// 	CookieSameSite: "Lax",
+	// 	CookieSecure:   true,
+	// 	CookieHTTPOnly: true,
+	// 	ContextKey:     "csrf",
+	// 	ErrorHandler: func(c *fiber.Ctx, err error) error {
+	// 		return c.Status(fiber.StatusForbidden).JSON(handler.ErrorHandler(domain.ErrInvalidCSRFToken))
+	// 	},
+	// 	Expiration: time.Minute * 30,
+	// }
 
-	csrfMiddleware := csrf.New(csrfConfig)
+	// _ := csrf.New(csrfConfig)
 
 	// 사용자 관련 의존성 주입
 	authRepo := redisRepository.NewAuthRepository(store)
@@ -126,20 +124,20 @@ func main() {
 	bookHandler := handler.NewBookHandler(bookUseCase, authRepo)
 
 	api := app.Group("/api")
-	user := api.Group("/user")
+	user := api.Group("/users")
 	user.Post("/register", userHandler.UserRegisterHandler)
 	user.Post("/login", userHandler.UserLoginHandler)
-	user.Post("/verify", csrfMiddleware, userHandler.UserVerifyHandler)
+	user.Post("/me", userHandler.UserVerifyHandler)
 	user.Get("/:id", userHandler.UserGetByIdHandler)
-	user.Put("/:id", csrfMiddleware, userHandler.UserEditHandler)
+	user.Put("/:id", userHandler.UserEditHandler)
 	user.Delete("/:id", userHandler.UserDeleteHandler)
 
-	book := api.Group("/book")
-	book.Post("/", bookHandler.SaveBookHandler)
-	book.Get("/", bookHandler.GetBooksHandler)
-	book.Delete("/:id", bookHandler.BookDeleteHandler)
-	book.Get("/:name", bookHandler.GetBooksByUserNameHandler)
-	book.Post("/search", bookHandler.SearchBookIsbnHandler)
+	books := api.Group("/books")
+	books.Post("/", bookHandler.SaveBookHandler)
+	books.Get("/", bookHandler.GetBooksHandler)
+	books.Delete("/:id", bookHandler.BookDeleteHandler)
+	books.Get("/:name", bookHandler.GetBooksByUserNameHandler)
+	books.Post("/search", bookHandler.SearchBookIsbnHandler)
 
 	if err := app.Listen(":3000"); err != nil {
 		logger.Init().Sugar().Fatalf("서버를 시작하는 도중 오류가 발생했습니다: %v", err)

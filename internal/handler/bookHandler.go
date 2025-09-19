@@ -71,7 +71,7 @@ func NewBookHandler(bookUseCase domain.BookUseCase, AuthHandler domain.AuthUseCa
 }
 
 func (h *BookHandler) SaveBookHandler(ctx *fiber.Ctx) error {
-	sessionID := ctx.Cookies("user")
+	sessionID := ctx.Cookies("auth_token")
 	if len(sessionID) == 0 {
 		logger.Init().Sugar().Error("클라이언트측 세션 쿠키가 존재하지 않습니다.")
 		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
@@ -117,7 +117,7 @@ func (h *BookHandler) SaveBookHandler(ctx *fiber.Ctx) error {
 }
 
 func (h *BookHandler) GetBooksHandler(ctx *fiber.Ctx) error {
-	sessionID := ctx.Cookies("user")
+	sessionID := ctx.Cookies("auth_token")
 	if len(sessionID) == 0 {
 		logger.Init().Sugar().Error("클라이언트측 세션 쿠키가 존재하지 않습니다.")
 		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
@@ -168,7 +168,7 @@ func (h *BookHandler) GetBooksByUserNameHandler(ctx *fiber.Ctx) error {
 }
 
 func (h *BookHandler) BookDeleteHandler(ctx *fiber.Ctx) error {
-	sessionID := ctx.Cookies("user")
+	sessionID := ctx.Cookies("auth_token")
 	if len(sessionID) == 0 {
 		logger.Init().Sugar().Error("클라이언트측 세션 쿠키가 존재하지 않습니다.")
 		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
@@ -202,7 +202,7 @@ func (h *BookHandler) BookDeleteHandler(ctx *fiber.Ctx) error {
 }
 
 func (h *BookHandler) SearchBookIsbnHandler(ctx *fiber.Ctx) error {
-	sessionID := ctx.Cookies("user")
+	sessionID := ctx.Cookies("auth_token")
 	if len(sessionID) == 0 {
 		logger.Init().Sugar().Error("클라이언트측 세션 쿠키가 존재하지 않습니다.")
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
@@ -268,4 +268,22 @@ func (h *BookHandler) SearchBookIsbnHandler(ctx *fiber.Ctx) error {
 		"data":         res,
 		"responsed_at": time.Now(),
 	})
+}
+
+// 책 리뷰 작성할 수 있는 핸들러
+// 책 ID, 리뷰 내용, 별점(1~5) 필요
+// 책 ID를 통해 해당 책이 사용자의 책인지 확인하고 책이 있는지 확인
+func (h *BookHandler) ReviewBookHandler(ctx *fiber.Ctx) error {
+	sessionID := ctx.Cookies("auth_token")
+	if len(sessionID) == 0 {
+		logger.Init().Sugar().Error("클라이언트측 세션 쿠키가 존재하지 않습니다.")
+		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
+	}
+
+	result, err := h.AuthHandler.GetSessionByID(sessionID, ctx)
+	if err != nil {
+		logger.Init().Sugar().Errorf("세션에 해당하는 쿠키 정보를 찾을 수 없습니다: %v", err)
+		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
+	}
+
 }

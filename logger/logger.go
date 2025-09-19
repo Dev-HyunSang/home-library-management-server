@@ -6,7 +6,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func InitLogger() *zap.Logger {
+func Init() *zap.Logger {
 	logger, err := zap.NewProduction()
 	if err != nil {
 		log.Fatalln(err)
@@ -16,7 +16,7 @@ func InitLogger() *zap.Logger {
 }
 
 func ErrLog(msg string) {
-	logger := InitLogger()
+	logger := Init()
 
 	defer logger.Sync()
 
@@ -24,7 +24,7 @@ func ErrLog(msg string) {
 }
 
 func UserInfoLog(userID, msg string) {
-	logger := InitLogger()
+	logger := Init()
 
 	defer logger.Sync()
 

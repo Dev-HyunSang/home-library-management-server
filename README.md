@@ -14,18 +14,16 @@
 ## 보안성
 
 - 본 프로젝트의 모든 쿠키들은 암호화 됩니다. / 세션 쿠키 등을 비롯하여 모든 쿠키
-
   - [Encrypt Cookie](https://docs.lou2.kr/go-fiber/home/api/middleware/encrypt-cookie?q=) 관련 문서
-
 - 본 프로젝트에서의 모든 암호는 안전하게 암호화 됩니다.
-
 - 본 프로젝트는 JWT(JSON Web Token)을 사용하지 않고, Session 인증 방식을 사용합니다.
-  > Stateless JWT tokens cannot be invalidated or updated, and will introduce either size issues or security issues depending on where you store them. Stateful JWT tokens are functionally the same as session cookies, but without the battle-tested and well-reviewed implementations or client support.
-  >
-  > Unless you work on a Reddit-scale application, there's no reason to be using JWT tokens as a session mechanism. Just use sessions.  
-  > [Stop using JWT for sessions](http://cryto.net/~joepie91/blog/2016/06/13/stop-using-jwt-for-sessions/)
+
+> Stateless JWT tokens cannot be invalidated or updated, and will introduce either size issues or security issues depending on where you store them. Stateful JWT tokens are functionally the same as session cookies, but without the battle-tested and well-reviewed implementations or client support.
+>
+> Unless you work on a Reddit-scale application, there's no reason to be using JWT tokens as a session mechanism. Just use sessions.  
+> [Stop using JWT for sessions](http://cryto.net/~joepie91/blog/2016/06/13/stop-using-jwt-for-sessions/)
 
 ## 로깅 방법
 
-- Golang에서 기본적으로 `log` 패키지를 이용합니다
-- Logstash를 이용하여 로깅을 기록합니다.
+- `uber-go/zap` 패키지를 사용하여 로깅합니다.
+- [효율적으로 로그 모니터링하기 - 로그 레벨 구분하기](https://jojoldu.tistory.com/712)를 참고하여 개발하였습니다.
