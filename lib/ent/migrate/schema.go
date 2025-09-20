@@ -35,8 +35,10 @@ var (
 	// ReviewsColumns holds the columns for the "reviews" table.
 	ReviewsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
-		{Name: "content", Type: field.TypeString},
+		{Name: "content", Type: field.TypeString, Size: 2147483647},
 		{Name: "rating", Type: field.TypeInt},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "book_reviews", Type: field.TypeUUID},
 		{Name: "user_reviews", Type: field.TypeUUID},
 	}
@@ -48,13 +50,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "reviews_books_reviews",
-				Columns:    []*schema.Column{ReviewsColumns[3]},
+				Columns:    []*schema.Column{ReviewsColumns[5]},
 				RefColumns: []*schema.Column{BooksColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "reviews_users_reviews",
-				Columns:    []*schema.Column{ReviewsColumns[4]},
+				Columns:    []*schema.Column{ReviewsColumns[6]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -64,7 +66,7 @@ var (
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
 		{Name: "nick_name", Type: field.TypeString},
-		{Name: "email", Type: field.TypeString, Unique: true},
+		{Name: "email", Type: field.TypeString},
 		{Name: "password", Type: field.TypeString},
 		{Name: "is_published", Type: field.TypeBool, Default: false},
 		{Name: "created_at", Type: field.TypeTime},

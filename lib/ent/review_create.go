@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -31,6 +32,34 @@ func (rc *ReviewCreate) SetContent(s string) *ReviewCreate {
 // SetRating sets the "rating" field.
 func (rc *ReviewCreate) SetRating(i int) *ReviewCreate {
 	rc.mutation.SetRating(i)
+	return rc
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (rc *ReviewCreate) SetCreatedAt(t time.Time) *ReviewCreate {
+	rc.mutation.SetCreatedAt(t)
+	return rc
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (rc *ReviewCreate) SetNillableCreatedAt(t *time.Time) *ReviewCreate {
+	if t != nil {
+		rc.SetCreatedAt(*t)
+	}
+	return rc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (rc *ReviewCreate) SetUpdatedAt(t time.Time) *ReviewCreate {
+	rc.mutation.SetUpdatedAt(t)
+	return rc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (rc *ReviewCreate) SetNillableUpdatedAt(t *time.Time) *ReviewCreate {
+	if t != nil {
+		rc.SetUpdatedAt(*t)
+	}
 	return rc
 }
 
@@ -69,6 +98,7 @@ func (rc *ReviewCreate) Mutation() *ReviewMutation {
 
 // Save creates the Review in the database.
 func (rc *ReviewCreate) Save(ctx context.Context) (*Review, error) {
+	rc.defaults()
 	return withHooks(ctx, rc.sqlSave, rc.mutation, rc.hooks)
 }
 
@@ -94,6 +124,18 @@ func (rc *ReviewCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (rc *ReviewCreate) defaults() {
+	if _, ok := rc.mutation.CreatedAt(); !ok {
+		v := review.DefaultCreatedAt()
+		rc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := rc.mutation.UpdatedAt(); !ok {
+		v := review.DefaultUpdatedAt()
+		rc.mutation.SetUpdatedAt(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (rc *ReviewCreate) check() error {
 	if _, ok := rc.mutation.Content(); !ok {
@@ -111,6 +153,12 @@ func (rc *ReviewCreate) check() error {
 		if err := review.RatingValidator(v); err != nil {
 			return &ValidationError{Name: "rating", err: fmt.Errorf(`ent: validator failed for field "Review.rating": %w`, err)}
 		}
+	}
+	if _, ok := rc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Review.created_at"`)}
+	}
+	if _, ok := rc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Review.updated_at"`)}
 	}
 	if len(rc.mutation.OwnerIDs()) == 0 {
 		return &ValidationError{Name: "owner", err: errors.New(`ent: missing required edge "Review.owner"`)}
@@ -160,6 +208,14 @@ func (rc *ReviewCreate) createSpec() (*Review, *sqlgraph.CreateSpec) {
 	if value, ok := rc.mutation.Rating(); ok {
 		_spec.SetField(review.FieldRating, field.TypeInt, value)
 		_node.Rating = value
+	}
+	if value, ok := rc.mutation.CreatedAt(); ok {
+		_spec.SetField(review.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := rc.mutation.UpdatedAt(); ok {
+		_spec.SetField(review.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
 	}
 	if nodes := rc.mutation.OwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -216,6 +272,7 @@ func (rcb *ReviewCreateBulk) Save(ctx context.Context) ([]*Review, error) {
 	for i := range rcb.builders {
 		func(i int, root context.Context) {
 			builder := rcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*ReviewMutation)
 				if !ok {

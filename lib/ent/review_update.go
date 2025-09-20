@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -62,6 +63,34 @@ func (ru *ReviewUpdate) SetNillableRating(i *int) *ReviewUpdate {
 // AddRating adds i to the "rating" field.
 func (ru *ReviewUpdate) AddRating(i int) *ReviewUpdate {
 	ru.mutation.AddRating(i)
+	return ru
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (ru *ReviewUpdate) SetCreatedAt(t time.Time) *ReviewUpdate {
+	ru.mutation.SetCreatedAt(t)
+	return ru
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (ru *ReviewUpdate) SetNillableCreatedAt(t *time.Time) *ReviewUpdate {
+	if t != nil {
+		ru.SetCreatedAt(*t)
+	}
+	return ru
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (ru *ReviewUpdate) SetUpdatedAt(t time.Time) *ReviewUpdate {
+	ru.mutation.SetUpdatedAt(t)
+	return ru
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (ru *ReviewUpdate) SetNillableUpdatedAt(t *time.Time) *ReviewUpdate {
+	if t != nil {
+		ru.SetUpdatedAt(*t)
+	}
 	return ru
 }
 
@@ -173,6 +202,12 @@ func (ru *ReviewUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := ru.mutation.AddedRating(); ok {
 		_spec.AddField(review.FieldRating, field.TypeInt, value)
 	}
+	if value, ok := ru.mutation.CreatedAt(); ok {
+		_spec.SetField(review.FieldCreatedAt, field.TypeTime, value)
+	}
+	if value, ok := ru.mutation.UpdatedAt(); ok {
+		_spec.SetField(review.FieldUpdatedAt, field.TypeTime, value)
+	}
 	if ru.mutation.OwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -283,6 +318,34 @@ func (ruo *ReviewUpdateOne) SetNillableRating(i *int) *ReviewUpdateOne {
 // AddRating adds i to the "rating" field.
 func (ruo *ReviewUpdateOne) AddRating(i int) *ReviewUpdateOne {
 	ruo.mutation.AddRating(i)
+	return ruo
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (ruo *ReviewUpdateOne) SetCreatedAt(t time.Time) *ReviewUpdateOne {
+	ruo.mutation.SetCreatedAt(t)
+	return ruo
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (ruo *ReviewUpdateOne) SetNillableCreatedAt(t *time.Time) *ReviewUpdateOne {
+	if t != nil {
+		ruo.SetCreatedAt(*t)
+	}
+	return ruo
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (ruo *ReviewUpdateOne) SetUpdatedAt(t time.Time) *ReviewUpdateOne {
+	ruo.mutation.SetUpdatedAt(t)
+	return ruo
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (ruo *ReviewUpdateOne) SetNillableUpdatedAt(t *time.Time) *ReviewUpdateOne {
+	if t != nil {
+		ruo.SetUpdatedAt(*t)
+	}
 	return ruo
 }
 
@@ -423,6 +486,12 @@ func (ruo *ReviewUpdateOne) sqlSave(ctx context.Context) (_node *Review, err err
 	}
 	if value, ok := ruo.mutation.AddedRating(); ok {
 		_spec.AddField(review.FieldRating, field.TypeInt, value)
+	}
+	if value, ok := ruo.mutation.CreatedAt(); ok {
+		_spec.SetField(review.FieldCreatedAt, field.TypeTime, value)
+	}
+	if value, ok := ruo.mutation.UpdatedAt(); ok {
+		_spec.SetField(review.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if ruo.mutation.OwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{

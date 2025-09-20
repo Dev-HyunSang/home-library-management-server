@@ -127,12 +127,7 @@ func (r *UserRepository) GetByEmail(email string) (*domain.User, error) {
 func (r *UserRepository) Edit(user *domain.User) (*domain.User, error) {
 	client := r.client
 
-	hashedPw, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return nil, fmt.Errorf("사용자의 암호를 안전하게 해쉬하던 도중 오류가 발생했습니다: %w", err)
-	}
-
-	err = client.User.UpdateOneID(user.ID).
+	err := client.User.UpdateOneID(user.ID).
 		SetEmail(user.Email).
 		SetNickName(user.NickName).
 		SetPassword(string(hashedPw)).

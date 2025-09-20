@@ -1,6 +1,8 @@
 package schema
 
 import (
+	"time"
+
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
@@ -16,12 +18,16 @@ type Review struct {
 // Fields of the Review.
 func (Review) Fields() []ent.Field {
 	return []ent.Field{
-		field.UUID("id", uuid.New()),
-		field.String("content").
+		field.UUID("id", uuid.UUID{}),
+		field.Text("content").
 			NotEmpty(),
 		field.Int("rating").
 			Min(1).
 			Max(5),
+		field.Time("created_at").
+			Default(time.Now),
+		field.Time("updated_at").
+			Default(time.Now),
 	}
 }
 
@@ -34,7 +40,7 @@ func (Review) Edges() []ent.Edge {
 			Required().
 			Annotations(entsql.OnDelete(entsql.Cascade)),
 		edge.From("book", Book.Type).
-			Ref("reviews").
+			Ref("reviews"). // "books"가 아니라 "reviews"로 수정). // "books"가 아니라 "reviews"로 수정
 			Unique().
 			Required().
 			Annotations(entsql.OnDelete(entsql.Cascade)),

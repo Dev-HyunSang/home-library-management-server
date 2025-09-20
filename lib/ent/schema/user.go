@@ -24,7 +24,6 @@ func (User) Fields() []ent.Field {
 			Comment("사용자 닉네임"),
 		field.String("email").
 			NotEmpty().
-			Unique().
 			Comment("사용자 이메일"),
 		field.String("password").
 			NotEmpty().
