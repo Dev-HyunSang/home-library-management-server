@@ -40,9 +40,11 @@ type User struct {
 type UserEdges struct {
 	// Books holds the value of the books edge.
 	Books []*Book `json:"books,omitempty"`
+	// Reviews holds the value of the reviews edge.
+	Reviews []*Review `json:"reviews,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // BooksOrErr returns the Books value or an error if the edge
@@ -52,6 +54,15 @@ func (e UserEdges) BooksOrErr() ([]*Book, error) {
 		return e.Books, nil
 	}
 	return nil, &NotLoadedError{edge: "books"}
+}
+
+// ReviewsOrErr returns the Reviews value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) ReviewsOrErr() ([]*Review, error) {
+	if e.loadedTypes[1] {
+		return e.Reviews, nil
+	}
+	return nil, &NotLoadedError{edge: "reviews"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -140,6 +151,11 @@ func (u *User) Value(name string) (ent.Value, error) {
 // QueryBooks queries the "books" edge of the User entity.
 func (u *User) QueryBooks() *BookQuery {
 	return NewUserClient(u.config).QueryBooks(u)
+}
+
+// QueryReviews queries the "reviews" edge of the User entity.
+func (u *User) QueryReviews() *ReviewQuery {
+	return NewUserClient(u.config).QueryReviews(u)
 }
 
 // Update returns a builder for updating this User.

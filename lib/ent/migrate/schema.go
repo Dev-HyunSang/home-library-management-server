@@ -28,7 +28,35 @@ var (
 				Symbol:     "books_users_books",
 				Columns:    []*schema.Column{BooksColumns[6]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// ReviewsColumns holds the columns for the "reviews" table.
+	ReviewsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "content", Type: field.TypeString},
+		{Name: "rating", Type: field.TypeInt},
+		{Name: "book_reviews", Type: field.TypeUUID},
+		{Name: "user_reviews", Type: field.TypeUUID},
+	}
+	// ReviewsTable holds the schema information for the "reviews" table.
+	ReviewsTable = &schema.Table{
+		Name:       "reviews",
+		Columns:    ReviewsColumns,
+		PrimaryKey: []*schema.Column{ReviewsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "reviews_books_reviews",
+				Columns:    []*schema.Column{ReviewsColumns[3]},
+				RefColumns: []*schema.Column{BooksColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "reviews_users_reviews",
+				Columns:    []*schema.Column{ReviewsColumns[4]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
 			},
 		},
 	}
@@ -51,10 +79,13 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		BooksTable,
+		ReviewsTable,
 		UsersTable,
 	}
 )
 
 func init() {
 	BooksTable.ForeignKeys[0].RefTable = UsersTable
+	ReviewsTable.ForeignKeys[0].RefTable = BooksTable
+	ReviewsTable.ForeignKeys[1].RefTable = UsersTable
 }

@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 
@@ -13,6 +14,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/dev-hyunsang/home-library/lib/ent/book"
 	"github.com/dev-hyunsang/home-library/lib/ent/predicate"
+	"github.com/dev-hyunsang/home-library/lib/ent/review"
 	"github.com/dev-hyunsang/home-library/lib/ent/user"
 	"github.com/google/uuid"
 )
@@ -20,12 +22,13 @@ import (
 // BookQuery is the builder for querying Book entities.
 type BookQuery struct {
 	config
-	ctx        *QueryContext
-	order      []book.OrderOption
-	inters     []Interceptor
-	predicates []predicate.Book
-	withOwner  *UserQuery
-	withFKs    bool
+	ctx         *QueryContext
+	order       []book.OrderOption
+	inters      []Interceptor
+	predicates  []predicate.Book
+	withOwner   *UserQuery
+	withReviews *ReviewQuery
+	withFKs     bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -77,6 +80,28 @@ func (bq *BookQuery) QueryOwner() *UserQuery {
 			sqlgraph.From(book.Table, book.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, book.OwnerTable, book.OwnerColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryReviews chains the current query on the "reviews" edge.
+func (bq *BookQuery) QueryReviews() *ReviewQuery {
+	query := (&ReviewClient{config: bq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := bq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := bq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(book.Table, book.FieldID, selector),
+			sqlgraph.To(review.Table, review.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, book.ReviewsTable, book.ReviewsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
 		return fromU, nil
@@ -271,12 +296,13 @@ func (bq *BookQuery) Clone() *BookQuery {
 		return nil
 	}
 	return &BookQuery{
-		config:     bq.config,
-		ctx:        bq.ctx.Clone(),
-		order:      append([]book.OrderOption{}, bq.order...),
-		inters:     append([]Interceptor{}, bq.inters...),
-		predicates: append([]predicate.Book{}, bq.predicates...),
-		withOwner:  bq.withOwner.Clone(),
+		config:      bq.config,
+		ctx:         bq.ctx.Clone(),
+		order:       append([]book.OrderOption{}, bq.order...),
+		inters:      append([]Interceptor{}, bq.inters...),
+		predicates:  append([]predicate.Book{}, bq.predicates...),
+		withOwner:   bq.withOwner.Clone(),
+		withReviews: bq.withReviews.Clone(),
 		// clone intermediate query.
 		sql:  bq.sql.Clone(),
 		path: bq.path,
@@ -291,6 +317,17 @@ func (bq *BookQuery) WithOwner(opts ...func(*UserQuery)) *BookQuery {
 		opt(query)
 	}
 	bq.withOwner = query
+	return bq
+}
+
+// WithReviews tells the query-builder to eager-load the nodes that are connected to
+// the "reviews" edge. The optional arguments are used to configure the query builder of the edge.
+func (bq *BookQuery) WithReviews(opts ...func(*ReviewQuery)) *BookQuery {
+	query := (&ReviewClient{config: bq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	bq.withReviews = query
 	return bq
 }
 
@@ -373,8 +410,9 @@ func (bq *BookQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Book, e
 		nodes       = []*Book{}
 		withFKs     = bq.withFKs
 		_spec       = bq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			bq.withOwner != nil,
+			bq.withReviews != nil,
 		}
 	)
 	if bq.withOwner != nil {
@@ -404,6 +442,13 @@ func (bq *BookQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Book, e
 	if query := bq.withOwner; query != nil {
 		if err := bq.loadOwner(ctx, query, nodes, nil,
 			func(n *Book, e *User) { n.Edges.Owner = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := bq.withReviews; query != nil {
+		if err := bq.loadReviews(ctx, query, nodes,
+			func(n *Book) { n.Edges.Reviews = []*Review{} },
+			func(n *Book, e *Review) { n.Edges.Reviews = append(n.Edges.Reviews, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -439,6 +484,37 @@ func (bq *BookQuery) loadOwner(ctx context.Context, query *UserQuery, nodes []*B
 		for i := range nodes {
 			assign(nodes[i], n)
 		}
+	}
+	return nil
+}
+func (bq *BookQuery) loadReviews(ctx context.Context, query *ReviewQuery, nodes []*Book, init func(*Book), assign func(*Book, *Review)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*Book)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Review(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(book.ReviewsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.book_reviews
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "book_reviews" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "book_reviews" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
 	}
 	return nil
 }

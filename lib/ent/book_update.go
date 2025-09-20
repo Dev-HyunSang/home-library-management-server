@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/dev-hyunsang/home-library/lib/ent/book"
 	"github.com/dev-hyunsang/home-library/lib/ent/predicate"
+	"github.com/dev-hyunsang/home-library/lib/ent/review"
 	"github.com/dev-hyunsang/home-library/lib/ent/user"
 	"github.com/google/uuid"
 )
@@ -117,6 +118,21 @@ func (bu *BookUpdate) SetOwner(u *User) *BookUpdate {
 	return bu.SetOwnerID(u.ID)
 }
 
+// AddReviewIDs adds the "reviews" edge to the Review entity by IDs.
+func (bu *BookUpdate) AddReviewIDs(ids ...uuid.UUID) *BookUpdate {
+	bu.mutation.AddReviewIDs(ids...)
+	return bu
+}
+
+// AddReviews adds the "reviews" edges to the Review entity.
+func (bu *BookUpdate) AddReviews(r ...*Review) *BookUpdate {
+	ids := make([]uuid.UUID, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return bu.AddReviewIDs(ids...)
+}
+
 // Mutation returns the BookMutation object of the builder.
 func (bu *BookUpdate) Mutation() *BookMutation {
 	return bu.mutation
@@ -126,6 +142,27 @@ func (bu *BookUpdate) Mutation() *BookMutation {
 func (bu *BookUpdate) ClearOwner() *BookUpdate {
 	bu.mutation.ClearOwner()
 	return bu
+}
+
+// ClearReviews clears all "reviews" edges to the Review entity.
+func (bu *BookUpdate) ClearReviews() *BookUpdate {
+	bu.mutation.ClearReviews()
+	return bu
+}
+
+// RemoveReviewIDs removes the "reviews" edge to Review entities by IDs.
+func (bu *BookUpdate) RemoveReviewIDs(ids ...uuid.UUID) *BookUpdate {
+	bu.mutation.RemoveReviewIDs(ids...)
+	return bu
+}
+
+// RemoveReviews removes "reviews" edges to Review entities.
+func (bu *BookUpdate) RemoveReviews(r ...*Review) *BookUpdate {
+	ids := make([]uuid.UUID, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return bu.RemoveReviewIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -225,6 +262,51 @@ func (bu *BookUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if bu.mutation.ReviewsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   book.ReviewsTable,
+			Columns: []string{book.ReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.RemovedReviewsIDs(); len(nodes) > 0 && !bu.mutation.ReviewsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   book.ReviewsTable,
+			Columns: []string{book.ReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.ReviewsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   book.ReviewsTable,
+			Columns: []string{book.ReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -339,6 +421,21 @@ func (buo *BookUpdateOne) SetOwner(u *User) *BookUpdateOne {
 	return buo.SetOwnerID(u.ID)
 }
 
+// AddReviewIDs adds the "reviews" edge to the Review entity by IDs.
+func (buo *BookUpdateOne) AddReviewIDs(ids ...uuid.UUID) *BookUpdateOne {
+	buo.mutation.AddReviewIDs(ids...)
+	return buo
+}
+
+// AddReviews adds the "reviews" edges to the Review entity.
+func (buo *BookUpdateOne) AddReviews(r ...*Review) *BookUpdateOne {
+	ids := make([]uuid.UUID, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return buo.AddReviewIDs(ids...)
+}
+
 // Mutation returns the BookMutation object of the builder.
 func (buo *BookUpdateOne) Mutation() *BookMutation {
 	return buo.mutation
@@ -348,6 +445,27 @@ func (buo *BookUpdateOne) Mutation() *BookMutation {
 func (buo *BookUpdateOne) ClearOwner() *BookUpdateOne {
 	buo.mutation.ClearOwner()
 	return buo
+}
+
+// ClearReviews clears all "reviews" edges to the Review entity.
+func (buo *BookUpdateOne) ClearReviews() *BookUpdateOne {
+	buo.mutation.ClearReviews()
+	return buo
+}
+
+// RemoveReviewIDs removes the "reviews" edge to Review entities by IDs.
+func (buo *BookUpdateOne) RemoveReviewIDs(ids ...uuid.UUID) *BookUpdateOne {
+	buo.mutation.RemoveReviewIDs(ids...)
+	return buo
+}
+
+// RemoveReviews removes "reviews" edges to Review entities.
+func (buo *BookUpdateOne) RemoveReviews(r ...*Review) *BookUpdateOne {
+	ids := make([]uuid.UUID, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return buo.RemoveReviewIDs(ids...)
 }
 
 // Where appends a list predicates to the BookUpdate builder.
@@ -477,6 +595,51 @@ func (buo *BookUpdateOne) sqlSave(ctx context.Context) (_node *Book, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if buo.mutation.ReviewsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   book.ReviewsTable,
+			Columns: []string{book.ReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.RemovedReviewsIDs(); len(nodes) > 0 && !buo.mutation.ReviewsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   book.ReviewsTable,
+			Columns: []string{book.ReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.ReviewsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   book.ReviewsTable,
+			Columns: []string{book.ReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

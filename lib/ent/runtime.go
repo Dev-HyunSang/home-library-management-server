@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/dev-hyunsang/home-library/lib/ent/book"
+	"github.com/dev-hyunsang/home-library/lib/ent/review"
 	"github.com/dev-hyunsang/home-library/lib/ent/schema"
 	"github.com/dev-hyunsang/home-library/lib/ent/user"
 )
@@ -32,6 +33,30 @@ func init() {
 	bookDescComplatedAt := bookFields[5].Descriptor()
 	// book.DefaultComplatedAt holds the default value on creation for the complated_at field.
 	book.DefaultComplatedAt = bookDescComplatedAt.Default.(time.Time)
+	reviewFields := schema.Review{}.Fields()
+	_ = reviewFields
+	// reviewDescContent is the schema descriptor for content field.
+	reviewDescContent := reviewFields[1].Descriptor()
+	// review.ContentValidator is a validator for the "content" field. It is called by the builders before save.
+	review.ContentValidator = reviewDescContent.Validators[0].(func(string) error)
+	// reviewDescRating is the schema descriptor for rating field.
+	reviewDescRating := reviewFields[2].Descriptor()
+	// review.RatingValidator is a validator for the "rating" field. It is called by the builders before save.
+	review.RatingValidator = func() func(int) error {
+		validators := reviewDescRating.Validators
+		fns := [...]func(int) error{
+			validators[0].(func(int) error),
+			validators[1].(func(int) error),
+		}
+		return func(rating int) error {
+			for _, fn := range fns {
+				if err := fn(rating); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescNickName is the schema descriptor for nick_name field.

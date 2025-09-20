@@ -40,5 +40,7 @@ func (Book) Edges() []ent.Edge {
 			Unique().
 			Required().
 			Annotations(entsql.OnDelete(entsql.Cascade)),
+		edge.To("reviews", Review.Type).
+			Annotations(entsql.OnDelete(entsql.Cascade)),
 	}
 }

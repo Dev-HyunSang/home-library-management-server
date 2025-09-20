@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/dev-hyunsang/home-library/lib/ent/book"
+	"github.com/dev-hyunsang/home-library/lib/ent/review"
 	"github.com/dev-hyunsang/home-library/lib/ent/user"
 	"github.com/google/uuid"
 )
@@ -91,6 +92,21 @@ func (bc *BookCreate) SetOwnerID(id uuid.UUID) *BookCreate {
 // SetOwner sets the "owner" edge to the User entity.
 func (bc *BookCreate) SetOwner(u *User) *BookCreate {
 	return bc.SetOwnerID(u.ID)
+}
+
+// AddReviewIDs adds the "reviews" edge to the Review entity by IDs.
+func (bc *BookCreate) AddReviewIDs(ids ...uuid.UUID) *BookCreate {
+	bc.mutation.AddReviewIDs(ids...)
+	return bc
+}
+
+// AddReviews adds the "reviews" edges to the Review entity.
+func (bc *BookCreate) AddReviews(r ...*Review) *BookCreate {
+	ids := make([]uuid.UUID, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return bc.AddReviewIDs(ids...)
 }
 
 // Mutation returns the BookMutation object of the builder.
@@ -235,6 +251,22 @@ func (bc *BookCreate) createSpec() (*Book, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.user_books = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := bc.mutation.ReviewsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   book.ReviewsTable,
+			Columns: []string{book.ReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
