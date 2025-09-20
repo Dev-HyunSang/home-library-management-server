@@ -125,8 +125,10 @@ func main() {
 
 	api := app.Group("/api")
 	user := api.Group("/users")
-	user.Post("/register", userHandler.UserRegisterHandler)
-	user.Post("/login", userHandler.UserLoginHandler)
+	user.Post("/signup", userHandler.UserSignUpHandler)
+	user.Post("/signin", userHandler.UserSignInHandler)
+	user.Post("/signout", userHandler.UserSignOutHandler)
+	user.Post("/rest-password", userHandler.UserRestPasswordHandler)
 	user.Post("/me", userHandler.UserVerifyHandler)
 	user.Get("/:id", userHandler.UserGetByIdHandler)
 	user.Put("/:id", userHandler.UserEditHandler)
@@ -134,10 +136,14 @@ func main() {
 
 	books := api.Group("/books")
 	books.Post("/", bookHandler.SaveBookHandler)
-	books.Get("/", bookHandler.GetBooksHandler)
+	books.Get("/get", bookHandler.GetBooksHandler)
 	books.Delete("/:id", bookHandler.BookDeleteHandler)
 	books.Get("/:name", bookHandler.GetBooksByUserNameHandler)
 	books.Post("/search", bookHandler.SearchBookIsbnHandler)
+
+	reviews := books.Group("/reviews")
+	reviews.Post("/", bookHandler.SaveBookReviewHandler)
+	reviews.Get("/get", bookHandler.GetBookReviewByUserIDHandler)
 
 	if err := app.Listen(":3000"); err != nil {
 		logger.Init().Sugar().Fatalf("서버를 시작하는 도중 오류가 발생했습니다: %v", err)
