@@ -124,34 +124,23 @@ func (r *UserRepository) GetByEmail(email string) (*domain.User, error) {
 	}
 }
 
-func (r *UserRepository) Edit(user *domain.User) (*domain.User, error) {
+func (r *UserRepository) Edit(user *domain.User) error {
 	client := r.client
 
 	err := client.User.UpdateOneID(user.ID).
 		SetEmail(user.Email).
 		SetNickName(user.NickName).
-		SetPassword(string(hashedPw)).
+		SetPassword(user.Password).
 		SetUpdatedAt(time.Now()).
 		Exec(context.Background())
-	if err == nil {
-		logger.UserInfoLog(user.ID.String(), "해당하는 ID로 사용자를 업데이트 했습니다.")
-		return &domain.User{
-			ID:        user.ID,
-			NickName:  user.NickName,
-			Email:     user.Email,
-			Password:  user.Password,
-			CreatedAt: user.CreatedAt,
-			UpdatedAt: time.Now(),
-		}, nil
+
+	if err != nil {
+		return fmt.Errorf("사용자 정보를 업데이트하는 도중 오류가 발생했습니다: %w", err)
+	} else if ent.IsNotFound(err) {
+		return fmt.Errorf("해당하는 ID로 사용자를 찾을 수 없습니다: %w", err)
 	}
 
-	// 해당 되는 ID로 조회한 결과가 없는 경우
-	switch {
-	case ent.IsNotFound(err):
-		return nil, fmt.Errorf("해당하는 사용자를 찾을 수 없습니다: %w", err)
-	default:
-		return nil, fmt.Errorf("사용자 정보를 업데이트하는 도중 오류가 발생했습니다: %w", err)
-	}
+	return nil
 }
 
 func (r *UserRepository) Delete(id uuid.UUID) error {

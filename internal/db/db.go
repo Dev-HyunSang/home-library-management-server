@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"time"
 
 	entsql "entgo.io/ent/dialect/sql"
@@ -22,6 +23,7 @@ func NewDBConnection(config *config.Config) (*ent.Client, error) {
 		config.DB.MySQL.Port,
 		config.DB.MySQL.DBName,
 	)
+	log.Println(dsn)
 	db, err := sql.Open(config.DB.MySQL.Driver, dsn)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database connection: %w", err)

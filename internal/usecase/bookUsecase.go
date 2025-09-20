@@ -21,12 +21,12 @@ func (bc *BookUseCase) SaveByBookID(userID uuid.UUID, book *domain.Book) (*domai
 	return bc.bookRepo.SaveByBookID(userID, book)
 }
 
-func (bc *BookUseCase) GetByBookID(userID, id uuid.UUID) (*domain.Book, error) {
+func (bc *BookUseCase) GetBookByID(userID, id uuid.UUID) (*domain.Book, error) {
 	if id == uuid.Nil {
 		return nil, domain.ErrInvalidInput
 	}
 
-	return bc.bookRepo.GetByBookID(userID, id)
+	return bc.bookRepo.GetBookByID(userID, id)
 }
 
 func (bc *BookUseCase) GetBooksByUserID(userID uuid.UUID) ([]*domain.Book, error) {
@@ -59,4 +59,30 @@ func (bc *BookUseCase) DeleteByID(userID, id uuid.UUID) error {
 	}
 
 	return bc.bookRepo.DeleteByID(userID, id)
+}
+
+// Book Review
+
+func (bc *BookUseCase) CreateReview(review *domain.ReviewBook) error {
+	if review == nil || review.BookID == uuid.Nil || review.OwnerID == uuid.Nil || review.Rating < 1 || review.Rating > 5 || review.Content == "" {
+		return domain.ErrInvalidInput
+	}
+
+	return bc.bookRepo.CreateReview(review)
+}
+
+func (bc *BookUseCase) GetReviewsByUserID(userID uuid.UUID) ([]*domain.ReviewBook, error) {
+	if userID == uuid.Nil {
+		return nil, domain.ErrInvalidInput
+	}
+
+	return bc.bookRepo.GetReviewsByUserID(userID)
+}
+
+func (bc *BookUseCase) UpdateReviewByID(review *domain.ReviewBook) (domain.ReviewBook, error) {
+	if review == nil || review.ID == uuid.Nil {
+		return domain.ReviewBook{}, domain.ErrInvalidInput
+	}
+
+	return bc.bookRepo.UpdateReviewByID(review)
 }

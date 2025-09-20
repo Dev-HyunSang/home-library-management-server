@@ -16,20 +16,38 @@ type Book struct {
 	ComplatedAt  time.Time `json:"complated_at"`
 }
 
+type ReviewBook struct {
+	ID        uuid.UUID `json:"id"`
+	BookID    uuid.UUID `json:"book_id"`
+	OwnerID   uuid.UUID `json:"owner_id"`
+	Content   string    `json:"content"`
+	Rating    int       `json:"rating"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
 type BookRepository interface {
 	SaveByBookID(id uuid.UUID, book *Book) (*Book, error)
-	GetByBookID(userID, id uuid.UUID) (*Book, error)
+	GetBookByID(userID, id uuid.UUID) (*Book, error)
 	GetBooksByUserID(id uuid.UUID) ([]*Book, error)
 	Edit(id uuid.UUID, book *Book) error
 	DeleteByID(userID, id uuid.UUID) error
 	GetBooksByUserName(name string) ([]*Book, error)
+	// Book Review
+	CreateReview(review *ReviewBook) error
+	GetReviewsByUserID(userID uuid.UUID) ([]*ReviewBook, error)
+	UpdateReviewByID(review *ReviewBook) (ReviewBook, error)
 }
 
 type BookUseCase interface {
 	SaveByBookID(userID uuid.UUID, book *Book) (*Book, error)
-	GetByBookID(userID, id uuid.UUID) (*Book, error)
+	GetBookByID(userID, id uuid.UUID) (*Book, error)
 	GetBooksByUserID(userID uuid.UUID) ([]*Book, error)
 	Edit(id uuid.UUID, book *Book) error
 	DeleteByID(userID, id uuid.UUID) error
 	GetBooksByUserName(name string) ([]*Book, error)
+	// Book Review
+	CreateReview(review *ReviewBook) error
+	GetReviewsByUserID(userID uuid.UUID) ([]*ReviewBook, error)
+	UpdateReviewByID(review *ReviewBook) (ReviewBook, error)
 }

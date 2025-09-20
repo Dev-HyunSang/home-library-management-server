@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -50,6 +51,12 @@ type Book struct {
 	PubDate     string `json:"pubdate"`
 	ISBN        string `json:"isbn"`
 	Description string `json:"description"`
+}
+
+type BookReviewRequest struct {
+	BookID  string `json:"book_id"`
+	Content string `json:"content"`
+	Rating  int    `json:"rating"`
 }
 
 var userToken string
@@ -236,8 +243,8 @@ func (h *BookHandler) SearchBookIsbnHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
 	}
 
-	bookReq.Header.Add("X-Naver-Client-Id", config.LoadEnv("NAVER_API_CLIENT_ID"))
-	bookReq.Header.Add("X-Naver-Client-Secret", config.LoadEnv("NAVER_API_CLIENT_SECRET"))
+	bookReq.Header.Add("X-Naver-Client-Id", config.GetEnv("NAVER_API_CLIENT_ID"))
+	bookReq.Header.Add("X-Naver-Client-Secret", config.GetEnv("NAVER_API_CLIENT_SECRET"))
 
 	client := &http.Client{}
 	resp, err := client.Do(bookReq)
@@ -270,10 +277,18 @@ func (h *BookHandler) SearchBookIsbnHandler(ctx *fiber.Ctx) error {
 	})
 }
 
+// Book Review
+
 // 책 리뷰 작성할 수 있는 핸들러
 // 책 ID, 리뷰 내용, 별점(1~5) 필요
 // 책 ID를 통해 해당 책이 사용자의 책인지 확인하고 책이 있는지 확인
-func (h *BookHandler) ReviewBookHandler(ctx *fiber.Ctx) error {
+func (h *BookHandler) SaveBookReviewHandler(ctx *fiber.Ctx) error {
+	req := new(BookReviewRequest)
+	if err := ctx.BodyParser(req); err != nil {
+		logger.Init().Sugar().Errorf("요청 본문을 파싱하는 도중 오류가 발생했습니다: %v", err)
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+
 	sessionID := ctx.Cookies("auth_token")
 	if len(sessionID) == 0 {
 		logger.Init().Sugar().Error("클라이언트측 세션 쿠키가 존재하지 않습니다.")
@@ -286,4 +301,52 @@ func (h *BookHandler) ReviewBookHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
 	}
 
+	books, err := h.bookUseCase.GetBookByID(uuid.MustParse(result), uuid.MustParse(req.BookID))
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
+	}
+
+	log.Println(result)
+	log.Println(books)
+
+	if err = h.bookUseCase.CreateReview(&domain.ReviewBook{
+		ID:        uuid.New(),
+		BookID:    uuid.MustParse(req.BookID),
+		OwnerID:   uuid.MustParse(result),
+		Content:   req.Content,
+		Rating:    req.Rating,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}); err != nil {
+		logger.Init().Sugar().Errorf("책 리뷰 생성 중 오류가 발생했습니다: %v", err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{})
+}
+
+func (h *BookHandler) GetBookReviewByUserIDHandler(ctx *fiber.Ctx) error {
+	sessionID := ctx.Cookies("auth_token")
+	if len(sessionID) == 0 {
+		logger.Init().Sugar().Error("클라이언트측 세션 쿠키가 존재하지 않습니다.")
+		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
+	}
+
+	userID, err := h.AuthHandler.GetSessionByID(sessionID, ctx)
+	if err != nil {
+		logger.Init().Sugar().Errorf("세션에 해당하는 쿠키 정보를 찾을 수 없습니다: %v", err)
+		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
+	}
+
+	results, err := h.bookUseCase.GetReviewsByUserID(uuid.MustParse(userID))
+	if err != nil {
+		logger.Init().Sugar().Errorf("책 리뷰 목록을 가져오는 도중 오류가 발생했습니다: %v", err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"is_success":   true,
+		"data":         results,
+		"responsed_at": time.Now(),
+	})
 }
