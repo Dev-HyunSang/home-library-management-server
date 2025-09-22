@@ -17,13 +17,15 @@ type Book struct {
 }
 
 type ReviewBook struct {
-	ID        uuid.UUID `json:"id"`
-	BookID    uuid.UUID `json:"book_id"`
-	OwnerID   uuid.UUID `json:"owner_id"`
-	Content   string    `json:"content"`
-	Rating    int       `json:"rating"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID         uuid.UUID `json:"id"`
+	BookID     uuid.UUID `json:"book_id"`
+	OwnerID    uuid.UUID `json:"owner_id"`
+	BookTitle  string    `json:"book_title"`
+	BookAuthor string    `json:"book_author"`
+	Content    string    `json:"content"`
+	Rating     int       `json:"rating"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
 }
 
 type BookRepository interface {
@@ -36,6 +38,7 @@ type BookRepository interface {
 	// Book Review
 	CreateReview(review *ReviewBook) error
 	GetReviewsByUserID(userID uuid.UUID) ([]*ReviewBook, error)
+	GetReviewByID(id uuid.UUID) (*ReviewBook, error)
 	UpdateReviewByID(review *ReviewBook) (ReviewBook, error)
 }
 
@@ -49,5 +52,6 @@ type BookUseCase interface {
 	// Book Review
 	CreateReview(review *ReviewBook) error
 	GetReviewsByUserID(userID uuid.UUID) ([]*ReviewBook, error)
+	GetReviewByID(id uuid.UUID) (*ReviewBook, error)
 	UpdateReviewByID(review *ReviewBook) (ReviewBook, error)
 }

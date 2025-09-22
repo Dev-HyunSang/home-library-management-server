@@ -241,18 +241,41 @@ func (bc *BookRepository) GetReviewsByUserID(userID uuid.UUID) ([]*domain.Review
 
 	for _, r := range reviews {
 		result = append(result, &domain.ReviewBook{
-			ID:        r.ID,
-			BookID:    r.QueryBook().OnlyIDX(context.Background()),
-			OwnerID:   r.QueryOwner().OnlyIDX(context.Background()),
-			Content:   r.Content,
-			Rating:    r.Rating,
-			CreatedAt: r.CreatedAt,
-			UpdatedAt: r.UpdatedAt,
+			ID:         r.ID,
+			BookID:     r.QueryBook().OnlyIDX(context.Background()),
+			OwnerID:    r.QueryOwner().OnlyIDX(context.Background()),
+			BookTitle:  r.QueryBook().OnlyX(context.Background()).BookTitle,
+			BookAuthor: r.QueryBook().OnlyX(context.Background()).Author,
+			Content:    r.Content,
+			Rating:     r.Rating,
+			CreatedAt:  r.CreatedAt,
+			UpdatedAt:  r.UpdatedAt,
 		})
 		log.Println(result)
 	}
 
 	return result, nil
+}
+
+func (bc *BookRepository) GetReviewByID(reviewID uuid.UUID) (*domain.ReviewBook, error) {
+	client := bc.client
+
+	r, err := client.Review.Get(context.Background(), reviewID)
+	if err != nil {
+		return nil, fmt.Errorf("리뷰를 가져오는 도중 오류가 발생했습니다: %w", err)
+	}
+
+	return &domain.ReviewBook{
+		ID:         r.ID,
+		BookID:     r.QueryBook().OnlyIDX(context.Background()),
+		OwnerID:    r.QueryOwner().OnlyIDX(context.Background()),
+		BookTitle:  r.QueryBook().OnlyX(context.Background()).BookTitle,
+		BookAuthor: r.QueryBook().OnlyX(context.Background()).Author,
+		Content:    r.Content,
+		Rating:     r.Rating,
+		CreatedAt:  r.CreatedAt,
+		UpdatedAt:  r.UpdatedAt,
+	}, nil
 }
 
 func (bc *BookRepository) UpdateReviewByID(review *domain.ReviewBook) (domain.ReviewBook, error) {

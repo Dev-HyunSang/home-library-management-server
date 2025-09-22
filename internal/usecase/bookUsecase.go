@@ -79,6 +79,14 @@ func (bc *BookUseCase) GetReviewsByUserID(userID uuid.UUID) ([]*domain.ReviewBoo
 	return bc.bookRepo.GetReviewsByUserID(userID)
 }
 
+func (bc *BookUseCase) GetReviewByID(id uuid.UUID) (*domain.ReviewBook, error) {
+	if id == uuid.Nil {
+		return nil, domain.ErrInvalidInput
+	}
+
+	return bc.bookRepo.GetReviewByID(id)
+}
+
 func (bc *BookUseCase) UpdateReviewByID(review *domain.ReviewBook) (domain.ReviewBook, error) {
 	if review == nil || review.ID == uuid.Nil {
 		return domain.ReviewBook{}, domain.ErrInvalidInput
