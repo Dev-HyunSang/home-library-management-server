@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"database/sql/driver"
 	"fmt"
 	"math"
 
@@ -15,60 +14,58 @@ import (
 	"github.com/dev-hyunsang/home-library/lib/ent/book"
 	"github.com/dev-hyunsang/home-library/lib/ent/bookmark"
 	"github.com/dev-hyunsang/home-library/lib/ent/predicate"
-	"github.com/dev-hyunsang/home-library/lib/ent/review"
 	"github.com/dev-hyunsang/home-library/lib/ent/user"
 	"github.com/google/uuid"
 )
 
-// BookQuery is the builder for querying Book entities.
-type BookQuery struct {
+// BookmarkQuery is the builder for querying Bookmark entities.
+type BookmarkQuery struct {
 	config
-	ctx           *QueryContext
-	order         []book.OrderOption
-	inters        []Interceptor
-	predicates    []predicate.Book
-	withOwner     *UserQuery
-	withReviews   *ReviewQuery
-	withBookmarks *BookmarkQuery
-	withFKs       bool
+	ctx        *QueryContext
+	order      []bookmark.OrderOption
+	inters     []Interceptor
+	predicates []predicate.Bookmark
+	withOwner  *UserQuery
+	withBook   *BookQuery
+	withFKs    bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
 }
 
-// Where adds a new predicate for the BookQuery builder.
-func (bq *BookQuery) Where(ps ...predicate.Book) *BookQuery {
+// Where adds a new predicate for the BookmarkQuery builder.
+func (bq *BookmarkQuery) Where(ps ...predicate.Bookmark) *BookmarkQuery {
 	bq.predicates = append(bq.predicates, ps...)
 	return bq
 }
 
 // Limit the number of records to be returned by this query.
-func (bq *BookQuery) Limit(limit int) *BookQuery {
+func (bq *BookmarkQuery) Limit(limit int) *BookmarkQuery {
 	bq.ctx.Limit = &limit
 	return bq
 }
 
 // Offset to start from.
-func (bq *BookQuery) Offset(offset int) *BookQuery {
+func (bq *BookmarkQuery) Offset(offset int) *BookmarkQuery {
 	bq.ctx.Offset = &offset
 	return bq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (bq *BookQuery) Unique(unique bool) *BookQuery {
+func (bq *BookmarkQuery) Unique(unique bool) *BookmarkQuery {
 	bq.ctx.Unique = &unique
 	return bq
 }
 
 // Order specifies how the records should be ordered.
-func (bq *BookQuery) Order(o ...book.OrderOption) *BookQuery {
+func (bq *BookmarkQuery) Order(o ...bookmark.OrderOption) *BookmarkQuery {
 	bq.order = append(bq.order, o...)
 	return bq
 }
 
 // QueryOwner chains the current query on the "owner" edge.
-func (bq *BookQuery) QueryOwner() *UserQuery {
+func (bq *BookmarkQuery) QueryOwner() *UserQuery {
 	query := (&UserClient{config: bq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := bq.prepareQuery(ctx); err != nil {
@@ -79,9 +76,9 @@ func (bq *BookQuery) QueryOwner() *UserQuery {
 			return nil, err
 		}
 		step := sqlgraph.NewStep(
-			sqlgraph.From(book.Table, book.FieldID, selector),
+			sqlgraph.From(bookmark.Table, bookmark.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, book.OwnerTable, book.OwnerColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, bookmark.OwnerTable, bookmark.OwnerColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
 		return fromU, nil
@@ -89,9 +86,9 @@ func (bq *BookQuery) QueryOwner() *UserQuery {
 	return query
 }
 
-// QueryReviews chains the current query on the "reviews" edge.
-func (bq *BookQuery) QueryReviews() *ReviewQuery {
-	query := (&ReviewClient{config: bq.config}).Query()
+// QueryBook chains the current query on the "book" edge.
+func (bq *BookmarkQuery) QueryBook() *BookQuery {
+	query := (&BookClient{config: bq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := bq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -101,9 +98,9 @@ func (bq *BookQuery) QueryReviews() *ReviewQuery {
 			return nil, err
 		}
 		step := sqlgraph.NewStep(
-			sqlgraph.From(book.Table, book.FieldID, selector),
-			sqlgraph.To(review.Table, review.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, book.ReviewsTable, book.ReviewsColumn),
+			sqlgraph.From(bookmark.Table, bookmark.FieldID, selector),
+			sqlgraph.To(book.Table, book.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, bookmark.BookTable, bookmark.BookColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
 		return fromU, nil
@@ -111,43 +108,21 @@ func (bq *BookQuery) QueryReviews() *ReviewQuery {
 	return query
 }
 
-// QueryBookmarks chains the current query on the "bookmarks" edge.
-func (bq *BookQuery) QueryBookmarks() *BookmarkQuery {
-	query := (&BookmarkClient{config: bq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := bq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := bq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(book.Table, book.FieldID, selector),
-			sqlgraph.To(bookmark.Table, bookmark.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, book.BookmarksTable, book.BookmarksColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// First returns the first Book entity from the query.
-// Returns a *NotFoundError when no Book was found.
-func (bq *BookQuery) First(ctx context.Context) (*Book, error) {
+// First returns the first Bookmark entity from the query.
+// Returns a *NotFoundError when no Bookmark was found.
+func (bq *BookmarkQuery) First(ctx context.Context) (*Bookmark, error) {
 	nodes, err := bq.Limit(1).All(setContextOp(ctx, bq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
-		return nil, &NotFoundError{book.Label}
+		return nil, &NotFoundError{bookmark.Label}
 	}
 	return nodes[0], nil
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (bq *BookQuery) FirstX(ctx context.Context) *Book {
+func (bq *BookmarkQuery) FirstX(ctx context.Context) *Bookmark {
 	node, err := bq.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -155,22 +130,22 @@ func (bq *BookQuery) FirstX(ctx context.Context) *Book {
 	return node
 }
 
-// FirstID returns the first Book ID from the query.
-// Returns a *NotFoundError when no Book ID was found.
-func (bq *BookQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+// FirstID returns the first Bookmark ID from the query.
+// Returns a *NotFoundError when no Bookmark ID was found.
+func (bq *BookmarkQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
 	if ids, err = bq.Limit(1).IDs(setContextOp(ctx, bq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
-		err = &NotFoundError{book.Label}
+		err = &NotFoundError{bookmark.Label}
 		return
 	}
 	return ids[0], nil
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (bq *BookQuery) FirstIDX(ctx context.Context) uuid.UUID {
+func (bq *BookmarkQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := bq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -178,10 +153,10 @@ func (bq *BookQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	return id
 }
 
-// Only returns a single Book entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when more than one Book entity is found.
-// Returns a *NotFoundError when no Book entities are found.
-func (bq *BookQuery) Only(ctx context.Context) (*Book, error) {
+// Only returns a single Bookmark entity found by the query, ensuring it only returns one.
+// Returns a *NotSingularError when more than one Bookmark entity is found.
+// Returns a *NotFoundError when no Bookmark entities are found.
+func (bq *BookmarkQuery) Only(ctx context.Context) (*Bookmark, error) {
 	nodes, err := bq.Limit(2).All(setContextOp(ctx, bq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
@@ -190,14 +165,14 @@ func (bq *BookQuery) Only(ctx context.Context) (*Book, error) {
 	case 1:
 		return nodes[0], nil
 	case 0:
-		return nil, &NotFoundError{book.Label}
+		return nil, &NotFoundError{bookmark.Label}
 	default:
-		return nil, &NotSingularError{book.Label}
+		return nil, &NotSingularError{bookmark.Label}
 	}
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (bq *BookQuery) OnlyX(ctx context.Context) *Book {
+func (bq *BookmarkQuery) OnlyX(ctx context.Context) *Bookmark {
 	node, err := bq.Only(ctx)
 	if err != nil {
 		panic(err)
@@ -205,10 +180,10 @@ func (bq *BookQuery) OnlyX(ctx context.Context) *Book {
 	return node
 }
 
-// OnlyID is like Only, but returns the only Book ID in the query.
-// Returns a *NotSingularError when more than one Book ID is found.
+// OnlyID is like Only, but returns the only Bookmark ID in the query.
+// Returns a *NotSingularError when more than one Bookmark ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (bq *BookQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+func (bq *BookmarkQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
 	if ids, err = bq.Limit(2).IDs(setContextOp(ctx, bq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
@@ -217,15 +192,15 @@ func (bq *BookQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	case 1:
 		id = ids[0]
 	case 0:
-		err = &NotFoundError{book.Label}
+		err = &NotFoundError{bookmark.Label}
 	default:
-		err = &NotSingularError{book.Label}
+		err = &NotSingularError{bookmark.Label}
 	}
 	return
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (bq *BookQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+func (bq *BookmarkQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := bq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -233,18 +208,18 @@ func (bq *BookQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	return id
 }
 
-// All executes the query and returns a list of Books.
-func (bq *BookQuery) All(ctx context.Context) ([]*Book, error) {
+// All executes the query and returns a list of Bookmarks.
+func (bq *BookmarkQuery) All(ctx context.Context) ([]*Bookmark, error) {
 	ctx = setContextOp(ctx, bq.ctx, ent.OpQueryAll)
 	if err := bq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	qr := querierAll[[]*Book, *BookQuery]()
-	return withInterceptors[[]*Book](ctx, bq, qr, bq.inters)
+	qr := querierAll[[]*Bookmark, *BookmarkQuery]()
+	return withInterceptors[[]*Bookmark](ctx, bq, qr, bq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
-func (bq *BookQuery) AllX(ctx context.Context) []*Book {
+func (bq *BookmarkQuery) AllX(ctx context.Context) []*Bookmark {
 	nodes, err := bq.All(ctx)
 	if err != nil {
 		panic(err)
@@ -252,20 +227,20 @@ func (bq *BookQuery) AllX(ctx context.Context) []*Book {
 	return nodes
 }
 
-// IDs executes the query and returns a list of Book IDs.
-func (bq *BookQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
+// IDs executes the query and returns a list of Bookmark IDs.
+func (bq *BookmarkQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
 	if bq.ctx.Unique == nil && bq.path != nil {
 		bq.Unique(true)
 	}
 	ctx = setContextOp(ctx, bq.ctx, ent.OpQueryIDs)
-	if err = bq.Select(book.FieldID).Scan(ctx, &ids); err != nil {
+	if err = bq.Select(bookmark.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (bq *BookQuery) IDsX(ctx context.Context) []uuid.UUID {
+func (bq *BookmarkQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := bq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -274,16 +249,16 @@ func (bq *BookQuery) IDsX(ctx context.Context) []uuid.UUID {
 }
 
 // Count returns the count of the given query.
-func (bq *BookQuery) Count(ctx context.Context) (int, error) {
+func (bq *BookmarkQuery) Count(ctx context.Context) (int, error) {
 	ctx = setContextOp(ctx, bq.ctx, ent.OpQueryCount)
 	if err := bq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return withInterceptors[int](ctx, bq, querierCount[*BookQuery](), bq.inters)
+	return withInterceptors[int](ctx, bq, querierCount[*BookmarkQuery](), bq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (bq *BookQuery) CountX(ctx context.Context) int {
+func (bq *BookmarkQuery) CountX(ctx context.Context) int {
 	count, err := bq.Count(ctx)
 	if err != nil {
 		panic(err)
@@ -292,7 +267,7 @@ func (bq *BookQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (bq *BookQuery) Exist(ctx context.Context) (bool, error) {
+func (bq *BookmarkQuery) Exist(ctx context.Context) (bool, error) {
 	ctx = setContextOp(ctx, bq.ctx, ent.OpQueryExist)
 	switch _, err := bq.FirstID(ctx); {
 	case IsNotFound(err):
@@ -305,7 +280,7 @@ func (bq *BookQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (bq *BookQuery) ExistX(ctx context.Context) bool {
+func (bq *BookmarkQuery) ExistX(ctx context.Context) bool {
 	exist, err := bq.Exist(ctx)
 	if err != nil {
 		panic(err)
@@ -313,21 +288,20 @@ func (bq *BookQuery) ExistX(ctx context.Context) bool {
 	return exist
 }
 
-// Clone returns a duplicate of the BookQuery builder, including all associated steps. It can be
+// Clone returns a duplicate of the BookmarkQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (bq *BookQuery) Clone() *BookQuery {
+func (bq *BookmarkQuery) Clone() *BookmarkQuery {
 	if bq == nil {
 		return nil
 	}
-	return &BookQuery{
-		config:        bq.config,
-		ctx:           bq.ctx.Clone(),
-		order:         append([]book.OrderOption{}, bq.order...),
-		inters:        append([]Interceptor{}, bq.inters...),
-		predicates:    append([]predicate.Book{}, bq.predicates...),
-		withOwner:     bq.withOwner.Clone(),
-		withReviews:   bq.withReviews.Clone(),
-		withBookmarks: bq.withBookmarks.Clone(),
+	return &BookmarkQuery{
+		config:     bq.config,
+		ctx:        bq.ctx.Clone(),
+		order:      append([]bookmark.OrderOption{}, bq.order...),
+		inters:     append([]Interceptor{}, bq.inters...),
+		predicates: append([]predicate.Bookmark{}, bq.predicates...),
+		withOwner:  bq.withOwner.Clone(),
+		withBook:   bq.withBook.Clone(),
 		// clone intermediate query.
 		sql:  bq.sql.Clone(),
 		path: bq.path,
@@ -336,7 +310,7 @@ func (bq *BookQuery) Clone() *BookQuery {
 
 // WithOwner tells the query-builder to eager-load the nodes that are connected to
 // the "owner" edge. The optional arguments are used to configure the query builder of the edge.
-func (bq *BookQuery) WithOwner(opts ...func(*UserQuery)) *BookQuery {
+func (bq *BookmarkQuery) WithOwner(opts ...func(*UserQuery)) *BookmarkQuery {
 	query := (&UserClient{config: bq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
@@ -345,25 +319,14 @@ func (bq *BookQuery) WithOwner(opts ...func(*UserQuery)) *BookQuery {
 	return bq
 }
 
-// WithReviews tells the query-builder to eager-load the nodes that are connected to
-// the "reviews" edge. The optional arguments are used to configure the query builder of the edge.
-func (bq *BookQuery) WithReviews(opts ...func(*ReviewQuery)) *BookQuery {
-	query := (&ReviewClient{config: bq.config}).Query()
+// WithBook tells the query-builder to eager-load the nodes that are connected to
+// the "book" edge. The optional arguments are used to configure the query builder of the edge.
+func (bq *BookmarkQuery) WithBook(opts ...func(*BookQuery)) *BookmarkQuery {
+	query := (&BookClient{config: bq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	bq.withReviews = query
-	return bq
-}
-
-// WithBookmarks tells the query-builder to eager-load the nodes that are connected to
-// the "bookmarks" edge. The optional arguments are used to configure the query builder of the edge.
-func (bq *BookQuery) WithBookmarks(opts ...func(*BookmarkQuery)) *BookQuery {
-	query := (&BookmarkClient{config: bq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	bq.withBookmarks = query
+	bq.withBook = query
 	return bq
 }
 
@@ -373,19 +336,19 @@ func (bq *BookQuery) WithBookmarks(opts ...func(*BookmarkQuery)) *BookQuery {
 // Example:
 //
 //	var v []struct {
-//		BookTitle string `json:"book_title,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
-//	client.Book.Query().
-//		GroupBy(book.FieldBookTitle).
+//	client.Bookmark.Query().
+//		GroupBy(bookmark.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-func (bq *BookQuery) GroupBy(field string, fields ...string) *BookGroupBy {
+func (bq *BookmarkQuery) GroupBy(field string, fields ...string) *BookmarkGroupBy {
 	bq.ctx.Fields = append([]string{field}, fields...)
-	grbuild := &BookGroupBy{build: bq}
+	grbuild := &BookmarkGroupBy{build: bq}
 	grbuild.flds = &bq.ctx.Fields
-	grbuild.label = book.Label
+	grbuild.label = bookmark.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
 }
@@ -396,26 +359,26 @@ func (bq *BookQuery) GroupBy(field string, fields ...string) *BookGroupBy {
 // Example:
 //
 //	var v []struct {
-//		BookTitle string `json:"book_title,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
-//	client.Book.Query().
-//		Select(book.FieldBookTitle).
+//	client.Bookmark.Query().
+//		Select(bookmark.FieldCreatedAt).
 //		Scan(ctx, &v)
-func (bq *BookQuery) Select(fields ...string) *BookSelect {
+func (bq *BookmarkQuery) Select(fields ...string) *BookmarkSelect {
 	bq.ctx.Fields = append(bq.ctx.Fields, fields...)
-	sbuild := &BookSelect{BookQuery: bq}
-	sbuild.label = book.Label
+	sbuild := &BookmarkSelect{BookmarkQuery: bq}
+	sbuild.label = bookmark.Label
 	sbuild.flds, sbuild.scan = &bq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
-// Aggregate returns a BookSelect configured with the given aggregations.
-func (bq *BookQuery) Aggregate(fns ...AggregateFunc) *BookSelect {
+// Aggregate returns a BookmarkSelect configured with the given aggregations.
+func (bq *BookmarkQuery) Aggregate(fns ...AggregateFunc) *BookmarkSelect {
 	return bq.Select().Aggregate(fns...)
 }
 
-func (bq *BookQuery) prepareQuery(ctx context.Context) error {
+func (bq *BookmarkQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range bq.inters {
 		if inter == nil {
 			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
@@ -427,7 +390,7 @@ func (bq *BookQuery) prepareQuery(ctx context.Context) error {
 		}
 	}
 	for _, f := range bq.ctx.Fields {
-		if !book.ValidColumn(f) {
+		if !bookmark.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
@@ -441,28 +404,27 @@ func (bq *BookQuery) prepareQuery(ctx context.Context) error {
 	return nil
 }
 
-func (bq *BookQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Book, error) {
+func (bq *BookmarkQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bookmark, error) {
 	var (
-		nodes       = []*Book{}
+		nodes       = []*Bookmark{}
 		withFKs     = bq.withFKs
 		_spec       = bq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [2]bool{
 			bq.withOwner != nil,
-			bq.withReviews != nil,
-			bq.withBookmarks != nil,
+			bq.withBook != nil,
 		}
 	)
-	if bq.withOwner != nil {
+	if bq.withOwner != nil || bq.withBook != nil {
 		withFKs = true
 	}
 	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, book.ForeignKeys...)
+		_spec.Node.Columns = append(_spec.Node.Columns, bookmark.ForeignKeys...)
 	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
-		return (*Book).scanValues(nil, columns)
+		return (*Bookmark).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
-		node := &Book{config: bq.config}
+		node := &Bookmark{config: bq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
@@ -478,35 +440,27 @@ func (bq *BookQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Book, e
 	}
 	if query := bq.withOwner; query != nil {
 		if err := bq.loadOwner(ctx, query, nodes, nil,
-			func(n *Book, e *User) { n.Edges.Owner = e }); err != nil {
+			func(n *Bookmark, e *User) { n.Edges.Owner = e }); err != nil {
 			return nil, err
 		}
 	}
-	if query := bq.withReviews; query != nil {
-		if err := bq.loadReviews(ctx, query, nodes,
-			func(n *Book) { n.Edges.Reviews = []*Review{} },
-			func(n *Book, e *Review) { n.Edges.Reviews = append(n.Edges.Reviews, e) }); err != nil {
-			return nil, err
-		}
-	}
-	if query := bq.withBookmarks; query != nil {
-		if err := bq.loadBookmarks(ctx, query, nodes,
-			func(n *Book) { n.Edges.Bookmarks = []*Bookmark{} },
-			func(n *Book, e *Bookmark) { n.Edges.Bookmarks = append(n.Edges.Bookmarks, e) }); err != nil {
+	if query := bq.withBook; query != nil {
+		if err := bq.loadBook(ctx, query, nodes, nil,
+			func(n *Bookmark, e *Book) { n.Edges.Book = e }); err != nil {
 			return nil, err
 		}
 	}
 	return nodes, nil
 }
 
-func (bq *BookQuery) loadOwner(ctx context.Context, query *UserQuery, nodes []*Book, init func(*Book), assign func(*Book, *User)) error {
+func (bq *BookmarkQuery) loadOwner(ctx context.Context, query *UserQuery, nodes []*Bookmark, init func(*Bookmark), assign func(*Bookmark, *User)) error {
 	ids := make([]uuid.UUID, 0, len(nodes))
-	nodeids := make(map[uuid.UUID][]*Book)
+	nodeids := make(map[uuid.UUID][]*Bookmark)
 	for i := range nodes {
-		if nodes[i].user_books == nil {
+		if nodes[i].user_bookmarks == nil {
 			continue
 		}
-		fk := *nodes[i].user_books
+		fk := *nodes[i].user_bookmarks
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -523,7 +477,7 @@ func (bq *BookQuery) loadOwner(ctx context.Context, query *UserQuery, nodes []*B
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "user_books" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "user_bookmarks" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -531,70 +485,40 @@ func (bq *BookQuery) loadOwner(ctx context.Context, query *UserQuery, nodes []*B
 	}
 	return nil
 }
-func (bq *BookQuery) loadReviews(ctx context.Context, query *ReviewQuery, nodes []*Book, init func(*Book), assign func(*Book, *Review)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uuid.UUID]*Book)
+func (bq *BookmarkQuery) loadBook(ctx context.Context, query *BookQuery, nodes []*Bookmark, init func(*Bookmark), assign func(*Bookmark, *Book)) error {
+	ids := make([]uuid.UUID, 0, len(nodes))
+	nodeids := make(map[uuid.UUID][]*Bookmark)
 	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
+		if nodes[i].book_bookmarks == nil {
+			continue
 		}
+		fk := *nodes[i].book_bookmarks
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
-	query.withFKs = true
-	query.Where(predicate.Review(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(book.ReviewsColumn), fks...))
-	}))
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(book.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.book_reviews
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "book_reviews" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
+		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "book_reviews" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "book_bookmarks" returned %v`, n.ID)
 		}
-		assign(node, n)
-	}
-	return nil
-}
-func (bq *BookQuery) loadBookmarks(ctx context.Context, query *BookmarkQuery, nodes []*Book, init func(*Book), assign func(*Book, *Bookmark)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uuid.UUID]*Book)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
+		for i := range nodes {
+			assign(nodes[i], n)
 		}
-	}
-	query.withFKs = true
-	query.Where(predicate.Bookmark(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(book.BookmarksColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.book_bookmarks
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "book_bookmarks" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "book_bookmarks" returned %v for node %v`, *fk, n.ID)
-		}
-		assign(node, n)
 	}
 	return nil
 }
 
-func (bq *BookQuery) sqlCount(ctx context.Context) (int, error) {
+func (bq *BookmarkQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := bq.querySpec()
 	_spec.Node.Columns = bq.ctx.Fields
 	if len(bq.ctx.Fields) > 0 {
@@ -603,8 +527,8 @@ func (bq *BookQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, bq.driver, _spec)
 }
 
-func (bq *BookQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(book.Table, book.Columns, sqlgraph.NewFieldSpec(book.FieldID, field.TypeUUID))
+func (bq *BookmarkQuery) querySpec() *sqlgraph.QuerySpec {
+	_spec := sqlgraph.NewQuerySpec(bookmark.Table, bookmark.Columns, sqlgraph.NewFieldSpec(bookmark.FieldID, field.TypeUUID))
 	_spec.From = bq.sql
 	if unique := bq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
@@ -613,9 +537,9 @@ func (bq *BookQuery) querySpec() *sqlgraph.QuerySpec {
 	}
 	if fields := bq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
-		_spec.Node.Columns = append(_spec.Node.Columns, book.FieldID)
+		_spec.Node.Columns = append(_spec.Node.Columns, bookmark.FieldID)
 		for i := range fields {
-			if fields[i] != book.FieldID {
+			if fields[i] != bookmark.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
@@ -643,12 +567,12 @@ func (bq *BookQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (bq *BookQuery) sqlQuery(ctx context.Context) *sql.Selector {
+func (bq *BookmarkQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(bq.driver.Dialect())
-	t1 := builder.Table(book.Table)
+	t1 := builder.Table(bookmark.Table)
 	columns := bq.ctx.Fields
 	if len(columns) == 0 {
-		columns = book.Columns
+		columns = bookmark.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
 	if bq.sql != nil {
@@ -675,28 +599,28 @@ func (bq *BookQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	return selector
 }
 
-// BookGroupBy is the group-by builder for Book entities.
-type BookGroupBy struct {
+// BookmarkGroupBy is the group-by builder for Bookmark entities.
+type BookmarkGroupBy struct {
 	selector
-	build *BookQuery
+	build *BookmarkQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (bgb *BookGroupBy) Aggregate(fns ...AggregateFunc) *BookGroupBy {
+func (bgb *BookmarkGroupBy) Aggregate(fns ...AggregateFunc) *BookmarkGroupBy {
 	bgb.fns = append(bgb.fns, fns...)
 	return bgb
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (bgb *BookGroupBy) Scan(ctx context.Context, v any) error {
+func (bgb *BookmarkGroupBy) Scan(ctx context.Context, v any) error {
 	ctx = setContextOp(ctx, bgb.build.ctx, ent.OpQueryGroupBy)
 	if err := bgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*BookQuery, *BookGroupBy](ctx, bgb.build, bgb, bgb.build.inters, v)
+	return scanWithInterceptors[*BookmarkQuery, *BookmarkGroupBy](ctx, bgb.build, bgb, bgb.build.inters, v)
 }
 
-func (bgb *BookGroupBy) sqlScan(ctx context.Context, root *BookQuery, v any) error {
+func (bgb *BookmarkGroupBy) sqlScan(ctx context.Context, root *BookmarkQuery, v any) error {
 	selector := root.sqlQuery(ctx).Select()
 	aggregation := make([]string, 0, len(bgb.fns))
 	for _, fn := range bgb.fns {
@@ -723,28 +647,28 @@ func (bgb *BookGroupBy) sqlScan(ctx context.Context, root *BookQuery, v any) err
 	return sql.ScanSlice(rows, v)
 }
 
-// BookSelect is the builder for selecting fields of Book entities.
-type BookSelect struct {
-	*BookQuery
+// BookmarkSelect is the builder for selecting fields of Bookmark entities.
+type BookmarkSelect struct {
+	*BookmarkQuery
 	selector
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
-func (bs *BookSelect) Aggregate(fns ...AggregateFunc) *BookSelect {
+func (bs *BookmarkSelect) Aggregate(fns ...AggregateFunc) *BookmarkSelect {
 	bs.fns = append(bs.fns, fns...)
 	return bs
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (bs *BookSelect) Scan(ctx context.Context, v any) error {
+func (bs *BookmarkSelect) Scan(ctx context.Context, v any) error {
 	ctx = setContextOp(ctx, bs.ctx, ent.OpQuerySelect)
 	if err := bs.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*BookQuery, *BookSelect](ctx, bs.BookQuery, bs, bs.inters, v)
+	return scanWithInterceptors[*BookmarkQuery, *BookmarkSelect](ctx, bs.BookmarkQuery, bs, bs.inters, v)
 }
 
-func (bs *BookSelect) sqlScan(ctx context.Context, root *BookQuery, v any) error {
+func (bs *BookmarkSelect) sqlScan(ctx context.Context, root *BookmarkQuery, v any) error {
 	selector := root.sqlQuery(ctx)
 	aggregation := make([]string, 0, len(bs.fns))
 	for _, fn := range bs.fns {

@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/dev-hyunsang/home-library/lib/ent/book"
+	"github.com/dev-hyunsang/home-library/lib/ent/bookmark"
 	"github.com/dev-hyunsang/home-library/lib/ent/review"
 	"github.com/dev-hyunsang/home-library/lib/ent/user"
 	"github.com/google/uuid"
@@ -107,6 +108,21 @@ func (bc *BookCreate) AddReviews(r ...*Review) *BookCreate {
 		ids[i] = r[i].ID
 	}
 	return bc.AddReviewIDs(ids...)
+}
+
+// AddBookmarkIDs adds the "bookmarks" edge to the Bookmark entity by IDs.
+func (bc *BookCreate) AddBookmarkIDs(ids ...uuid.UUID) *BookCreate {
+	bc.mutation.AddBookmarkIDs(ids...)
+	return bc
+}
+
+// AddBookmarks adds the "bookmarks" edges to the Bookmark entity.
+func (bc *BookCreate) AddBookmarks(b ...*Bookmark) *BookCreate {
+	ids := make([]uuid.UUID, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return bc.AddBookmarkIDs(ids...)
 }
 
 // Mutation returns the BookMutation object of the builder.
@@ -262,6 +278,22 @@ func (bc *BookCreate) createSpec() (*Book, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := bc.mutation.BookmarksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   book.BookmarksTable,
+			Columns: []string{book.BookmarksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(bookmark.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

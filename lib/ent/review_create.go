@@ -69,6 +69,14 @@ func (rc *ReviewCreate) SetID(u uuid.UUID) *ReviewCreate {
 	return rc
 }
 
+// SetNillableID sets the "id" field if the given value is not nil.
+func (rc *ReviewCreate) SetNillableID(u *uuid.UUID) *ReviewCreate {
+	if u != nil {
+		rc.SetID(*u)
+	}
+	return rc
+}
+
 // SetOwnerID sets the "owner" edge to the User entity by ID.
 func (rc *ReviewCreate) SetOwnerID(id uuid.UUID) *ReviewCreate {
 	rc.mutation.SetOwnerID(id)
@@ -133,6 +141,10 @@ func (rc *ReviewCreate) defaults() {
 	if _, ok := rc.mutation.UpdatedAt(); !ok {
 		v := review.DefaultUpdatedAt()
 		rc.mutation.SetUpdatedAt(v)
+	}
+	if _, ok := rc.mutation.ID(); !ok {
+		v := review.DefaultID()
+		rc.mutation.SetID(v)
 	}
 }
 

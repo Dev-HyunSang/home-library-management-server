@@ -10,41 +10,31 @@ import (
 	"github.com/google/uuid"
 )
 
-// Review holds the schema definition for the Review entity.
-type Review struct {
+// Bookmark holds the schema definition for the Bookmark entity.
+type Bookmark struct {
 	ent.Schema
 }
 
-// Fields of the Review.
-func (Review) Fields() []ent.Field {
+// Fields of the Bookmark.
+func (Bookmark) Fields() []ent.Field {
 	return []ent.Field{
 		field.UUID("id", uuid.UUID{}).
-			Default(uuid.New).
-			StorageKey("id"),
-		field.Text("content").
-			NotEmpty(),
-		field.Int("rating").
-			Min(1).
-			Max(5),
+			Default(uuid.New),
 		field.Time("created_at").
-			Default(time.Now).
-			Immutable(),
-		field.Time("updated_at").
-			Default(time.Now).
-			UpdateDefault(time.Now),
+			Default(time.Now),
 	}
 }
 
-// Edges of the Review.
-func (Review) Edges() []ent.Edge {
+// Edges of the Bookmark.
+func (Bookmark) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("owner", User.Type).
-			Ref("reviews").
+			Ref("bookmarks").
 			Unique().
 			Required().
 			Annotations(entsql.OnDelete(entsql.Cascade)),
 		edge.From("book", Book.Type).
-			Ref("reviews").
+			Ref("bookmarks").
 			Unique().
 			Required().
 			Annotations(entsql.OnDelete(entsql.Cascade)),

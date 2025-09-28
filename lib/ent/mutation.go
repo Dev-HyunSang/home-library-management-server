@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/dev-hyunsang/home-library/lib/ent/book"
+	"github.com/dev-hyunsang/home-library/lib/ent/bookmark"
 	"github.com/dev-hyunsang/home-library/lib/ent/predicate"
 	"github.com/dev-hyunsang/home-library/lib/ent/review"
 	"github.com/dev-hyunsang/home-library/lib/ent/user"
@@ -27,31 +28,35 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeBook   = "Book"
-	TypeReview = "Review"
-	TypeUser   = "User"
+	TypeBook     = "Book"
+	TypeBookmark = "Bookmark"
+	TypeReview   = "Review"
+	TypeUser     = "User"
 )
 
 // BookMutation represents an operation that mutates the Book nodes in the graph.
 type BookMutation struct {
 	config
-	op             Op
-	typ            string
-	id             *uuid.UUID
-	book_title     *string
-	author         *string
-	book_isbn      *string
-	registered_at  *time.Time
-	complated_at   *time.Time
-	clearedFields  map[string]struct{}
-	owner          *uuid.UUID
-	clearedowner   bool
-	reviews        map[uuid.UUID]struct{}
-	removedreviews map[uuid.UUID]struct{}
-	clearedreviews bool
-	done           bool
-	oldValue       func(context.Context) (*Book, error)
-	predicates     []predicate.Book
+	op               Op
+	typ              string
+	id               *uuid.UUID
+	book_title       *string
+	author           *string
+	book_isbn        *string
+	registered_at    *time.Time
+	complated_at     *time.Time
+	clearedFields    map[string]struct{}
+	owner            *uuid.UUID
+	clearedowner     bool
+	reviews          map[uuid.UUID]struct{}
+	removedreviews   map[uuid.UUID]struct{}
+	clearedreviews   bool
+	bookmarks        map[uuid.UUID]struct{}
+	removedbookmarks map[uuid.UUID]struct{}
+	clearedbookmarks bool
+	done             bool
+	oldValue         func(context.Context) (*Book, error)
+	predicates       []predicate.Book
 }
 
 var _ ent.Mutation = (*BookMutation)(nil)
@@ -444,6 +449,60 @@ func (m *BookMutation) ResetReviews() {
 	m.removedreviews = nil
 }
 
+// AddBookmarkIDs adds the "bookmarks" edge to the Bookmark entity by ids.
+func (m *BookMutation) AddBookmarkIDs(ids ...uuid.UUID) {
+	if m.bookmarks == nil {
+		m.bookmarks = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.bookmarks[ids[i]] = struct{}{}
+	}
+}
+
+// ClearBookmarks clears the "bookmarks" edge to the Bookmark entity.
+func (m *BookMutation) ClearBookmarks() {
+	m.clearedbookmarks = true
+}
+
+// BookmarksCleared reports if the "bookmarks" edge to the Bookmark entity was cleared.
+func (m *BookMutation) BookmarksCleared() bool {
+	return m.clearedbookmarks
+}
+
+// RemoveBookmarkIDs removes the "bookmarks" edge to the Bookmark entity by IDs.
+func (m *BookMutation) RemoveBookmarkIDs(ids ...uuid.UUID) {
+	if m.removedbookmarks == nil {
+		m.removedbookmarks = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.bookmarks, ids[i])
+		m.removedbookmarks[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedBookmarks returns the removed IDs of the "bookmarks" edge to the Bookmark entity.
+func (m *BookMutation) RemovedBookmarksIDs() (ids []uuid.UUID) {
+	for id := range m.removedbookmarks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// BookmarksIDs returns the "bookmarks" edge IDs in the mutation.
+func (m *BookMutation) BookmarksIDs() (ids []uuid.UUID) {
+	for id := range m.bookmarks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetBookmarks resets all changes to the "bookmarks" edge.
+func (m *BookMutation) ResetBookmarks() {
+	m.bookmarks = nil
+	m.clearedbookmarks = false
+	m.removedbookmarks = nil
+}
+
 // Where appends a list predicates to the BookMutation builder.
 func (m *BookMutation) Where(ps ...predicate.Book) {
 	m.predicates = append(m.predicates, ps...)
@@ -654,12 +713,15 @@ func (m *BookMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *BookMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.owner != nil {
 		edges = append(edges, book.EdgeOwner)
 	}
 	if m.reviews != nil {
 		edges = append(edges, book.EdgeReviews)
+	}
+	if m.bookmarks != nil {
+		edges = append(edges, book.EdgeBookmarks)
 	}
 	return edges
 }
@@ -678,15 +740,24 @@ func (m *BookMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case book.EdgeBookmarks:
+		ids := make([]ent.Value, 0, len(m.bookmarks))
+		for id := range m.bookmarks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *BookMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.removedreviews != nil {
 		edges = append(edges, book.EdgeReviews)
+	}
+	if m.removedbookmarks != nil {
+		edges = append(edges, book.EdgeBookmarks)
 	}
 	return edges
 }
@@ -701,18 +772,27 @@ func (m *BookMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case book.EdgeBookmarks:
+		ids := make([]ent.Value, 0, len(m.removedbookmarks))
+		for id := range m.removedbookmarks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *BookMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.clearedowner {
 		edges = append(edges, book.EdgeOwner)
 	}
 	if m.clearedreviews {
 		edges = append(edges, book.EdgeReviews)
+	}
+	if m.clearedbookmarks {
+		edges = append(edges, book.EdgeBookmarks)
 	}
 	return edges
 }
@@ -725,6 +805,8 @@ func (m *BookMutation) EdgeCleared(name string) bool {
 		return m.clearedowner
 	case book.EdgeReviews:
 		return m.clearedreviews
+	case book.EdgeBookmarks:
+		return m.clearedbookmarks
 	}
 	return false
 }
@@ -750,8 +832,469 @@ func (m *BookMutation) ResetEdge(name string) error {
 	case book.EdgeReviews:
 		m.ResetReviews()
 		return nil
+	case book.EdgeBookmarks:
+		m.ResetBookmarks()
+		return nil
 	}
 	return fmt.Errorf("unknown Book edge %s", name)
+}
+
+// BookmarkMutation represents an operation that mutates the Bookmark nodes in the graph.
+type BookmarkMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *uuid.UUID
+	created_at    *time.Time
+	clearedFields map[string]struct{}
+	owner         *uuid.UUID
+	clearedowner  bool
+	book          *uuid.UUID
+	clearedbook   bool
+	done          bool
+	oldValue      func(context.Context) (*Bookmark, error)
+	predicates    []predicate.Bookmark
+}
+
+var _ ent.Mutation = (*BookmarkMutation)(nil)
+
+// bookmarkOption allows management of the mutation configuration using functional options.
+type bookmarkOption func(*BookmarkMutation)
+
+// newBookmarkMutation creates new mutation for the Bookmark entity.
+func newBookmarkMutation(c config, op Op, opts ...bookmarkOption) *BookmarkMutation {
+	m := &BookmarkMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeBookmark,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withBookmarkID sets the ID field of the mutation.
+func withBookmarkID(id uuid.UUID) bookmarkOption {
+	return func(m *BookmarkMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Bookmark
+		)
+		m.oldValue = func(ctx context.Context) (*Bookmark, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Bookmark.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withBookmark sets the old Bookmark of the mutation.
+func withBookmark(node *Bookmark) bookmarkOption {
+	return func(m *BookmarkMutation) {
+		m.oldValue = func(context.Context) (*Bookmark, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m BookmarkMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m BookmarkMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Bookmark entities.
+func (m *BookmarkMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *BookmarkMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *BookmarkMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Bookmark.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *BookmarkMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *BookmarkMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Bookmark entity.
+// If the Bookmark object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BookmarkMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *BookmarkMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetOwnerID sets the "owner" edge to the User entity by id.
+func (m *BookmarkMutation) SetOwnerID(id uuid.UUID) {
+	m.owner = &id
+}
+
+// ClearOwner clears the "owner" edge to the User entity.
+func (m *BookmarkMutation) ClearOwner() {
+	m.clearedowner = true
+}
+
+// OwnerCleared reports if the "owner" edge to the User entity was cleared.
+func (m *BookmarkMutation) OwnerCleared() bool {
+	return m.clearedowner
+}
+
+// OwnerID returns the "owner" edge ID in the mutation.
+func (m *BookmarkMutation) OwnerID() (id uuid.UUID, exists bool) {
+	if m.owner != nil {
+		return *m.owner, true
+	}
+	return
+}
+
+// OwnerIDs returns the "owner" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// OwnerID instead. It exists only for internal usage by the builders.
+func (m *BookmarkMutation) OwnerIDs() (ids []uuid.UUID) {
+	if id := m.owner; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetOwner resets all changes to the "owner" edge.
+func (m *BookmarkMutation) ResetOwner() {
+	m.owner = nil
+	m.clearedowner = false
+}
+
+// SetBookID sets the "book" edge to the Book entity by id.
+func (m *BookmarkMutation) SetBookID(id uuid.UUID) {
+	m.book = &id
+}
+
+// ClearBook clears the "book" edge to the Book entity.
+func (m *BookmarkMutation) ClearBook() {
+	m.clearedbook = true
+}
+
+// BookCleared reports if the "book" edge to the Book entity was cleared.
+func (m *BookmarkMutation) BookCleared() bool {
+	return m.clearedbook
+}
+
+// BookID returns the "book" edge ID in the mutation.
+func (m *BookmarkMutation) BookID() (id uuid.UUID, exists bool) {
+	if m.book != nil {
+		return *m.book, true
+	}
+	return
+}
+
+// BookIDs returns the "book" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// BookID instead. It exists only for internal usage by the builders.
+func (m *BookmarkMutation) BookIDs() (ids []uuid.UUID) {
+	if id := m.book; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetBook resets all changes to the "book" edge.
+func (m *BookmarkMutation) ResetBook() {
+	m.book = nil
+	m.clearedbook = false
+}
+
+// Where appends a list predicates to the BookmarkMutation builder.
+func (m *BookmarkMutation) Where(ps ...predicate.Bookmark) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the BookmarkMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *BookmarkMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Bookmark, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *BookmarkMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *BookmarkMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Bookmark).
+func (m *BookmarkMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *BookmarkMutation) Fields() []string {
+	fields := make([]string, 0, 1)
+	if m.created_at != nil {
+		fields = append(fields, bookmark.FieldCreatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *BookmarkMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case bookmark.FieldCreatedAt:
+		return m.CreatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *BookmarkMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case bookmark.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown Bookmark field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *BookmarkMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case bookmark.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Bookmark field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *BookmarkMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *BookmarkMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *BookmarkMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Bookmark numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *BookmarkMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *BookmarkMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *BookmarkMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Bookmark nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *BookmarkMutation) ResetField(name string) error {
+	switch name {
+	case bookmark.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown Bookmark field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *BookmarkMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.owner != nil {
+		edges = append(edges, bookmark.EdgeOwner)
+	}
+	if m.book != nil {
+		edges = append(edges, bookmark.EdgeBook)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *BookmarkMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case bookmark.EdgeOwner:
+		if id := m.owner; id != nil {
+			return []ent.Value{*id}
+		}
+	case bookmark.EdgeBook:
+		if id := m.book; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *BookmarkMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *BookmarkMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *BookmarkMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedowner {
+		edges = append(edges, bookmark.EdgeOwner)
+	}
+	if m.clearedbook {
+		edges = append(edges, bookmark.EdgeBook)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *BookmarkMutation) EdgeCleared(name string) bool {
+	switch name {
+	case bookmark.EdgeOwner:
+		return m.clearedowner
+	case bookmark.EdgeBook:
+		return m.clearedbook
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *BookmarkMutation) ClearEdge(name string) error {
+	switch name {
+	case bookmark.EdgeOwner:
+		m.ClearOwner()
+		return nil
+	case bookmark.EdgeBook:
+		m.ClearBook()
+		return nil
+	}
+	return fmt.Errorf("unknown Bookmark unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *BookmarkMutation) ResetEdge(name string) error {
+	switch name {
+	case bookmark.EdgeOwner:
+		m.ResetOwner()
+		return nil
+	case bookmark.EdgeBook:
+		m.ResetBook()
+		return nil
+	}
+	return fmt.Errorf("unknown Bookmark edge %s", name)
 }
 
 // ReviewMutation represents an operation that mutates the Review nodes in the graph.
@@ -1413,25 +1956,28 @@ func (m *ReviewMutation) ResetEdge(name string) error {
 // UserMutation represents an operation that mutates the User nodes in the graph.
 type UserMutation struct {
 	config
-	op             Op
-	typ            string
-	id             *uuid.UUID
-	nick_name      *string
-	email          *string
-	password       *string
-	is_published   *bool
-	created_at     *time.Time
-	updated_at     *time.Time
-	clearedFields  map[string]struct{}
-	books          map[uuid.UUID]struct{}
-	removedbooks   map[uuid.UUID]struct{}
-	clearedbooks   bool
-	reviews        map[uuid.UUID]struct{}
-	removedreviews map[uuid.UUID]struct{}
-	clearedreviews bool
-	done           bool
-	oldValue       func(context.Context) (*User, error)
-	predicates     []predicate.User
+	op               Op
+	typ              string
+	id               *uuid.UUID
+	nick_name        *string
+	email            *string
+	password         *string
+	is_published     *bool
+	created_at       *time.Time
+	updated_at       *time.Time
+	clearedFields    map[string]struct{}
+	books            map[uuid.UUID]struct{}
+	removedbooks     map[uuid.UUID]struct{}
+	clearedbooks     bool
+	reviews          map[uuid.UUID]struct{}
+	removedreviews   map[uuid.UUID]struct{}
+	clearedreviews   bool
+	bookmarks        map[uuid.UUID]struct{}
+	removedbookmarks map[uuid.UUID]struct{}
+	clearedbookmarks bool
+	done             bool
+	oldValue         func(context.Context) (*User, error)
+	predicates       []predicate.User
 }
 
 var _ ent.Mutation = (*UserMutation)(nil)
@@ -1862,6 +2408,60 @@ func (m *UserMutation) ResetReviews() {
 	m.removedreviews = nil
 }
 
+// AddBookmarkIDs adds the "bookmarks" edge to the Bookmark entity by ids.
+func (m *UserMutation) AddBookmarkIDs(ids ...uuid.UUID) {
+	if m.bookmarks == nil {
+		m.bookmarks = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.bookmarks[ids[i]] = struct{}{}
+	}
+}
+
+// ClearBookmarks clears the "bookmarks" edge to the Bookmark entity.
+func (m *UserMutation) ClearBookmarks() {
+	m.clearedbookmarks = true
+}
+
+// BookmarksCleared reports if the "bookmarks" edge to the Bookmark entity was cleared.
+func (m *UserMutation) BookmarksCleared() bool {
+	return m.clearedbookmarks
+}
+
+// RemoveBookmarkIDs removes the "bookmarks" edge to the Bookmark entity by IDs.
+func (m *UserMutation) RemoveBookmarkIDs(ids ...uuid.UUID) {
+	if m.removedbookmarks == nil {
+		m.removedbookmarks = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.bookmarks, ids[i])
+		m.removedbookmarks[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedBookmarks returns the removed IDs of the "bookmarks" edge to the Bookmark entity.
+func (m *UserMutation) RemovedBookmarksIDs() (ids []uuid.UUID) {
+	for id := range m.removedbookmarks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// BookmarksIDs returns the "bookmarks" edge IDs in the mutation.
+func (m *UserMutation) BookmarksIDs() (ids []uuid.UUID) {
+	for id := range m.bookmarks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetBookmarks resets all changes to the "bookmarks" edge.
+func (m *UserMutation) ResetBookmarks() {
+	m.bookmarks = nil
+	m.clearedbookmarks = false
+	m.removedbookmarks = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -2080,12 +2680,15 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.books != nil {
 		edges = append(edges, user.EdgeBooks)
 	}
 	if m.reviews != nil {
 		edges = append(edges, user.EdgeReviews)
+	}
+	if m.bookmarks != nil {
+		edges = append(edges, user.EdgeBookmarks)
 	}
 	return edges
 }
@@ -2106,18 +2709,27 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeBookmarks:
+		ids := make([]ent.Value, 0, len(m.bookmarks))
+		for id := range m.bookmarks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.removedbooks != nil {
 		edges = append(edges, user.EdgeBooks)
 	}
 	if m.removedreviews != nil {
 		edges = append(edges, user.EdgeReviews)
+	}
+	if m.removedbookmarks != nil {
+		edges = append(edges, user.EdgeBookmarks)
 	}
 	return edges
 }
@@ -2138,18 +2750,27 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeBookmarks:
+		ids := make([]ent.Value, 0, len(m.removedbookmarks))
+		for id := range m.removedbookmarks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.clearedbooks {
 		edges = append(edges, user.EdgeBooks)
 	}
 	if m.clearedreviews {
 		edges = append(edges, user.EdgeReviews)
+	}
+	if m.clearedbookmarks {
+		edges = append(edges, user.EdgeBookmarks)
 	}
 	return edges
 }
@@ -2162,6 +2783,8 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.clearedbooks
 	case user.EdgeReviews:
 		return m.clearedreviews
+	case user.EdgeBookmarks:
+		return m.clearedbookmarks
 	}
 	return false
 }
@@ -2183,6 +2806,9 @@ func (m *UserMutation) ResetEdge(name string) error {
 		return nil
 	case user.EdgeReviews:
 		m.ResetReviews()
+		return nil
+	case user.EdgeBookmarks:
+		m.ResetBookmarks()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)

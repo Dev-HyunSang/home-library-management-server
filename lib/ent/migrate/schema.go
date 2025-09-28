@@ -32,6 +32,33 @@ var (
 			},
 		},
 	}
+	// BookmarksColumns holds the columns for the "bookmarks" table.
+	BookmarksColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "book_bookmarks", Type: field.TypeUUID},
+		{Name: "user_bookmarks", Type: field.TypeUUID},
+	}
+	// BookmarksTable holds the schema information for the "bookmarks" table.
+	BookmarksTable = &schema.Table{
+		Name:       "bookmarks",
+		Columns:    BookmarksColumns,
+		PrimaryKey: []*schema.Column{BookmarksColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "bookmarks_books_bookmarks",
+				Columns:    []*schema.Column{BookmarksColumns[2]},
+				RefColumns: []*schema.Column{BooksColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "bookmarks_users_bookmarks",
+				Columns:    []*schema.Column{BookmarksColumns[3]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// ReviewsColumns holds the columns for the "reviews" table.
 	ReviewsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -81,6 +108,7 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		BooksTable,
+		BookmarksTable,
 		ReviewsTable,
 		UsersTable,
 	}
@@ -88,6 +116,8 @@ var (
 
 func init() {
 	BooksTable.ForeignKeys[0].RefTable = UsersTable
+	BookmarksTable.ForeignKeys[0].RefTable = BooksTable
+	BookmarksTable.ForeignKeys[1].RefTable = UsersTable
 	ReviewsTable.ForeignKeys[0].RefTable = BooksTable
 	ReviewsTable.ForeignKeys[1].RefTable = UsersTable
 }

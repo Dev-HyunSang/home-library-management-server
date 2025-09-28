@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/dev-hyunsang/home-library/lib/ent/book"
+	"github.com/dev-hyunsang/home-library/lib/ent/bookmark"
 	"github.com/dev-hyunsang/home-library/lib/ent/predicate"
 	"github.com/dev-hyunsang/home-library/lib/ent/review"
 	"github.com/dev-hyunsang/home-library/lib/ent/user"
@@ -131,6 +132,21 @@ func (uu *UserUpdate) AddReviews(r ...*Review) *UserUpdate {
 	return uu.AddReviewIDs(ids...)
 }
 
+// AddBookmarkIDs adds the "bookmarks" edge to the Bookmark entity by IDs.
+func (uu *UserUpdate) AddBookmarkIDs(ids ...uuid.UUID) *UserUpdate {
+	uu.mutation.AddBookmarkIDs(ids...)
+	return uu
+}
+
+// AddBookmarks adds the "bookmarks" edges to the Bookmark entity.
+func (uu *UserUpdate) AddBookmarks(b ...*Bookmark) *UserUpdate {
+	ids := make([]uuid.UUID, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return uu.AddBookmarkIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -176,6 +192,27 @@ func (uu *UserUpdate) RemoveReviews(r ...*Review) *UserUpdate {
 		ids[i] = r[i].ID
 	}
 	return uu.RemoveReviewIDs(ids...)
+}
+
+// ClearBookmarks clears all "bookmarks" edges to the Bookmark entity.
+func (uu *UserUpdate) ClearBookmarks() *UserUpdate {
+	uu.mutation.ClearBookmarks()
+	return uu
+}
+
+// RemoveBookmarkIDs removes the "bookmarks" edge to Bookmark entities by IDs.
+func (uu *UserUpdate) RemoveBookmarkIDs(ids ...uuid.UUID) *UserUpdate {
+	uu.mutation.RemoveBookmarkIDs(ids...)
+	return uu
+}
+
+// RemoveBookmarks removes "bookmarks" edges to Bookmark entities.
+func (uu *UserUpdate) RemoveBookmarks(b ...*Bookmark) *UserUpdate {
+	ids := make([]uuid.UUID, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return uu.RemoveBookmarkIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -342,6 +379,51 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.BookmarksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.BookmarksTable,
+			Columns: []string{user.BookmarksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(bookmark.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedBookmarksIDs(); len(nodes) > 0 && !uu.mutation.BookmarksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.BookmarksTable,
+			Columns: []string{user.BookmarksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(bookmark.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.BookmarksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.BookmarksTable,
+			Columns: []string{user.BookmarksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(bookmark.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -462,6 +544,21 @@ func (uuo *UserUpdateOne) AddReviews(r ...*Review) *UserUpdateOne {
 	return uuo.AddReviewIDs(ids...)
 }
 
+// AddBookmarkIDs adds the "bookmarks" edge to the Bookmark entity by IDs.
+func (uuo *UserUpdateOne) AddBookmarkIDs(ids ...uuid.UUID) *UserUpdateOne {
+	uuo.mutation.AddBookmarkIDs(ids...)
+	return uuo
+}
+
+// AddBookmarks adds the "bookmarks" edges to the Bookmark entity.
+func (uuo *UserUpdateOne) AddBookmarks(b ...*Bookmark) *UserUpdateOne {
+	ids := make([]uuid.UUID, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return uuo.AddBookmarkIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -507,6 +604,27 @@ func (uuo *UserUpdateOne) RemoveReviews(r ...*Review) *UserUpdateOne {
 		ids[i] = r[i].ID
 	}
 	return uuo.RemoveReviewIDs(ids...)
+}
+
+// ClearBookmarks clears all "bookmarks" edges to the Bookmark entity.
+func (uuo *UserUpdateOne) ClearBookmarks() *UserUpdateOne {
+	uuo.mutation.ClearBookmarks()
+	return uuo
+}
+
+// RemoveBookmarkIDs removes the "bookmarks" edge to Bookmark entities by IDs.
+func (uuo *UserUpdateOne) RemoveBookmarkIDs(ids ...uuid.UUID) *UserUpdateOne {
+	uuo.mutation.RemoveBookmarkIDs(ids...)
+	return uuo
+}
+
+// RemoveBookmarks removes "bookmarks" edges to Bookmark entities.
+func (uuo *UserUpdateOne) RemoveBookmarks(b ...*Bookmark) *UserUpdateOne {
+	ids := make([]uuid.UUID, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return uuo.RemoveBookmarkIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -696,6 +814,51 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.BookmarksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.BookmarksTable,
+			Columns: []string{user.BookmarksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(bookmark.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedBookmarksIDs(); len(nodes) > 0 && !uuo.mutation.BookmarksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.BookmarksTable,
+			Columns: []string{user.BookmarksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(bookmark.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.BookmarksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.BookmarksTable,
+			Columns: []string{user.BookmarksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(bookmark.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

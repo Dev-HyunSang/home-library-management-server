@@ -42,5 +42,7 @@ func (Book) Edges() []ent.Edge {
 			Annotations(entsql.OnDelete(entsql.Cascade)),
 		edge.To("reviews", Review.Type).
 			Annotations(entsql.OnDelete(entsql.Cascade)),
+		edge.To("bookmarks", Bookmark.Type).
+			Annotations(entsql.OnDelete(entsql.Cascade)),
 	}
 }

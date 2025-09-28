@@ -6,9 +6,11 @@ import (
 	"time"
 
 	"github.com/dev-hyunsang/home-library/lib/ent/book"
+	"github.com/dev-hyunsang/home-library/lib/ent/bookmark"
 	"github.com/dev-hyunsang/home-library/lib/ent/review"
 	"github.com/dev-hyunsang/home-library/lib/ent/schema"
 	"github.com/dev-hyunsang/home-library/lib/ent/user"
+	"github.com/google/uuid"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -33,6 +35,16 @@ func init() {
 	bookDescComplatedAt := bookFields[5].Descriptor()
 	// book.DefaultComplatedAt holds the default value on creation for the complated_at field.
 	book.DefaultComplatedAt = bookDescComplatedAt.Default.(time.Time)
+	bookmarkFields := schema.Bookmark{}.Fields()
+	_ = bookmarkFields
+	// bookmarkDescCreatedAt is the schema descriptor for created_at field.
+	bookmarkDescCreatedAt := bookmarkFields[1].Descriptor()
+	// bookmark.DefaultCreatedAt holds the default value on creation for the created_at field.
+	bookmark.DefaultCreatedAt = bookmarkDescCreatedAt.Default.(func() time.Time)
+	// bookmarkDescID is the schema descriptor for id field.
+	bookmarkDescID := bookmarkFields[0].Descriptor()
+	// bookmark.DefaultID holds the default value on creation for the id field.
+	bookmark.DefaultID = bookmarkDescID.Default.(func() uuid.UUID)
 	reviewFields := schema.Review{}.Fields()
 	_ = reviewFields
 	// reviewDescContent is the schema descriptor for content field.
@@ -65,6 +77,12 @@ func init() {
 	reviewDescUpdatedAt := reviewFields[4].Descriptor()
 	// review.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	review.DefaultUpdatedAt = reviewDescUpdatedAt.Default.(func() time.Time)
+	// review.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	review.UpdateDefaultUpdatedAt = reviewDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// reviewDescID is the schema descriptor for id field.
+	reviewDescID := reviewFields[0].Descriptor()
+	// review.DefaultID holds the default value on creation for the id field.
+	review.DefaultID = reviewDescID.Default.(func() uuid.UUID)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescNickName is the schema descriptor for nick_name field.

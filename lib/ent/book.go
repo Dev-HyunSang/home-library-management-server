@@ -42,9 +42,11 @@ type BookEdges struct {
 	Owner *User `json:"owner,omitempty"`
 	// Reviews holds the value of the reviews edge.
 	Reviews []*Review `json:"reviews,omitempty"`
+	// Bookmarks holds the value of the bookmarks edge.
+	Bookmarks []*Bookmark `json:"bookmarks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // OwnerOrErr returns the Owner value or an error if the edge
@@ -65,6 +67,15 @@ func (e BookEdges) ReviewsOrErr() ([]*Review, error) {
 		return e.Reviews, nil
 	}
 	return nil, &NotLoadedError{edge: "reviews"}
+}
+
+// BookmarksOrErr returns the Bookmarks value or an error if the edge
+// was not loaded in eager-loading.
+func (e BookEdges) BookmarksOrErr() ([]*Bookmark, error) {
+	if e.loadedTypes[2] {
+		return e.Bookmarks, nil
+	}
+	return nil, &NotLoadedError{edge: "bookmarks"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -159,6 +170,11 @@ func (b *Book) QueryOwner() *UserQuery {
 // QueryReviews queries the "reviews" edge of the Book entity.
 func (b *Book) QueryReviews() *ReviewQuery {
 	return NewBookClient(b.config).QueryReviews(b)
+}
+
+// QueryBookmarks queries the "bookmarks" edge of the Book entity.
+func (b *Book) QueryBookmarks() *BookmarkQuery {
+	return NewBookClient(b.config).QueryBookmarks(b)
 }
 
 // Update returns a builder for updating this Book.

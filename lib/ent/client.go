@@ -17,6 +17,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/dev-hyunsang/home-library/lib/ent/book"
+	"github.com/dev-hyunsang/home-library/lib/ent/bookmark"
 	"github.com/dev-hyunsang/home-library/lib/ent/review"
 	"github.com/dev-hyunsang/home-library/lib/ent/user"
 )
@@ -28,6 +29,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Book is the client for interacting with the Book builders.
 	Book *BookClient
+	// Bookmark is the client for interacting with the Bookmark builders.
+	Bookmark *BookmarkClient
 	// Review is the client for interacting with the Review builders.
 	Review *ReviewClient
 	// User is the client for interacting with the User builders.
@@ -44,6 +47,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Book = NewBookClient(c.config)
+	c.Bookmark = NewBookmarkClient(c.config)
 	c.Review = NewReviewClient(c.config)
 	c.User = NewUserClient(c.config)
 }
@@ -136,11 +140,12 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:    ctx,
-		config: cfg,
-		Book:   NewBookClient(cfg),
-		Review: NewReviewClient(cfg),
-		User:   NewUserClient(cfg),
+		ctx:      ctx,
+		config:   cfg,
+		Book:     NewBookClient(cfg),
+		Bookmark: NewBookmarkClient(cfg),
+		Review:   NewReviewClient(cfg),
+		User:     NewUserClient(cfg),
 	}, nil
 }
 
@@ -158,11 +163,12 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:    ctx,
-		config: cfg,
-		Book:   NewBookClient(cfg),
-		Review: NewReviewClient(cfg),
-		User:   NewUserClient(cfg),
+		ctx:      ctx,
+		config:   cfg,
+		Book:     NewBookClient(cfg),
+		Bookmark: NewBookmarkClient(cfg),
+		Review:   NewReviewClient(cfg),
+		User:     NewUserClient(cfg),
 	}, nil
 }
 
@@ -192,6 +198,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Book.Use(hooks...)
+	c.Bookmark.Use(hooks...)
 	c.Review.Use(hooks...)
 	c.User.Use(hooks...)
 }
@@ -200,6 +207,7 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	c.Book.Intercept(interceptors...)
+	c.Bookmark.Intercept(interceptors...)
 	c.Review.Intercept(interceptors...)
 	c.User.Intercept(interceptors...)
 }
@@ -209,6 +217,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
 	case *BookMutation:
 		return c.Book.mutate(ctx, m)
+	case *BookmarkMutation:
+		return c.Bookmark.mutate(ctx, m)
 	case *ReviewMutation:
 		return c.Review.mutate(ctx, m)
 	case *UserMutation:
@@ -358,6 +368,22 @@ func (c *BookClient) QueryReviews(b *Book) *ReviewQuery {
 	return query
 }
 
+// QueryBookmarks queries the bookmarks edge of a Book.
+func (c *BookClient) QueryBookmarks(b *Book) *BookmarkQuery {
+	query := (&BookmarkClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(book.Table, book.FieldID, id),
+			sqlgraph.To(bookmark.Table, bookmark.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, book.BookmarksTable, book.BookmarksColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *BookClient) Hooks() []Hook {
 	return c.hooks.Book
@@ -380,6 +406,171 @@ func (c *BookClient) mutate(ctx context.Context, m *BookMutation) (Value, error)
 		return (&BookDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Book mutation op: %q", m.Op())
+	}
+}
+
+// BookmarkClient is a client for the Bookmark schema.
+type BookmarkClient struct {
+	config
+}
+
+// NewBookmarkClient returns a client for the Bookmark from the given config.
+func NewBookmarkClient(c config) *BookmarkClient {
+	return &BookmarkClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `bookmark.Hooks(f(g(h())))`.
+func (c *BookmarkClient) Use(hooks ...Hook) {
+	c.hooks.Bookmark = append(c.hooks.Bookmark, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `bookmark.Intercept(f(g(h())))`.
+func (c *BookmarkClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Bookmark = append(c.inters.Bookmark, interceptors...)
+}
+
+// Create returns a builder for creating a Bookmark entity.
+func (c *BookmarkClient) Create() *BookmarkCreate {
+	mutation := newBookmarkMutation(c.config, OpCreate)
+	return &BookmarkCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Bookmark entities.
+func (c *BookmarkClient) CreateBulk(builders ...*BookmarkCreate) *BookmarkCreateBulk {
+	return &BookmarkCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *BookmarkClient) MapCreateBulk(slice any, setFunc func(*BookmarkCreate, int)) *BookmarkCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &BookmarkCreateBulk{err: fmt.Errorf("calling to BookmarkClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*BookmarkCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &BookmarkCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Bookmark.
+func (c *BookmarkClient) Update() *BookmarkUpdate {
+	mutation := newBookmarkMutation(c.config, OpUpdate)
+	return &BookmarkUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *BookmarkClient) UpdateOne(b *Bookmark) *BookmarkUpdateOne {
+	mutation := newBookmarkMutation(c.config, OpUpdateOne, withBookmark(b))
+	return &BookmarkUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *BookmarkClient) UpdateOneID(id uuid.UUID) *BookmarkUpdateOne {
+	mutation := newBookmarkMutation(c.config, OpUpdateOne, withBookmarkID(id))
+	return &BookmarkUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Bookmark.
+func (c *BookmarkClient) Delete() *BookmarkDelete {
+	mutation := newBookmarkMutation(c.config, OpDelete)
+	return &BookmarkDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *BookmarkClient) DeleteOne(b *Bookmark) *BookmarkDeleteOne {
+	return c.DeleteOneID(b.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *BookmarkClient) DeleteOneID(id uuid.UUID) *BookmarkDeleteOne {
+	builder := c.Delete().Where(bookmark.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &BookmarkDeleteOne{builder}
+}
+
+// Query returns a query builder for Bookmark.
+func (c *BookmarkClient) Query() *BookmarkQuery {
+	return &BookmarkQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeBookmark},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Bookmark entity by its id.
+func (c *BookmarkClient) Get(ctx context.Context, id uuid.UUID) (*Bookmark, error) {
+	return c.Query().Where(bookmark.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *BookmarkClient) GetX(ctx context.Context, id uuid.UUID) *Bookmark {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryOwner queries the owner edge of a Bookmark.
+func (c *BookmarkClient) QueryOwner(b *Bookmark) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(bookmark.Table, bookmark.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, bookmark.OwnerTable, bookmark.OwnerColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryBook queries the book edge of a Bookmark.
+func (c *BookmarkClient) QueryBook(b *Bookmark) *BookQuery {
+	query := (&BookClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(bookmark.Table, bookmark.FieldID, id),
+			sqlgraph.To(book.Table, book.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, bookmark.BookTable, bookmark.BookColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *BookmarkClient) Hooks() []Hook {
+	return c.hooks.Bookmark
+}
+
+// Interceptors returns the client interceptors.
+func (c *BookmarkClient) Interceptors() []Interceptor {
+	return c.inters.Bookmark
+}
+
+func (c *BookmarkClient) mutate(ctx context.Context, m *BookmarkMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&BookmarkCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&BookmarkUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&BookmarkUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&BookmarkDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Bookmark mutation op: %q", m.Op())
 	}
 }
 
@@ -688,6 +879,22 @@ func (c *UserClient) QueryReviews(u *User) *ReviewQuery {
 	return query
 }
 
+// QueryBookmarks queries the bookmarks edge of a User.
+func (c *UserClient) QueryBookmarks(u *User) *BookmarkQuery {
+	query := (&BookmarkClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(bookmark.Table, bookmark.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.BookmarksTable, user.BookmarksColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
 	return c.hooks.User
@@ -716,9 +923,9 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Book, Review, User []ent.Hook
+		Book, Bookmark, Review, User []ent.Hook
 	}
 	inters struct {
-		Book, Review, User []ent.Interceptor
+		Book, Bookmark, Review, User []ent.Interceptor
 	}
 )

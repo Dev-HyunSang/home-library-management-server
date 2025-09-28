@@ -66,31 +66,9 @@ func (ru *ReviewUpdate) AddRating(i int) *ReviewUpdate {
 	return ru
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (ru *ReviewUpdate) SetCreatedAt(t time.Time) *ReviewUpdate {
-	ru.mutation.SetCreatedAt(t)
-	return ru
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (ru *ReviewUpdate) SetNillableCreatedAt(t *time.Time) *ReviewUpdate {
-	if t != nil {
-		ru.SetCreatedAt(*t)
-	}
-	return ru
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (ru *ReviewUpdate) SetUpdatedAt(t time.Time) *ReviewUpdate {
 	ru.mutation.SetUpdatedAt(t)
-	return ru
-}
-
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (ru *ReviewUpdate) SetNillableUpdatedAt(t *time.Time) *ReviewUpdate {
-	if t != nil {
-		ru.SetUpdatedAt(*t)
-	}
 	return ru
 }
 
@@ -135,6 +113,7 @@ func (ru *ReviewUpdate) ClearBook() *ReviewUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ru *ReviewUpdate) Save(ctx context.Context) (int, error) {
+	ru.defaults()
 	return withHooks(ctx, ru.sqlSave, ru.mutation, ru.hooks)
 }
 
@@ -157,6 +136,14 @@ func (ru *ReviewUpdate) Exec(ctx context.Context) error {
 func (ru *ReviewUpdate) ExecX(ctx context.Context) {
 	if err := ru.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (ru *ReviewUpdate) defaults() {
+	if _, ok := ru.mutation.UpdatedAt(); !ok {
+		v := review.UpdateDefaultUpdatedAt()
+		ru.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -201,9 +188,6 @@ func (ru *ReviewUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := ru.mutation.AddedRating(); ok {
 		_spec.AddField(review.FieldRating, field.TypeInt, value)
-	}
-	if value, ok := ru.mutation.CreatedAt(); ok {
-		_spec.SetField(review.FieldCreatedAt, field.TypeTime, value)
 	}
 	if value, ok := ru.mutation.UpdatedAt(); ok {
 		_spec.SetField(review.FieldUpdatedAt, field.TypeTime, value)
@@ -321,31 +305,9 @@ func (ruo *ReviewUpdateOne) AddRating(i int) *ReviewUpdateOne {
 	return ruo
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (ruo *ReviewUpdateOne) SetCreatedAt(t time.Time) *ReviewUpdateOne {
-	ruo.mutation.SetCreatedAt(t)
-	return ruo
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (ruo *ReviewUpdateOne) SetNillableCreatedAt(t *time.Time) *ReviewUpdateOne {
-	if t != nil {
-		ruo.SetCreatedAt(*t)
-	}
-	return ruo
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (ruo *ReviewUpdateOne) SetUpdatedAt(t time.Time) *ReviewUpdateOne {
 	ruo.mutation.SetUpdatedAt(t)
-	return ruo
-}
-
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (ruo *ReviewUpdateOne) SetNillableUpdatedAt(t *time.Time) *ReviewUpdateOne {
-	if t != nil {
-		ruo.SetUpdatedAt(*t)
-	}
 	return ruo
 }
 
@@ -403,6 +365,7 @@ func (ruo *ReviewUpdateOne) Select(field string, fields ...string) *ReviewUpdate
 
 // Save executes the query and returns the updated Review entity.
 func (ruo *ReviewUpdateOne) Save(ctx context.Context) (*Review, error) {
+	ruo.defaults()
 	return withHooks(ctx, ruo.sqlSave, ruo.mutation, ruo.hooks)
 }
 
@@ -425,6 +388,14 @@ func (ruo *ReviewUpdateOne) Exec(ctx context.Context) error {
 func (ruo *ReviewUpdateOne) ExecX(ctx context.Context) {
 	if err := ruo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (ruo *ReviewUpdateOne) defaults() {
+	if _, ok := ruo.mutation.UpdatedAt(); !ok {
+		v := review.UpdateDefaultUpdatedAt()
+		ruo.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -486,9 +457,6 @@ func (ruo *ReviewUpdateOne) sqlSave(ctx context.Context) (_node *Review, err err
 	}
 	if value, ok := ruo.mutation.AddedRating(); ok {
 		_spec.AddField(review.FieldRating, field.TypeInt, value)
-	}
-	if value, ok := ruo.mutation.CreatedAt(); ok {
-		_spec.SetField(review.FieldCreatedAt, field.TypeTime, value)
 	}
 	if value, ok := ruo.mutation.UpdatedAt(); ok {
 		_spec.SetField(review.FieldUpdatedAt, field.TypeTime, value)
