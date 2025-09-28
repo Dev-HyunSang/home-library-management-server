@@ -13,6 +13,7 @@ type Config struct {
 	App  AppConfig  `json:"app"`
 	DB   DBConfig   `json:"db"`
 	Auth AuthConfig `json:"auth"`
+	JWT  JWTConfig  `json:"jwt"`
 }
 
 type AppConfig struct {
@@ -46,6 +47,11 @@ type RedisConfig struct {
 
 type AuthConfig struct {
 	CookieKey string `json:"cookie_key"`
+}
+
+type JWTConfig struct {
+	Secret string `json:"secret"`
+	TTL    string `json:"ttl"`
 }
 
 func LoadConfig(env string) (*Config, error) {
@@ -110,6 +116,10 @@ func LoadConfig(env string) (*Config, error) {
 		Auth: AuthConfig{
 			CookieKey: getEnvOrDefault("AUTH_COOKIE_KEY", ""),
 		},
+		JWT: JWTConfig{
+			Secret: getEnvOrDefault("JWT_SECRET", ""),
+			TTL:    getEnvOrDefault("JWT_TTL", "24h"),
+		},
 	}
 
 	// 필수 값 검증
@@ -131,8 +141,8 @@ func validateConfig(config *Config) error {
 	if config.DB.MySQL.DBName == "" {
 		return fmt.Errorf("MYSQL_DBNAME is required")
 	}
-	if config.Auth.CookieKey == "" {
-		return fmt.Errorf("AUTH_COOKIE_KEY is required")
+	if config.JWT.Secret == "" {
+		return fmt.Errorf("JWT_SECRET is required")
 	}
 	return nil
 }

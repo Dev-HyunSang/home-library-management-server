@@ -25,10 +25,15 @@ func (Book) Fields() []ent.Field {
 			NotEmpty(),
 		field.String("book_isbn").
 			Optional(),
-		field.Time("registered_at").
+		field.String("thumbnail_url").
+			Optional(),
+		field.Int("status").
+			Default(0),
+		field.Time("created_at").
 			Default(time.Now()),
-		field.Time("complated_at").
-			Default(time.Time{}),
+		field.Time("updated_at").
+			Default(time.Now()).
+			UpdateDefault(time.Now),
 	}
 }
 

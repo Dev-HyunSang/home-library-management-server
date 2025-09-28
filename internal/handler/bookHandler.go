@@ -7,7 +7,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/dev-hyunsang/home-library/internal/config"
@@ -24,9 +23,11 @@ type BookHandler struct {
 }
 
 type SaveBookRequest struct {
-	Title    string `json:"title"`
-	Author   string `json:"author"`
-	BookISBN string `json:"book_isbn"`
+	Title        string `json:"title"`
+	Author       string `json:"author"`
+	BookISBN     string `json:"book_isbn"`
+	ThumbnailURL string `json:"thumbnail_url"`
+	Status       int    `json:"status"` // 0: 읽지 않음, 1: 읽는 중, 2: 읽음
 }
 
 type SearchBookRequest struct {
@@ -59,17 +60,6 @@ type BookReviewRequest struct {
 	Rating  int    `json:"rating"`
 }
 
-var userToken string
-
-func TokenSelection(sessionID string) string {
-	userPart := strings.Split(sessionID, ";")[0]
-	keyValue := strings.Split(userPart, "=")
-	if len(keyValue) > 1 {
-		return keyValue[1]
-	}
-	return ""
-}
-
 func NewBookHandler(bookUseCase domain.BookUseCase, AuthHandler domain.AuthUseCase) *BookHandler {
 	return &BookHandler{
 		bookUseCase: bookUseCase,
@@ -78,17 +68,10 @@ func NewBookHandler(bookUseCase domain.BookUseCase, AuthHandler domain.AuthUseCa
 }
 
 func (h *BookHandler) SaveBookHandler(ctx *fiber.Ctx) error {
-	sessionID := ctx.Cookies("auth_token")
-	if len(sessionID) == 0 {
-		logger.Init().Sugar().Error("클라이언트측 세션 쿠키가 존재하지 않습니다.")
-		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
-	}
-
-	userToken = TokenSelection(sessionID)
-
-	userID, err := h.AuthHandler.GetSessionByID(userToken, ctx)
+	// JWT 토큰에서 사용자 ID 추출
+	userID, err := h.AuthHandler.GetUserIDFromToken(ctx)
 	if err != nil {
-		logger.Init().Sugar().Errorf("세션에 해당하는 쿠키 정보를 찾을 수 없습니다: %v", err)
+		logger.Init().Sugar().Errorf("JWT 토큰을 통한 사용자 인증에 실패했습니다: %v", err)
 		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
 	}
 
@@ -100,21 +83,23 @@ func (h *BookHandler) SaveBookHandler(ctx *fiber.Ctx) error {
 
 	createdBook := &domain.Book{
 		ID:           uuid.New(),
-		OwnerID:      uuid.MustParse(userID),
+		OwnerID:      userID,
 		Title:        book.Title,
 		Author:       book.Author,
 		BookISBN:     book.BookISBN,
-		RegisteredAt: time.Now(),
-		ComplatedAt:  time.Time{},
+		ThumbnailURL: book.ThumbnailURL,
+		Status:       book.Status,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
 	}
 
-	result, err := h.bookUseCase.SaveByBookID(uuid.MustParse(userID), createdBook)
+	result, err := h.bookUseCase.SaveByBookID(userID, createdBook)
 	if err != nil {
 		logger.Init().Sugar().Errorf("책을 저장하는 도중 오류가 발생했습니다: %v", err)
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
 	}
 
-	logger.Init().Sugar().Infof("책이 성공적으로 저장되었습니다 / 책ID: %s, 사용자ID: %s", result.ID.String(), userID)
+	logger.Init().Sugar().Infof("책이 성공적으로 저장되었습니다 / 책ID: %s, 사용자ID: %s", result.ID.String(), userID.String())
 
 	return ctx.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"is_success":   true,
@@ -124,24 +109,19 @@ func (h *BookHandler) SaveBookHandler(ctx *fiber.Ctx) error {
 }
 
 func (h *BookHandler) GetBooksHandler(ctx *fiber.Ctx) error {
-	sessionID := ctx.Cookies("auth_token")
-	if len(sessionID) == 0 {
-		logger.Init().Sugar().Error("클라이언트측 세션 쿠키가 존재하지 않습니다.")
-		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
-	}
-
-	result, err := h.AuthHandler.GetSessionByID(sessionID, ctx)
+	// JWT 토큰에서 사용자 ID 추출
+	userID, err := h.AuthHandler.GetUserIDFromToken(ctx)
 	if err != nil {
-		logger.Init().Sugar().Errorf("세션에 해당하는 쿠키 정보를 찾을 수 없습니다: %v", err)
+		logger.Init().Sugar().Errorf("JWT 토큰을 통한 사용자 인증에 실패했습니다: %v", err)
 		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
 	}
 
-	books, err := h.bookUseCase.GetBooksByUserID(uuid.MustParse(result))
+	books, err := h.bookUseCase.GetBooksByUserID(userID)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
 	}
 
-	logger.Init().Sugar().Infof("사용자의 책 목록을 성공적으로 조회했습니다. / 사용자ID: %s", result)
+	logger.Init().Sugar().Infof("사용자의 책 목록을 성공적으로 조회했습니다. / 사용자ID: %s", userID.String())
 
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"is_success":   true,
@@ -175,16 +155,11 @@ func (h *BookHandler) GetBooksByUserNameHandler(ctx *fiber.Ctx) error {
 }
 
 func (h *BookHandler) BookDeleteHandler(ctx *fiber.Ctx) error {
-	sessionID := ctx.Cookies("auth_token")
-	if len(sessionID) == 0 {
-		logger.Init().Sugar().Error("클라이언트측 세션 쿠키가 존재하지 않습니다.")
-		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
-	}
-
-	userID, err := h.AuthHandler.GetSessionByID(sessionID, ctx)
+	// JWT 토큰에서 사용자 ID 추출
+	userID, err := h.AuthHandler.GetUserIDFromToken(ctx)
 	if err != nil {
-		logger.Init().Sugar().Errorf("세션에 해당하는 쿠키 정보를 찾을 수 없습니다: %v", err)
-		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(err))
+		logger.Init().Sugar().Errorf("JWT 토큰을 통한 사용자 인증에 실패했습니다: %v", err)
+		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
 	}
 
 	id := ctx.Params("id")
@@ -193,7 +168,7 @@ func (h *BookHandler) BookDeleteHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
 	}
 
-	err = h.bookUseCase.DeleteByID(uuid.MustParse(userID), uuid.MustParse(id))
+	err = h.bookUseCase.DeleteByID(userID, uuid.MustParse(id))
 	if err != nil {
 		if ent.IsNotFound(err) {
 			logger.Init().Sugar().Errorf("등록된 책을 찾을 수 없습니다: %v", err)
@@ -203,25 +178,16 @@ func (h *BookHandler) BookDeleteHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
 	}
 
-	logger.Init().Sugar().Infof("책이 성공적으로 삭제되었습니다 / 책ID: %s, 사용자ID: %s", id, userID)
+	logger.Init().Sugar().Infof("책이 성공적으로 삭제되었습니다 / 책ID: %s, 사용자ID: %s", id, userID.String())
 
 	return ctx.SendStatus(fiber.StatusNoContent)
 }
 
 func (h *BookHandler) SearchBookIsbnHandler(ctx *fiber.Ctx) error {
-	sessionID := ctx.Cookies("auth_token")
-	if len(sessionID) == 0 {
-		logger.Init().Sugar().Error("클라이언트측 세션 쿠키가 존재하지 않습니다.")
-		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
-	}
-
-	result, err := h.AuthHandler.GetSessionByID(userToken, ctx)
+	// JWT 토큰에서 사용자 ID 추출
+	userID, err := h.AuthHandler.GetUserIDFromToken(ctx)
 	if err != nil {
-		logger.Init().Sugar().Errorf("세션에 해당하는 쿠키 정보를 찾을 수 없습니다: %v", err)
-		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
-	}
-
-	if len(result) == 0 {
+		logger.Init().Sugar().Errorf("JWT 토큰을 통한 사용자 인증에 실패했습니다: %v", err)
 		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
 	}
 
@@ -268,7 +234,7 @@ func (h *BookHandler) SearchBookIsbnHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
 	}
 
-	logger.Init().Sugar().Infof("네이버 책 검색 API 요청이 성공적으로 완료되었습니다. / 사용자ID: %s", result)
+	logger.Init().Sugar().Infof("네이버 책 검색 API 요청이 성공적으로 완료되었습니다. / 사용자ID: %s", userID.String())
 
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"is_success":   true,
@@ -289,30 +255,25 @@ func (h *BookHandler) SaveBookReviewHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
 	}
 
-	sessionID := ctx.Cookies("auth_token")
-	if len(sessionID) == 0 {
-		logger.Init().Sugar().Error("클라이언트측 세션 쿠키가 존재하지 않습니다.")
-		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
-	}
-
-	result, err := h.AuthHandler.GetSessionByID(sessionID, ctx)
+	// JWT 토큰에서 사용자 ID 추출
+	userID, err := h.AuthHandler.GetUserIDFromToken(ctx)
 	if err != nil {
-		logger.Init().Sugar().Errorf("세션에 해당하는 쿠키 정보를 찾을 수 없습니다: %v", err)
+		logger.Init().Sugar().Errorf("JWT 토큰을 통한 사용자 인증에 실패했습니다: %v", err)
 		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
 	}
 
-	books, err := h.bookUseCase.GetBookByID(uuid.MustParse(result), uuid.MustParse(req.BookID))
+	books, err := h.bookUseCase.GetBookByID(userID, uuid.MustParse(req.BookID))
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
 	}
 
-	log.Println(result)
+	log.Println(userID.String())
 	log.Println(books)
 
 	if err = h.bookUseCase.CreateReview(&domain.ReviewBook{
 		ID:        uuid.New(),
 		BookID:    uuid.MustParse(req.BookID),
-		OwnerID:   uuid.MustParse(result),
+		OwnerID:   userID,
 		Content:   req.Content,
 		Rating:    req.Rating,
 		CreatedAt: time.Now(),
@@ -326,19 +287,14 @@ func (h *BookHandler) SaveBookReviewHandler(ctx *fiber.Ctx) error {
 }
 
 func (h *BookHandler) GetBookReviewByUserIDHandler(ctx *fiber.Ctx) error {
-	sessionID := ctx.Cookies("auth_token")
-	if len(sessionID) == 0 {
-		logger.Init().Sugar().Error("클라이언트측 세션 쿠키가 존재하지 않습니다.")
-		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
-	}
-
-	userID, err := h.AuthHandler.GetSessionByID(sessionID, ctx)
+	// JWT 토큰에서 사용자 ID 추출
+	userID, err := h.AuthHandler.GetUserIDFromToken(ctx)
 	if err != nil {
-		logger.Init().Sugar().Errorf("세션에 해당하는 쿠키 정보를 찾을 수 없습니다: %v", err)
+		logger.Init().Sugar().Errorf("JWT 토큰을 통한 사용자 인증에 실패했습니다: %v", err)
 		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
 	}
 
-	results, err := h.bookUseCase.GetReviewsByUserID(uuid.MustParse(userID))
+	results, err := h.bookUseCase.GetReviewsByUserID(userID)
 	if err != nil {
 		logger.Init().Sugar().Errorf("책 리뷰 목록을 가져오는 도중 오류가 발생했습니다: %v", err)
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
@@ -349,4 +305,66 @@ func (h *BookHandler) GetBookReviewByUserIDHandler(ctx *fiber.Ctx) error {
 		"data":         results,
 		"responsed_at": time.Now(),
 	})
+}
+
+func (h *BookHandler) AddBookmarkHandler(ctx *fiber.Ctx) error {
+	// JWT 토큰에서 사용자 ID 추출
+	userID, err := h.AuthHandler.GetUserIDFromToken(ctx)
+	if err != nil {
+		logger.Init().Sugar().Errorf("JWT 토큰을 통한 사용자 인증에 실패했습니다: %v", err)
+		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
+	}
+
+	BookID := ctx.Params("id")
+
+	result, err := h.bookUseCase.AddBookmarkByBookID(userID, uuid.MustParse(BookID))
+	if err != nil {
+		logger.Init().Sugar().Errorf("책 북마크 추가 중 오류가 발생했습니다: %v", err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"is_success":   true,
+		"data":         result,
+		"responsed_at": time.Now(),
+	})
+}
+
+func (h *BookHandler) GetBookmarksByUserIDHandler(ctx *fiber.Ctx) error {
+	// JWT 토큰에서 사용자 ID 추출
+	userID, err := h.AuthHandler.GetUserIDFromToken(ctx)
+	if err != nil {
+		logger.Init().Sugar().Errorf("JWT 토큰을 통한 사용자 인증에 실패했습니다: %v", err)
+		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
+	}
+
+	results, err := h.bookUseCase.GetBookmarksByUserID(userID)
+	if err != nil {
+		logger.Init().Sugar().Errorf("책 북마크 목록을 가져오는 도중 오류가 발생했습니다: %v", err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"is_success":   true,
+		"data":         results,
+		"responsed_at": time.Now(),
+	})
+}
+
+func (h *BookHandler) DeleteBookmarkHandler(ctx *fiber.Ctx) error {
+	_, err := h.AuthHandler.GetUserIDFromToken(ctx)
+	if err != nil {
+		logger.Init().Sugar().Errorf("JWT 토큰을 통한 사용자 인증에 실패했습니다: %v", err)
+		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
+	}
+
+	BookID := ctx.Params("id")
+
+	err = h.bookUseCase.DeleteBookmarkByID(uuid.MustParse(BookID))
+	if err != nil {
+		logger.Init().Sugar().Errorf("서적의 북마크 제거하던 도중 오류가 발생했습니다: %v", err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
+	}
+
+	return ctx.SendStatus(fiber.StatusNoContent)
 }

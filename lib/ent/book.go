@@ -25,10 +25,14 @@ type Book struct {
 	Author string `json:"author,omitempty"`
 	// BookIsbn holds the value of the "book_isbn" field.
 	BookIsbn string `json:"book_isbn,omitempty"`
-	// RegisteredAt holds the value of the "registered_at" field.
-	RegisteredAt time.Time `json:"registered_at,omitempty"`
-	// ComplatedAt holds the value of the "complated_at" field.
-	ComplatedAt time.Time `json:"complated_at,omitempty"`
+	// ThumbnailURL holds the value of the "thumbnail_url" field.
+	ThumbnailURL string `json:"thumbnail_url,omitempty"`
+	// Status holds the value of the "status" field.
+	Status int `json:"status,omitempty"`
+	// CreatedAt holds the value of the "created_at" field.
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// UpdatedAt holds the value of the "updated_at" field.
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the BookQuery when eager-loading is set.
 	Edges        BookEdges `json:"edges"`
@@ -83,9 +87,11 @@ func (*Book) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case book.FieldBookTitle, book.FieldAuthor, book.FieldBookIsbn:
+		case book.FieldStatus:
+			values[i] = new(sql.NullInt64)
+		case book.FieldBookTitle, book.FieldAuthor, book.FieldBookIsbn, book.FieldThumbnailURL:
 			values[i] = new(sql.NullString)
-		case book.FieldRegisteredAt, book.FieldComplatedAt:
+		case book.FieldCreatedAt, book.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		case book.FieldID:
 			values[i] = new(uuid.UUID)
@@ -130,17 +136,29 @@ func (b *Book) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				b.BookIsbn = value.String
 			}
-		case book.FieldRegisteredAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field registered_at", values[i])
+		case book.FieldThumbnailURL:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field thumbnail_url", values[i])
 			} else if value.Valid {
-				b.RegisteredAt = value.Time
+				b.ThumbnailURL = value.String
 			}
-		case book.FieldComplatedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field complated_at", values[i])
+		case book.FieldStatus:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
-				b.ComplatedAt = value.Time
+				b.Status = int(value.Int64)
+			}
+		case book.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				b.CreatedAt = value.Time
+			}
+		case book.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				b.UpdatedAt = value.Time
 			}
 		case book.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
@@ -209,11 +227,17 @@ func (b *Book) String() string {
 	builder.WriteString("book_isbn=")
 	builder.WriteString(b.BookIsbn)
 	builder.WriteString(", ")
-	builder.WriteString("registered_at=")
-	builder.WriteString(b.RegisteredAt.Format(time.ANSIC))
+	builder.WriteString("thumbnail_url=")
+	builder.WriteString(b.ThumbnailURL)
 	builder.WriteString(", ")
-	builder.WriteString("complated_at=")
-	builder.WriteString(b.ComplatedAt.Format(time.ANSIC))
+	builder.WriteString("status=")
+	builder.WriteString(fmt.Sprintf("%v", b.Status))
+	builder.WriteString(", ")
+	builder.WriteString("created_at=")
+	builder.WriteString(b.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("updated_at=")
+	builder.WriteString(b.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

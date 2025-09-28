@@ -2,28 +2,35 @@
 
 - 본 프로젝트는 집에 있는 다양한 서적들을 효율적으로 관리할 수 있도록 도와줍니다.
 - 집에 있는 도서들에 대한 독후감과 평가를 할 수 있는 기능을 비롯하여, 내가 완독하였던 책들의 목록을 가져옵니다.
+- 프론트엔드도 개발하였습니다. 프론트엔드 코드는 []()에서 보실 수 있으십니다.
 
 ## 사용한 기술
+- Golang / 헥사고날 아키텍처
+  - gofiber
+  - entgo
 
-- Golang
-  - Session with `gofiber`
-  - ORM with `entgo`
-- Redis(in Docker)
-- MySQL(in Docker)
+## 개발한 기능
 
-## 보안성
+### 사용자
 
-- 본 프로젝트의 모든 쿠키들은 암호화 됩니다. / 세션 쿠키 등을 비롯하여 모든 쿠키
-  - [Encrypt Cookie](https://docs.lou2.kr/go-fiber/home/api/middleware/encrypt-cookie?q=) 관련 문서
-- 본 프로젝트에서의 모든 암호는 안전하게 암호화 됩니다.
-- 본 프로젝트는 JWT(JSON Web Token)을 사용하지 않고, Session 인증 방식을 사용합니다.
+- 회원가입
+- 로그인
+- 비밀번호 찾기
+  - 임시 비밀번호를 등록된 메일 주소로 발송
+- 사용자 인증
+  - 로그인 상태 여부 및 세션 확인
 
-> Stateless JWT tokens cannot be invalidated or updated, and will introduce either size issues or security issues depending on where you store them. Stateful JWT tokens are functionally the same as session cookies, but without the battle-tested and well-reviewed implementations or client support.
->
-> Unless you work on a Reddit-scale application, there's no reason to be using JWT tokens as a session mechanism. Just use sessions.  
-> [Stop using JWT for sessions](http://cryto.net/~joepie91/blog/2016/06/13/stop-using-jwt-for-sessions/)
+### 서적 관리
+- 책 정보 등록
+- 책 정보 수정
+- 책 정보 삭제
+- 등록된 책에 대한 리뷰(독후감) 작성
+- 
 
-## 로깅 방법
-
-- `uber-go/zap` 패키지를 사용하여 로깅합니다.
-- [효율적으로 로그 모니터링하기 - 로그 레벨 구분하기](https://jojoldu.tistory.com/712)를 참고하여 개발하였습니다.
+## 기능 개발 및 리펙토링 예정 사항
+- [ ] 오류 핸들링
+  - 사용자에게 오류 세부 사항 전달 안 되도록 개선
+- [ ] 기존 등록된 책에서의 상태 기능 개발
+  - 읽기 전 / 읽는 중 / 완독
+- [ ] 기존 등록된 책에서의 즐겨찾기 기능 개발
+- [ ] 보안 취약점 검토

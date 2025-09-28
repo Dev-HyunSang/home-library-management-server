@@ -12,8 +12,10 @@ type Book struct {
 	Title        string    `json:"title"`
 	Author       string    `json:"author"`
 	BookISBN     string    `json:"book_isbn"`
-	RegisteredAt time.Time `json:"registered_at"`
-	ComplatedAt  time.Time `json:"complated_at"`
+	ThumbnailURL string    `json:"thumbnail_url"`
+	Status       int       `json:"status"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 type ReviewBook struct {
@@ -28,6 +30,13 @@ type ReviewBook struct {
 	UpdatedAt  time.Time `json:"updated_at"`
 }
 
+type Bookmark struct {
+	ID        uuid.UUID `json:"id"`
+	OwnerID   uuid.UUID `json:"owner_id"`
+	BookID    uuid.UUID `json:"book_id"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
 type BookRepository interface {
 	SaveByBookID(id uuid.UUID, book *Book) (*Book, error)
 	GetBookByID(userID, id uuid.UUID) (*Book, error)
@@ -40,6 +49,10 @@ type BookRepository interface {
 	GetReviewsByUserID(userID uuid.UUID) ([]*ReviewBook, error)
 	GetReviewByID(id uuid.UUID) (*ReviewBook, error)
 	UpdateReviewByID(review *ReviewBook) (ReviewBook, error)
+	// Book Bookmark
+	AddBookmarkByBookID(userID, bookID uuid.UUID) (*Bookmark, error)
+	GetBookmarksByUserID(userID uuid.UUID) ([]*Bookmark, error)
+	DeleteBookmarkByID(id uuid.UUID) error
 }
 
 type BookUseCase interface {
@@ -54,4 +67,8 @@ type BookUseCase interface {
 	GetReviewsByUserID(userID uuid.UUID) ([]*ReviewBook, error)
 	GetReviewByID(id uuid.UUID) (*ReviewBook, error)
 	UpdateReviewByID(review *ReviewBook) (ReviewBook, error)
+	// Book Bookmark
+	AddBookmarkByBookID(userID, bookID uuid.UUID) (*Bookmark, error)
+	GetBookmarksByUserID(userID uuid.UUID) ([]*Bookmark, error)
+	DeleteBookmarkByID(id uuid.UUID) error
 }

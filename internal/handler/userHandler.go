@@ -2,7 +2,6 @@ package handler
 
 import (
 	"fmt"
-	"log"
 	"math/rand"
 	"net/smtp"
 	"regexp"
@@ -123,35 +122,28 @@ func (h *UserHandler) UserSignInHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
 	}
 
-	log.Println(result.Password)
-
-	log.Println(user.Password)
-
 	err = bcrypt.CompareHashAndPassword([]byte(result.Password), []byte(user.Password))
 	if err != nil {
 		logger.Init().Sugar().Errorf("비밀번호 비교 중 오류가 발생했습니다: %v", err)
 		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrInvalidCredentials))
 	}
 
-	// 로그인 성공 시 세션 생성
-	err = h.AuthHandler.SetSession(result.ID.String(), ctx)
+	// JWT 토큰 쌍 생성 (Access + Refresh)
+	accessToken, refreshToken, err := h.AuthHandler.GenerateTokenPair(result.ID)
 	if err != nil {
-		logger.Init().Sugar().Errorf("세션 생성 중 오류가 발생했습니다: %v", err)
+		logger.Init().Sugar().Errorf("JWT 토큰 생성 중 오류가 발생했습니다: %v", err)
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(domain.ErrInternal))
 	}
 
-	// User ID를 세션에 저장하고, 쿠키로도 보냄.
-	c := &fiber.Cookie{
-		Name:   "auth_token",
-		Value:  result.ID.String(),
-		Secure: true,
-	}
-
-	ctx.Cookie(c)
-
 	logger.Init().Sugar().Infof("사용자가 성공적으로 로그인했습니다 / 사용자ID: %s", result.ID.String())
 
-	return ctx.Status(fiber.StatusOK).JSON(result)
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"user":          result,
+		"access_token":  accessToken,
+		"refresh_token": refreshToken,
+		"token_type":    "Bearer",
+		"expires_in":    3600, // 1시간 (seconds)
+	})
 }
 
 func (h *UserHandler) UserGetByIdHandler(ctx *fiber.Ctx) error {
@@ -161,15 +153,14 @@ func (h *UserHandler) UserGetByIdHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
 	}
 
-	sessionID := ctx.Cookies("auth_token")
-
-	result, err := h.AuthHandler.GetSessionByID(sessionID, ctx)
+	// JWT 토큰에서 사용자 ID 추출
+	userIDFromToken, err := h.AuthHandler.GetUserIDFromToken(ctx)
 	if err != nil {
-		logger.Init().Sugar().Errorf("세션에 해당하는 쿠키 정보를 찾을 수 없습니다: %v", err)
+		logger.Init().Sugar().Errorf("JWT 토큰을 통한 사용자 인증에 실패했습니다: %v", err)
 		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
 	}
 
-	logger.Init().Sugar().Infof("세션 ID를 성공적으로 가져왔습니다: %s", result)
+	logger.Init().Sugar().Infof("JWT 토큰에서 사용자 ID를 성공적으로 추출했습니다: %s", userIDFromToken.String())
 
 	user, err := h.userUseCase.GetByID(uuid.MustParse(id))
 	if err != nil {
@@ -181,13 +172,30 @@ func (h *UserHandler) UserGetByIdHandler(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(user)
 }
 func (h *UserHandler) UserSignOutHandler(ctx *fiber.Ctx) error {
-	err := h.AuthHandler.DeleteSession(ctx)
+	// JWT 토큰에서 사용자 ID 추출
+	userID, err := h.AuthHandler.GetUserIDFromToken(ctx)
 	if err != nil {
-		logger.Init().Sugar().Errorf("세션 삭제 중 오류가 발생했습니다: %v", err)
-		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
+		logger.Init().Sugar().Errorf("JWT 토큰을 통한 사용자 인증에 실패했습니다: %v", err)
+		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{"message": "successfully logged out"})
+	// 토큰 무효화
+	token, err := h.AuthHandler.ExtractTokenFromHeader(ctx)
+	if err != nil {
+		logger.Init().Sugar().Errorf("토큰 추출에 실패했습니다: %v", err)
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+
+	if err := h.AuthHandler.InvalidateToken(token); err != nil {
+		logger.Init().Sugar().Errorf("토큰 무효화에 실패했습니다: %v", err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(domain.ErrInternal))
+	}
+
+	logger.Init().Sugar().Infof("사용자가 성공적으로 로그아웃했습니다 / 사용자ID: %s", userID.String())
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "성공적으로 로그아웃되었습니다.",
+	})
 }
 
 // 가입된 메일을 통해서 사용자를 찾고, 임시 비밀번호를 생성하여 이메일로 발송하는 핸들러
@@ -268,6 +276,16 @@ func (h *UserHandler) UserRestPasswordHandler(ctx *fiber.Ctx) error {
 	})
 }
 
+func (h *UserHandler) UserVerifyByEmailHandler(ctx *fiber.Ctx) error {
+	email := ctx.Params("email")
+	if len(email) == 0 {
+		logger.Init().Sugar().Error("이메일이 입력되지 않았습니다.")
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+
+	return nil
+}
+
 func (h *UserHandler) UserEditHandler(ctx *fiber.Ctx) error {
 	id := ctx.Params("id")
 	if len(id) == 0 {
@@ -275,16 +293,17 @@ func (h *UserHandler) UserEditHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
 	}
 
-	sessionID := ctx.Cookies("auth_token")
-	if len(sessionID) == 0 {
-		logger.Init().Sugar().Error("클라이언트측 세션 쿠키가 존재하지 않습니다.")
+	// JWT 토큰에서 사용자 ID 추출
+	userIDFromToken, err := h.AuthHandler.GetUserIDFromToken(ctx)
+	if err != nil {
+		logger.Init().Sugar().Errorf("JWT 토큰을 통한 사용자 인증에 실패했습니다: %v", err)
 		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
 	}
 
-	_, err := h.AuthHandler.GetSessionByID(sessionID, ctx)
-	if err != nil {
-		logger.Init().Sugar().Errorf("세션에 해당하는 쿠키 정보를 찾을 수 없습니다: %v", err)
-		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(err))
+	// 요청한 ID와 토큰의 사용자 ID가 일치하는지 확인
+	if userIDFromToken.String() != id {
+		logger.Init().Sugar().Errorf("권한이 없는 사용자 정보 수정 시도: 토큰 사용자 ID %s, 요청 사용자 ID %s", userIDFromToken.String(), id)
+		return ctx.Status(fiber.StatusForbidden).JSON(ErrorHandler(domain.ErrPermissionDenied))
 	}
 
 	user := new(domain.User)
@@ -298,20 +317,14 @@ func (h *UserHandler) UserEditHandler(ctx *fiber.Ctx) error {
 }
 
 func (h *UserHandler) UserVerifyHandler(ctx *fiber.Ctx) error {
-	sessionID := ctx.Cookies("auth_token")
-
-	if len(sessionID) == 0 {
-		logger.Init().Sugar().Error("클라이언트측 세션 쿠키가 존재하지 않습니다.")
-		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
-	}
-
-	userID, err := h.AuthHandler.GetSessionByID(sessionID, ctx)
+	// JWT 토큰에서 사용자 ID 추출
+	userID, err := h.AuthHandler.GetUserIDFromToken(ctx)
 	if err != nil {
-		logger.Init().Sugar().Errorf("세션에 해당하는 쿠키 정보를 찾을 수 없습니다: %v", err)
+		logger.Init().Sugar().Errorf("JWT 토큰을 통한 사용자 인증에 실패했습니다: %v", err)
 		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
 	}
 
-	user, err := h.userUseCase.GetByID(uuid.MustParse(userID))
+	user, err := h.userUseCase.GetByID(userID)
 	if err != nil {
 		logger.Init().Sugar().Errorf("사용자 정보를 조회하는 도중 오류가 발생했습니다: %v", err)
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))

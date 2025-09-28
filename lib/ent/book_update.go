@@ -80,31 +80,64 @@ func (bu *BookUpdate) ClearBookIsbn() *BookUpdate {
 	return bu
 }
 
-// SetRegisteredAt sets the "registered_at" field.
-func (bu *BookUpdate) SetRegisteredAt(t time.Time) *BookUpdate {
-	bu.mutation.SetRegisteredAt(t)
+// SetThumbnailURL sets the "thumbnail_url" field.
+func (bu *BookUpdate) SetThumbnailURL(s string) *BookUpdate {
+	bu.mutation.SetThumbnailURL(s)
 	return bu
 }
 
-// SetNillableRegisteredAt sets the "registered_at" field if the given value is not nil.
-func (bu *BookUpdate) SetNillableRegisteredAt(t *time.Time) *BookUpdate {
-	if t != nil {
-		bu.SetRegisteredAt(*t)
+// SetNillableThumbnailURL sets the "thumbnail_url" field if the given value is not nil.
+func (bu *BookUpdate) SetNillableThumbnailURL(s *string) *BookUpdate {
+	if s != nil {
+		bu.SetThumbnailURL(*s)
 	}
 	return bu
 }
 
-// SetComplatedAt sets the "complated_at" field.
-func (bu *BookUpdate) SetComplatedAt(t time.Time) *BookUpdate {
-	bu.mutation.SetComplatedAt(t)
+// ClearThumbnailURL clears the value of the "thumbnail_url" field.
+func (bu *BookUpdate) ClearThumbnailURL() *BookUpdate {
+	bu.mutation.ClearThumbnailURL()
 	return bu
 }
 
-// SetNillableComplatedAt sets the "complated_at" field if the given value is not nil.
-func (bu *BookUpdate) SetNillableComplatedAt(t *time.Time) *BookUpdate {
-	if t != nil {
-		bu.SetComplatedAt(*t)
+// SetStatus sets the "status" field.
+func (bu *BookUpdate) SetStatus(i int) *BookUpdate {
+	bu.mutation.ResetStatus()
+	bu.mutation.SetStatus(i)
+	return bu
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (bu *BookUpdate) SetNillableStatus(i *int) *BookUpdate {
+	if i != nil {
+		bu.SetStatus(*i)
 	}
+	return bu
+}
+
+// AddStatus adds i to the "status" field.
+func (bu *BookUpdate) AddStatus(i int) *BookUpdate {
+	bu.mutation.AddStatus(i)
+	return bu
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (bu *BookUpdate) SetCreatedAt(t time.Time) *BookUpdate {
+	bu.mutation.SetCreatedAt(t)
+	return bu
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (bu *BookUpdate) SetNillableCreatedAt(t *time.Time) *BookUpdate {
+	if t != nil {
+		bu.SetCreatedAt(*t)
+	}
+	return bu
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (bu *BookUpdate) SetUpdatedAt(t time.Time) *BookUpdate {
+	bu.mutation.SetUpdatedAt(t)
 	return bu
 }
 
@@ -204,6 +237,7 @@ func (bu *BookUpdate) RemoveBookmarks(b ...*Bookmark) *BookUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (bu *BookUpdate) Save(ctx context.Context) (int, error) {
+	bu.defaults()
 	return withHooks(ctx, bu.sqlSave, bu.mutation, bu.hooks)
 }
 
@@ -226,6 +260,14 @@ func (bu *BookUpdate) Exec(ctx context.Context) error {
 func (bu *BookUpdate) ExecX(ctx context.Context) {
 	if err := bu.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (bu *BookUpdate) defaults() {
+	if _, ok := bu.mutation.UpdatedAt(); !ok {
+		v := book.UpdateDefaultUpdatedAt()
+		bu.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -271,11 +313,23 @@ func (bu *BookUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if bu.mutation.BookIsbnCleared() {
 		_spec.ClearField(book.FieldBookIsbn, field.TypeString)
 	}
-	if value, ok := bu.mutation.RegisteredAt(); ok {
-		_spec.SetField(book.FieldRegisteredAt, field.TypeTime, value)
+	if value, ok := bu.mutation.ThumbnailURL(); ok {
+		_spec.SetField(book.FieldThumbnailURL, field.TypeString, value)
 	}
-	if value, ok := bu.mutation.ComplatedAt(); ok {
-		_spec.SetField(book.FieldComplatedAt, field.TypeTime, value)
+	if bu.mutation.ThumbnailURLCleared() {
+		_spec.ClearField(book.FieldThumbnailURL, field.TypeString)
+	}
+	if value, ok := bu.mutation.Status(); ok {
+		_spec.SetField(book.FieldStatus, field.TypeInt, value)
+	}
+	if value, ok := bu.mutation.AddedStatus(); ok {
+		_spec.AddField(book.FieldStatus, field.TypeInt, value)
+	}
+	if value, ok := bu.mutation.CreatedAt(); ok {
+		_spec.SetField(book.FieldCreatedAt, field.TypeTime, value)
+	}
+	if value, ok := bu.mutation.UpdatedAt(); ok {
+		_spec.SetField(book.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if bu.mutation.OwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -464,31 +518,64 @@ func (buo *BookUpdateOne) ClearBookIsbn() *BookUpdateOne {
 	return buo
 }
 
-// SetRegisteredAt sets the "registered_at" field.
-func (buo *BookUpdateOne) SetRegisteredAt(t time.Time) *BookUpdateOne {
-	buo.mutation.SetRegisteredAt(t)
+// SetThumbnailURL sets the "thumbnail_url" field.
+func (buo *BookUpdateOne) SetThumbnailURL(s string) *BookUpdateOne {
+	buo.mutation.SetThumbnailURL(s)
 	return buo
 }
 
-// SetNillableRegisteredAt sets the "registered_at" field if the given value is not nil.
-func (buo *BookUpdateOne) SetNillableRegisteredAt(t *time.Time) *BookUpdateOne {
-	if t != nil {
-		buo.SetRegisteredAt(*t)
+// SetNillableThumbnailURL sets the "thumbnail_url" field if the given value is not nil.
+func (buo *BookUpdateOne) SetNillableThumbnailURL(s *string) *BookUpdateOne {
+	if s != nil {
+		buo.SetThumbnailURL(*s)
 	}
 	return buo
 }
 
-// SetComplatedAt sets the "complated_at" field.
-func (buo *BookUpdateOne) SetComplatedAt(t time.Time) *BookUpdateOne {
-	buo.mutation.SetComplatedAt(t)
+// ClearThumbnailURL clears the value of the "thumbnail_url" field.
+func (buo *BookUpdateOne) ClearThumbnailURL() *BookUpdateOne {
+	buo.mutation.ClearThumbnailURL()
 	return buo
 }
 
-// SetNillableComplatedAt sets the "complated_at" field if the given value is not nil.
-func (buo *BookUpdateOne) SetNillableComplatedAt(t *time.Time) *BookUpdateOne {
-	if t != nil {
-		buo.SetComplatedAt(*t)
+// SetStatus sets the "status" field.
+func (buo *BookUpdateOne) SetStatus(i int) *BookUpdateOne {
+	buo.mutation.ResetStatus()
+	buo.mutation.SetStatus(i)
+	return buo
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (buo *BookUpdateOne) SetNillableStatus(i *int) *BookUpdateOne {
+	if i != nil {
+		buo.SetStatus(*i)
 	}
+	return buo
+}
+
+// AddStatus adds i to the "status" field.
+func (buo *BookUpdateOne) AddStatus(i int) *BookUpdateOne {
+	buo.mutation.AddStatus(i)
+	return buo
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (buo *BookUpdateOne) SetCreatedAt(t time.Time) *BookUpdateOne {
+	buo.mutation.SetCreatedAt(t)
+	return buo
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (buo *BookUpdateOne) SetNillableCreatedAt(t *time.Time) *BookUpdateOne {
+	if t != nil {
+		buo.SetCreatedAt(*t)
+	}
+	return buo
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (buo *BookUpdateOne) SetUpdatedAt(t time.Time) *BookUpdateOne {
+	buo.mutation.SetUpdatedAt(t)
 	return buo
 }
 
@@ -601,6 +688,7 @@ func (buo *BookUpdateOne) Select(field string, fields ...string) *BookUpdateOne 
 
 // Save executes the query and returns the updated Book entity.
 func (buo *BookUpdateOne) Save(ctx context.Context) (*Book, error) {
+	buo.defaults()
 	return withHooks(ctx, buo.sqlSave, buo.mutation, buo.hooks)
 }
 
@@ -623,6 +711,14 @@ func (buo *BookUpdateOne) Exec(ctx context.Context) error {
 func (buo *BookUpdateOne) ExecX(ctx context.Context) {
 	if err := buo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (buo *BookUpdateOne) defaults() {
+	if _, ok := buo.mutation.UpdatedAt(); !ok {
+		v := book.UpdateDefaultUpdatedAt()
+		buo.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -685,11 +781,23 @@ func (buo *BookUpdateOne) sqlSave(ctx context.Context) (_node *Book, err error) 
 	if buo.mutation.BookIsbnCleared() {
 		_spec.ClearField(book.FieldBookIsbn, field.TypeString)
 	}
-	if value, ok := buo.mutation.RegisteredAt(); ok {
-		_spec.SetField(book.FieldRegisteredAt, field.TypeTime, value)
+	if value, ok := buo.mutation.ThumbnailURL(); ok {
+		_spec.SetField(book.FieldThumbnailURL, field.TypeString, value)
 	}
-	if value, ok := buo.mutation.ComplatedAt(); ok {
-		_spec.SetField(book.FieldComplatedAt, field.TypeTime, value)
+	if buo.mutation.ThumbnailURLCleared() {
+		_spec.ClearField(book.FieldThumbnailURL, field.TypeString)
+	}
+	if value, ok := buo.mutation.Status(); ok {
+		_spec.SetField(book.FieldStatus, field.TypeInt, value)
+	}
+	if value, ok := buo.mutation.AddedStatus(); ok {
+		_spec.AddField(book.FieldStatus, field.TypeInt, value)
+	}
+	if value, ok := buo.mutation.CreatedAt(); ok {
+		_spec.SetField(book.FieldCreatedAt, field.TypeTime, value)
+	}
+	if value, ok := buo.mutation.UpdatedAt(); ok {
+		_spec.SetField(book.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if buo.mutation.OwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{

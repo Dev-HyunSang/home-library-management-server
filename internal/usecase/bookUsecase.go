@@ -94,3 +94,27 @@ func (bc *BookUseCase) UpdateReviewByID(review *domain.ReviewBook) (domain.Revie
 
 	return bc.bookRepo.UpdateReviewByID(review)
 }
+
+func (bc *BookUseCase) AddBookmarkByBookID(userID, bookID uuid.UUID) (*domain.Bookmark, error) {
+	if userID == uuid.Nil || bookID == uuid.Nil {
+		return nil, domain.ErrInvalidInput
+	}
+
+	return bc.bookRepo.AddBookmarkByBookID(userID, bookID)
+}
+
+func (bc *BookUseCase) GetBookmarksByUserID(userID uuid.UUID) ([]*domain.Bookmark, error) {
+	if userID == uuid.Nil {
+		return nil, domain.ErrInvalidInput
+	}
+
+	return bc.bookRepo.GetBookmarksByUserID(userID)
+}
+
+func (bc *BookUseCase) DeleteBookmarkByID(id uuid.UUID) error {
+	if id == uuid.Nil {
+		return domain.ErrInvalidInput
+	}
+
+	return bc.bookRepo.DeleteBookmarkByID(id)
+}

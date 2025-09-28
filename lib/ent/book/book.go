@@ -20,10 +20,14 @@ const (
 	FieldAuthor = "author"
 	// FieldBookIsbn holds the string denoting the book_isbn field in the database.
 	FieldBookIsbn = "book_isbn"
-	// FieldRegisteredAt holds the string denoting the registered_at field in the database.
-	FieldRegisteredAt = "registered_at"
-	// FieldComplatedAt holds the string denoting the complated_at field in the database.
-	FieldComplatedAt = "complated_at"
+	// FieldThumbnailURL holds the string denoting the thumbnail_url field in the database.
+	FieldThumbnailURL = "thumbnail_url"
+	// FieldStatus holds the string denoting the status field in the database.
+	FieldStatus = "status"
+	// FieldCreatedAt holds the string denoting the created_at field in the database.
+	FieldCreatedAt = "created_at"
+	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
+	FieldUpdatedAt = "updated_at"
 	// EdgeOwner holds the string denoting the owner edge name in mutations.
 	EdgeOwner = "owner"
 	// EdgeReviews holds the string denoting the reviews edge name in mutations.
@@ -61,8 +65,10 @@ var Columns = []string{
 	FieldBookTitle,
 	FieldAuthor,
 	FieldBookIsbn,
-	FieldRegisteredAt,
-	FieldComplatedAt,
+	FieldThumbnailURL,
+	FieldStatus,
+	FieldCreatedAt,
+	FieldUpdatedAt,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "books"
@@ -91,10 +97,14 @@ var (
 	BookTitleValidator func(string) error
 	// AuthorValidator is a validator for the "author" field. It is called by the builders before save.
 	AuthorValidator func(string) error
-	// DefaultRegisteredAt holds the default value on creation for the "registered_at" field.
-	DefaultRegisteredAt time.Time
-	// DefaultComplatedAt holds the default value on creation for the "complated_at" field.
-	DefaultComplatedAt time.Time
+	// DefaultStatus holds the default value on creation for the "status" field.
+	DefaultStatus int
+	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
+	DefaultCreatedAt time.Time
+	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
+	DefaultUpdatedAt time.Time
+	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
+	UpdateDefaultUpdatedAt func() time.Time
 )
 
 // OrderOption defines the ordering options for the Book queries.
@@ -120,14 +130,24 @@ func ByBookIsbn(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldBookIsbn, opts...).ToFunc()
 }
 
-// ByRegisteredAt orders the results by the registered_at field.
-func ByRegisteredAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRegisteredAt, opts...).ToFunc()
+// ByThumbnailURL orders the results by the thumbnail_url field.
+func ByThumbnailURL(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldThumbnailURL, opts...).ToFunc()
 }
 
-// ByComplatedAt orders the results by the complated_at field.
-func ByComplatedAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldComplatedAt, opts...).ToFunc()
+// ByStatus orders the results by the status field.
+func ByStatus(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStatus, opts...).ToFunc()
+}
+
+// ByCreatedAt orders the results by the created_at field.
+func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByUpdatedAt orders the results by the updated_at field.
+func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
 // ByOwnerField orders the results by owner field.

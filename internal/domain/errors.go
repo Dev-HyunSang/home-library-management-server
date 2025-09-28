@@ -14,4 +14,7 @@ var (
 	ErrInvalidNickname    = errors.New("유효하지 않은 닉네임입니다.")
 	ErrAlreadyNickname    = errors.New("이미 존재하는 닉네임입니다.")
 	ErrInvalidCSRFToken   = errors.New("유효하지 않은 CSRF 토큰입니다.")
+	ErrTooManyRequests    = errors.New("너무 많은 요청입니다. 잠시 후 다시 시도해주세요.")
+	ErrTokenExpired       = errors.New("토큰이 만료되었습니다.")
+	ErrInvalidToken       = errors.New("유효하지 않은 토큰입니다.")
 )

@@ -71,14 +71,24 @@ func BookIsbn(v string) predicate.Book {
 	return predicate.Book(sql.FieldEQ(FieldBookIsbn, v))
 }
 
-// RegisteredAt applies equality check predicate on the "registered_at" field. It's identical to RegisteredAtEQ.
-func RegisteredAt(v time.Time) predicate.Book {
-	return predicate.Book(sql.FieldEQ(FieldRegisteredAt, v))
+// ThumbnailURL applies equality check predicate on the "thumbnail_url" field. It's identical to ThumbnailURLEQ.
+func ThumbnailURL(v string) predicate.Book {
+	return predicate.Book(sql.FieldEQ(FieldThumbnailURL, v))
 }
 
-// ComplatedAt applies equality check predicate on the "complated_at" field. It's identical to ComplatedAtEQ.
-func ComplatedAt(v time.Time) predicate.Book {
-	return predicate.Book(sql.FieldEQ(FieldComplatedAt, v))
+// Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
+func Status(v int) predicate.Book {
+	return predicate.Book(sql.FieldEQ(FieldStatus, v))
+}
+
+// CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
+func CreatedAt(v time.Time) predicate.Book {
+	return predicate.Book(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
+func UpdatedAt(v time.Time) predicate.Book {
+	return predicate.Book(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // BookTitleEQ applies the EQ predicate on the "book_title" field.
@@ -286,84 +296,199 @@ func BookIsbnContainsFold(v string) predicate.Book {
 	return predicate.Book(sql.FieldContainsFold(FieldBookIsbn, v))
 }
 
-// RegisteredAtEQ applies the EQ predicate on the "registered_at" field.
-func RegisteredAtEQ(v time.Time) predicate.Book {
-	return predicate.Book(sql.FieldEQ(FieldRegisteredAt, v))
+// ThumbnailURLEQ applies the EQ predicate on the "thumbnail_url" field.
+func ThumbnailURLEQ(v string) predicate.Book {
+	return predicate.Book(sql.FieldEQ(FieldThumbnailURL, v))
 }
 
-// RegisteredAtNEQ applies the NEQ predicate on the "registered_at" field.
-func RegisteredAtNEQ(v time.Time) predicate.Book {
-	return predicate.Book(sql.FieldNEQ(FieldRegisteredAt, v))
+// ThumbnailURLNEQ applies the NEQ predicate on the "thumbnail_url" field.
+func ThumbnailURLNEQ(v string) predicate.Book {
+	return predicate.Book(sql.FieldNEQ(FieldThumbnailURL, v))
 }
 
-// RegisteredAtIn applies the In predicate on the "registered_at" field.
-func RegisteredAtIn(vs ...time.Time) predicate.Book {
-	return predicate.Book(sql.FieldIn(FieldRegisteredAt, vs...))
+// ThumbnailURLIn applies the In predicate on the "thumbnail_url" field.
+func ThumbnailURLIn(vs ...string) predicate.Book {
+	return predicate.Book(sql.FieldIn(FieldThumbnailURL, vs...))
 }
 
-// RegisteredAtNotIn applies the NotIn predicate on the "registered_at" field.
-func RegisteredAtNotIn(vs ...time.Time) predicate.Book {
-	return predicate.Book(sql.FieldNotIn(FieldRegisteredAt, vs...))
+// ThumbnailURLNotIn applies the NotIn predicate on the "thumbnail_url" field.
+func ThumbnailURLNotIn(vs ...string) predicate.Book {
+	return predicate.Book(sql.FieldNotIn(FieldThumbnailURL, vs...))
 }
 
-// RegisteredAtGT applies the GT predicate on the "registered_at" field.
-func RegisteredAtGT(v time.Time) predicate.Book {
-	return predicate.Book(sql.FieldGT(FieldRegisteredAt, v))
+// ThumbnailURLGT applies the GT predicate on the "thumbnail_url" field.
+func ThumbnailURLGT(v string) predicate.Book {
+	return predicate.Book(sql.FieldGT(FieldThumbnailURL, v))
 }
 
-// RegisteredAtGTE applies the GTE predicate on the "registered_at" field.
-func RegisteredAtGTE(v time.Time) predicate.Book {
-	return predicate.Book(sql.FieldGTE(FieldRegisteredAt, v))
+// ThumbnailURLGTE applies the GTE predicate on the "thumbnail_url" field.
+func ThumbnailURLGTE(v string) predicate.Book {
+	return predicate.Book(sql.FieldGTE(FieldThumbnailURL, v))
 }
 
-// RegisteredAtLT applies the LT predicate on the "registered_at" field.
-func RegisteredAtLT(v time.Time) predicate.Book {
-	return predicate.Book(sql.FieldLT(FieldRegisteredAt, v))
+// ThumbnailURLLT applies the LT predicate on the "thumbnail_url" field.
+func ThumbnailURLLT(v string) predicate.Book {
+	return predicate.Book(sql.FieldLT(FieldThumbnailURL, v))
 }
 
-// RegisteredAtLTE applies the LTE predicate on the "registered_at" field.
-func RegisteredAtLTE(v time.Time) predicate.Book {
-	return predicate.Book(sql.FieldLTE(FieldRegisteredAt, v))
+// ThumbnailURLLTE applies the LTE predicate on the "thumbnail_url" field.
+func ThumbnailURLLTE(v string) predicate.Book {
+	return predicate.Book(sql.FieldLTE(FieldThumbnailURL, v))
 }
 
-// ComplatedAtEQ applies the EQ predicate on the "complated_at" field.
-func ComplatedAtEQ(v time.Time) predicate.Book {
-	return predicate.Book(sql.FieldEQ(FieldComplatedAt, v))
+// ThumbnailURLContains applies the Contains predicate on the "thumbnail_url" field.
+func ThumbnailURLContains(v string) predicate.Book {
+	return predicate.Book(sql.FieldContains(FieldThumbnailURL, v))
 }
 
-// ComplatedAtNEQ applies the NEQ predicate on the "complated_at" field.
-func ComplatedAtNEQ(v time.Time) predicate.Book {
-	return predicate.Book(sql.FieldNEQ(FieldComplatedAt, v))
+// ThumbnailURLHasPrefix applies the HasPrefix predicate on the "thumbnail_url" field.
+func ThumbnailURLHasPrefix(v string) predicate.Book {
+	return predicate.Book(sql.FieldHasPrefix(FieldThumbnailURL, v))
 }
 
-// ComplatedAtIn applies the In predicate on the "complated_at" field.
-func ComplatedAtIn(vs ...time.Time) predicate.Book {
-	return predicate.Book(sql.FieldIn(FieldComplatedAt, vs...))
+// ThumbnailURLHasSuffix applies the HasSuffix predicate on the "thumbnail_url" field.
+func ThumbnailURLHasSuffix(v string) predicate.Book {
+	return predicate.Book(sql.FieldHasSuffix(FieldThumbnailURL, v))
 }
 
-// ComplatedAtNotIn applies the NotIn predicate on the "complated_at" field.
-func ComplatedAtNotIn(vs ...time.Time) predicate.Book {
-	return predicate.Book(sql.FieldNotIn(FieldComplatedAt, vs...))
+// ThumbnailURLIsNil applies the IsNil predicate on the "thumbnail_url" field.
+func ThumbnailURLIsNil() predicate.Book {
+	return predicate.Book(sql.FieldIsNull(FieldThumbnailURL))
 }
 
-// ComplatedAtGT applies the GT predicate on the "complated_at" field.
-func ComplatedAtGT(v time.Time) predicate.Book {
-	return predicate.Book(sql.FieldGT(FieldComplatedAt, v))
+// ThumbnailURLNotNil applies the NotNil predicate on the "thumbnail_url" field.
+func ThumbnailURLNotNil() predicate.Book {
+	return predicate.Book(sql.FieldNotNull(FieldThumbnailURL))
 }
 
-// ComplatedAtGTE applies the GTE predicate on the "complated_at" field.
-func ComplatedAtGTE(v time.Time) predicate.Book {
-	return predicate.Book(sql.FieldGTE(FieldComplatedAt, v))
+// ThumbnailURLEqualFold applies the EqualFold predicate on the "thumbnail_url" field.
+func ThumbnailURLEqualFold(v string) predicate.Book {
+	return predicate.Book(sql.FieldEqualFold(FieldThumbnailURL, v))
 }
 
-// ComplatedAtLT applies the LT predicate on the "complated_at" field.
-func ComplatedAtLT(v time.Time) predicate.Book {
-	return predicate.Book(sql.FieldLT(FieldComplatedAt, v))
+// ThumbnailURLContainsFold applies the ContainsFold predicate on the "thumbnail_url" field.
+func ThumbnailURLContainsFold(v string) predicate.Book {
+	return predicate.Book(sql.FieldContainsFold(FieldThumbnailURL, v))
 }
 
-// ComplatedAtLTE applies the LTE predicate on the "complated_at" field.
-func ComplatedAtLTE(v time.Time) predicate.Book {
-	return predicate.Book(sql.FieldLTE(FieldComplatedAt, v))
+// StatusEQ applies the EQ predicate on the "status" field.
+func StatusEQ(v int) predicate.Book {
+	return predicate.Book(sql.FieldEQ(FieldStatus, v))
+}
+
+// StatusNEQ applies the NEQ predicate on the "status" field.
+func StatusNEQ(v int) predicate.Book {
+	return predicate.Book(sql.FieldNEQ(FieldStatus, v))
+}
+
+// StatusIn applies the In predicate on the "status" field.
+func StatusIn(vs ...int) predicate.Book {
+	return predicate.Book(sql.FieldIn(FieldStatus, vs...))
+}
+
+// StatusNotIn applies the NotIn predicate on the "status" field.
+func StatusNotIn(vs ...int) predicate.Book {
+	return predicate.Book(sql.FieldNotIn(FieldStatus, vs...))
+}
+
+// StatusGT applies the GT predicate on the "status" field.
+func StatusGT(v int) predicate.Book {
+	return predicate.Book(sql.FieldGT(FieldStatus, v))
+}
+
+// StatusGTE applies the GTE predicate on the "status" field.
+func StatusGTE(v int) predicate.Book {
+	return predicate.Book(sql.FieldGTE(FieldStatus, v))
+}
+
+// StatusLT applies the LT predicate on the "status" field.
+func StatusLT(v int) predicate.Book {
+	return predicate.Book(sql.FieldLT(FieldStatus, v))
+}
+
+// StatusLTE applies the LTE predicate on the "status" field.
+func StatusLTE(v int) predicate.Book {
+	return predicate.Book(sql.FieldLTE(FieldStatus, v))
+}
+
+// CreatedAtEQ applies the EQ predicate on the "created_at" field.
+func CreatedAtEQ(v time.Time) predicate.Book {
+	return predicate.Book(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
+func CreatedAtNEQ(v time.Time) predicate.Book {
+	return predicate.Book(sql.FieldNEQ(FieldCreatedAt, v))
+}
+
+// CreatedAtIn applies the In predicate on the "created_at" field.
+func CreatedAtIn(vs ...time.Time) predicate.Book {
+	return predicate.Book(sql.FieldIn(FieldCreatedAt, vs...))
+}
+
+// CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
+func CreatedAtNotIn(vs ...time.Time) predicate.Book {
+	return predicate.Book(sql.FieldNotIn(FieldCreatedAt, vs...))
+}
+
+// CreatedAtGT applies the GT predicate on the "created_at" field.
+func CreatedAtGT(v time.Time) predicate.Book {
+	return predicate.Book(sql.FieldGT(FieldCreatedAt, v))
+}
+
+// CreatedAtGTE applies the GTE predicate on the "created_at" field.
+func CreatedAtGTE(v time.Time) predicate.Book {
+	return predicate.Book(sql.FieldGTE(FieldCreatedAt, v))
+}
+
+// CreatedAtLT applies the LT predicate on the "created_at" field.
+func CreatedAtLT(v time.Time) predicate.Book {
+	return predicate.Book(sql.FieldLT(FieldCreatedAt, v))
+}
+
+// CreatedAtLTE applies the LTE predicate on the "created_at" field.
+func CreatedAtLTE(v time.Time) predicate.Book {
+	return predicate.Book(sql.FieldLTE(FieldCreatedAt, v))
+}
+
+// UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
+func UpdatedAtEQ(v time.Time) predicate.Book {
+	return predicate.Book(sql.FieldEQ(FieldUpdatedAt, v))
+}
+
+// UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
+func UpdatedAtNEQ(v time.Time) predicate.Book {
+	return predicate.Book(sql.FieldNEQ(FieldUpdatedAt, v))
+}
+
+// UpdatedAtIn applies the In predicate on the "updated_at" field.
+func UpdatedAtIn(vs ...time.Time) predicate.Book {
+	return predicate.Book(sql.FieldIn(FieldUpdatedAt, vs...))
+}
+
+// UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
+func UpdatedAtNotIn(vs ...time.Time) predicate.Book {
+	return predicate.Book(sql.FieldNotIn(FieldUpdatedAt, vs...))
+}
+
+// UpdatedAtGT applies the GT predicate on the "updated_at" field.
+func UpdatedAtGT(v time.Time) predicate.Book {
+	return predicate.Book(sql.FieldGT(FieldUpdatedAt, v))
+}
+
+// UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
+func UpdatedAtGTE(v time.Time) predicate.Book {
+	return predicate.Book(sql.FieldGTE(FieldUpdatedAt, v))
+}
+
+// UpdatedAtLT applies the LT predicate on the "updated_at" field.
+func UpdatedAtLT(v time.Time) predicate.Book {
+	return predicate.Book(sql.FieldLT(FieldUpdatedAt, v))
+}
+
+// UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
+func UpdatedAtLTE(v time.Time) predicate.Book {
+	return predicate.Book(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // HasOwner applies the HasEdge predicate on the "owner" edge.

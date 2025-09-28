@@ -50,30 +50,58 @@ func (bc *BookCreate) SetNillableBookIsbn(s *string) *BookCreate {
 	return bc
 }
 
-// SetRegisteredAt sets the "registered_at" field.
-func (bc *BookCreate) SetRegisteredAt(t time.Time) *BookCreate {
-	bc.mutation.SetRegisteredAt(t)
+// SetThumbnailURL sets the "thumbnail_url" field.
+func (bc *BookCreate) SetThumbnailURL(s string) *BookCreate {
+	bc.mutation.SetThumbnailURL(s)
 	return bc
 }
 
-// SetNillableRegisteredAt sets the "registered_at" field if the given value is not nil.
-func (bc *BookCreate) SetNillableRegisteredAt(t *time.Time) *BookCreate {
-	if t != nil {
-		bc.SetRegisteredAt(*t)
+// SetNillableThumbnailURL sets the "thumbnail_url" field if the given value is not nil.
+func (bc *BookCreate) SetNillableThumbnailURL(s *string) *BookCreate {
+	if s != nil {
+		bc.SetThumbnailURL(*s)
 	}
 	return bc
 }
 
-// SetComplatedAt sets the "complated_at" field.
-func (bc *BookCreate) SetComplatedAt(t time.Time) *BookCreate {
-	bc.mutation.SetComplatedAt(t)
+// SetStatus sets the "status" field.
+func (bc *BookCreate) SetStatus(i int) *BookCreate {
+	bc.mutation.SetStatus(i)
 	return bc
 }
 
-// SetNillableComplatedAt sets the "complated_at" field if the given value is not nil.
-func (bc *BookCreate) SetNillableComplatedAt(t *time.Time) *BookCreate {
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (bc *BookCreate) SetNillableStatus(i *int) *BookCreate {
+	if i != nil {
+		bc.SetStatus(*i)
+	}
+	return bc
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (bc *BookCreate) SetCreatedAt(t time.Time) *BookCreate {
+	bc.mutation.SetCreatedAt(t)
+	return bc
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (bc *BookCreate) SetNillableCreatedAt(t *time.Time) *BookCreate {
 	if t != nil {
-		bc.SetComplatedAt(*t)
+		bc.SetCreatedAt(*t)
+	}
+	return bc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (bc *BookCreate) SetUpdatedAt(t time.Time) *BookCreate {
+	bc.mutation.SetUpdatedAt(t)
+	return bc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (bc *BookCreate) SetNillableUpdatedAt(t *time.Time) *BookCreate {
+	if t != nil {
+		bc.SetUpdatedAt(*t)
 	}
 	return bc
 }
@@ -160,13 +188,17 @@ func (bc *BookCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (bc *BookCreate) defaults() {
-	if _, ok := bc.mutation.RegisteredAt(); !ok {
-		v := book.DefaultRegisteredAt
-		bc.mutation.SetRegisteredAt(v)
+	if _, ok := bc.mutation.Status(); !ok {
+		v := book.DefaultStatus
+		bc.mutation.SetStatus(v)
 	}
-	if _, ok := bc.mutation.ComplatedAt(); !ok {
-		v := book.DefaultComplatedAt
-		bc.mutation.SetComplatedAt(v)
+	if _, ok := bc.mutation.CreatedAt(); !ok {
+		v := book.DefaultCreatedAt
+		bc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := bc.mutation.UpdatedAt(); !ok {
+		v := book.DefaultUpdatedAt
+		bc.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -188,11 +220,14 @@ func (bc *BookCreate) check() error {
 			return &ValidationError{Name: "author", err: fmt.Errorf(`ent: validator failed for field "Book.author": %w`, err)}
 		}
 	}
-	if _, ok := bc.mutation.RegisteredAt(); !ok {
-		return &ValidationError{Name: "registered_at", err: errors.New(`ent: missing required field "Book.registered_at"`)}
+	if _, ok := bc.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Book.status"`)}
 	}
-	if _, ok := bc.mutation.ComplatedAt(); !ok {
-		return &ValidationError{Name: "complated_at", err: errors.New(`ent: missing required field "Book.complated_at"`)}
+	if _, ok := bc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Book.created_at"`)}
+	}
+	if _, ok := bc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Book.updated_at"`)}
 	}
 	if len(bc.mutation.OwnerIDs()) == 0 {
 		return &ValidationError{Name: "owner", err: errors.New(`ent: missing required edge "Book.owner"`)}
@@ -244,13 +279,21 @@ func (bc *BookCreate) createSpec() (*Book, *sqlgraph.CreateSpec) {
 		_spec.SetField(book.FieldBookIsbn, field.TypeString, value)
 		_node.BookIsbn = value
 	}
-	if value, ok := bc.mutation.RegisteredAt(); ok {
-		_spec.SetField(book.FieldRegisteredAt, field.TypeTime, value)
-		_node.RegisteredAt = value
+	if value, ok := bc.mutation.ThumbnailURL(); ok {
+		_spec.SetField(book.FieldThumbnailURL, field.TypeString, value)
+		_node.ThumbnailURL = value
 	}
-	if value, ok := bc.mutation.ComplatedAt(); ok {
-		_spec.SetField(book.FieldComplatedAt, field.TypeTime, value)
-		_node.ComplatedAt = value
+	if value, ok := bc.mutation.Status(); ok {
+		_spec.SetField(book.FieldStatus, field.TypeInt, value)
+		_node.Status = value
+	}
+	if value, ok := bc.mutation.CreatedAt(); ok {
+		_spec.SetField(book.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := bc.mutation.UpdatedAt(); ok {
+		_spec.SetField(book.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
 	}
 	if nodes := bc.mutation.OwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

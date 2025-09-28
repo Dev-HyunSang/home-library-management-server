@@ -9,6 +9,7 @@ import (
 	"github.com/dev-hyunsang/home-library/internal/domain"
 	"github.com/dev-hyunsang/home-library/lib/ent"
 	"github.com/dev-hyunsang/home-library/lib/ent/book"
+	"github.com/dev-hyunsang/home-library/lib/ent/bookmark"
 	"github.com/dev-hyunsang/home-library/lib/ent/review"
 	"github.com/dev-hyunsang/home-library/lib/ent/user"
 	"github.com/dev-hyunsang/home-library/logger"
@@ -28,6 +29,17 @@ func NewBookRepository(client *ent.Client) *BookRepository {
 func (rc *BookRepository) SaveByBookID(userID uuid.UUID, book *domain.Book) (*domain.Book, error) {
 	client := rc.client
 
+	// Check if user exists before creating book
+	exists, err := client.User.Query().Where(user.ID(userID)).Exist(context.Background())
+	if err != nil {
+		logger.Init().Sugar().Errorf("사용자 존재 확인 중 오류가 발생했습니다: %w", err)
+		return nil, fmt.Errorf("사용자 존재 확인 중 오류가 발생했습니다: %w", err)
+	}
+	if !exists {
+		logger.Init().Sugar().Errorf("존재하지 않는 사용자입니다: %s", userID.String())
+		return nil, fmt.Errorf("존재하지 않는 사용자입니다: %s", userID.String())
+	}
+
 	BookID, err := uuid.NewUUID()
 	if err != nil {
 		logger.Init().Sugar().Errorf("새로운 UUID를 생성하던 도중 오류가 발생했습니다. %w", err)
@@ -40,8 +52,10 @@ func (rc *BookRepository) SaveByBookID(userID uuid.UUID, book *domain.Book) (*do
 		SetBookTitle(book.Title).
 		SetAuthor(book.Author).
 		SetBookIsbn(book.BookISBN).
-		SetRegisteredAt(time.Now()).
-		SetComplatedAt(time.Now()).
+		SetThumbnailURL(book.ThumbnailURL).
+		SetStatus(book.Status).
+		SetCreatedAt(time.Now()).
+		SetUpdatedAt(time.Now()).
 		Save(context.Background())
 	if err == nil {
 		logger.UserInfoLog(userID.String(), "해당 유저의 새로운 책을 저장했습니다.")
@@ -51,8 +65,10 @@ func (rc *BookRepository) SaveByBookID(userID uuid.UUID, book *domain.Book) (*do
 			Title:        b.BookTitle,
 			Author:       b.Author,
 			BookISBN:     b.BookIsbn,
-			RegisteredAt: b.RegisteredAt,
-			ComplatedAt:  b.ComplatedAt,
+			ThumbnailURL: b.ThumbnailURL,
+			Status:       b.Status,
+			CreatedAt:    b.CreatedAt,
+			UpdatedAt:    b.UpdatedAt,
 		}, nil
 	}
 
@@ -92,8 +108,10 @@ func (rc *BookRepository) GetBookByID(userID, id uuid.UUID) (*domain.Book, error
 		Title:        result.BookTitle,
 		Author:       result.Author,
 		BookISBN:     result.BookIsbn,
-		RegisteredAt: result.RegisteredAt,
-		ComplatedAt:  result.ComplatedAt,
+		ThumbnailURL: result.ThumbnailURL,
+		Status:       result.Status,
+		CreatedAt:    result.CreatedAt,
+		UpdatedAt:    result.UpdatedAt,
 	}, nil
 
 }
@@ -116,8 +134,10 @@ func (rc *BookRepository) GetBooksByUserID(userID uuid.UUID) ([]*domain.Book, er
 				Title:        b.BookTitle,
 				Author:       b.Author,
 				BookISBN:     string(b.BookIsbn),
-				RegisteredAt: b.RegisteredAt,
-				ComplatedAt:  b.ComplatedAt,
+				ThumbnailURL: b.ThumbnailURL,
+				Status:       b.Status,
+				CreatedAt:    b.CreatedAt,
+				UpdatedAt:    b.UpdatedAt,
 			})
 		}
 
@@ -174,8 +194,10 @@ func (bc *BookRepository) GetBooksByUserName(name string) ([]*domain.Book, error
 			Title:        b.BookTitle,
 			Author:       b.Author,
 			BookISBN:     b.BookIsbn,
-			RegisteredAt: b.RegisteredAt,
-			ComplatedAt:  b.ComplatedAt,
+			CreatedAt:    b.CreatedAt,
+			UpdatedAt:    b.UpdatedAt,
+			ThumbnailURL: b.ThumbnailURL,
+			Status:       b.Status,
 		})
 	}
 
@@ -189,8 +211,9 @@ func (bc *BookRepository) Edit(id uuid.UUID, book *domain.Book) error {
 		SetBookTitle(book.Title).
 		SetAuthor(book.Author).
 		SetBookIsbn(book.BookISBN).
-		SetRegisteredAt(time.Now()).
-		SetComplatedAt(book.ComplatedAt).
+		SetThumbnailURL(book.ThumbnailURL).
+		SetStatus(book.Status).
+		SetUpdatedAt(time.Now()).
 		Save(context.Background())
 	if err == nil {
 		return nil
@@ -317,4 +340,63 @@ func (bc *BookRepository) DeleteByID(userID, id uuid.UUID) error {
 	default:
 		return fmt.Errorf("책을 삭제하는 도중 오류가 발생했습니다: %w", err)
 	}
+}
+
+func (bc *BookRepository) AddBookmarkByBookID(ownerID, bookID uuid.UUID) (*domain.Bookmark, error) {
+	client := bc.client
+
+	result, err := client.Bookmark.Create().
+		SetOwnerID(ownerID).
+		SetBookID(bookID).
+		SetCreatedAt(time.Now()).
+		Save(context.Background())
+	if err != nil {
+		return nil, fmt.Errorf("북마크를 추가하는 도중 오류가 발생했습니다: %w", err)
+	}
+
+	return &domain.Bookmark{
+		ID:        result.ID,
+		OwnerID:   result.QueryOwner().OnlyIDX(context.Background()),
+		BookID:    result.QueryBook().OnlyIDX(context.Background()),
+		CreatedAt: result.CreatedAt,
+	}, nil
+}
+
+func (bc *BookRepository) GetBookmarksByUserID(userID uuid.UUID) ([]*domain.Bookmark, error) {
+	var result []*domain.Bookmark
+
+	client := bc.client
+
+	bookmarks, err := client.Bookmark.Query().
+		Where(bookmark.HasOwnerWith(user.ID(userID))).
+		All(context.Background())
+	if err != nil {
+		return nil, fmt.Errorf("북마크 목록을 가져오는 도중 오류가 발생했습니다: %w", err)
+	}
+
+	for _, b := range bookmarks {
+		result = append(result, &domain.Bookmark{
+			ID:        b.ID,
+			OwnerID:   b.QueryOwner().OnlyIDX(context.Background()),
+			BookID:    b.QueryBook().OnlyIDX(context.Background()),
+			CreatedAt: b.CreatedAt,
+		})
+		log.Println(result)
+	}
+
+	return result, nil
+}
+
+func (bc *BookRepository) DeleteBookmarkByID(id uuid.UUID) error {
+	client := bc.client
+
+	err := client.Bookmark.DeleteOneID(id).Exec(context.Background())
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return fmt.Errorf("등록된 북마크를 찾을 수 없습니다: %w", err)
+		}
+		return fmt.Errorf("북마크를 삭제하는 도중 오류가 발생했습니다: %w", err)
+	}
+
+	return nil
 }

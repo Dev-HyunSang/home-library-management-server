@@ -3,6 +3,7 @@ package domain
 import (
 	"time"
 
+	"github.com/dev-hyunsang/home-library/internal/auth"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
@@ -34,12 +35,32 @@ type UserUseCase interface {
 }
 
 type AuthUseCase interface {
+	GenerateToken(userID uuid.UUID) (string, error)
+	GenerateTokenPair(userID uuid.UUID) (accessToken, refreshToken string, err error)
+	ValidateToken(tokenString string) (*auth.JWTClaims, error)
+	GetUserIDFromToken(ctx *fiber.Ctx) (uuid.UUID, error)
+	ExtractTokenFromHeader(ctx *fiber.Ctx) (string, error)
+	RefreshToken(refreshToken string) (newAccessToken, newRefreshToken string, err error)
+	InvalidateToken(token string) error
+	InvalidateAllUserTokens(userID uuid.UUID) error
+	CheckRateLimit(userID uuid.UUID, action string, limit int, window time.Duration) (bool, error)
+	// Legacy methods for backward compatibility
 	SetSession(userID string, ctx *fiber.Ctx) error
 	GetSessionByID(userID string, ctx *fiber.Ctx) (string, error)
 	DeleteSession(ctx *fiber.Ctx) error
 }
 
 type AuthRepository interface {
+	GenerateToken(userID uuid.UUID) (string, error)
+	GenerateTokenPair(userID uuid.UUID) (accessToken, refreshToken string, err error)
+	ValidateToken(tokenString string) (*auth.JWTClaims, error)
+	GetUserIDFromToken(ctx *fiber.Ctx) (uuid.UUID, error)
+	ExtractTokenFromHeader(ctx *fiber.Ctx) (string, error)
+	RefreshToken(refreshToken string) (newAccessToken, newRefreshToken string, err error)
+	InvalidateToken(token string) error
+	InvalidateAllUserTokens(userID uuid.UUID) error
+	CheckRateLimit(userID uuid.UUID, action string, limit int, window time.Duration) (bool, error)
+	// Legacy methods for backward compatibility
 	SetSession(userID string, ctx *fiber.Ctx) error
 	GetSessionByID(userID string, ctx *fiber.Ctx) (string, error)
 	DeleteSession(ctx *fiber.Ctx) error

@@ -14,8 +14,10 @@ var (
 		{Name: "book_title", Type: field.TypeString},
 		{Name: "author", Type: field.TypeString},
 		{Name: "book_isbn", Type: field.TypeString, Nullable: true},
-		{Name: "registered_at", Type: field.TypeTime},
-		{Name: "complated_at", Type: field.TypeTime},
+		{Name: "thumbnail_url", Type: field.TypeString, Nullable: true},
+		{Name: "status", Type: field.TypeInt, Default: 0},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "user_books", Type: field.TypeUUID},
 	}
 	// BooksTable holds the schema information for the "books" table.
@@ -26,7 +28,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "books_users_books",
-				Columns:    []*schema.Column{BooksColumns[6]},
+				Columns:    []*schema.Column{BooksColumns[8]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.Cascade,
 			},

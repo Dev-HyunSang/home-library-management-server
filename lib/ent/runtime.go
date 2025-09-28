@@ -27,14 +27,20 @@ func init() {
 	bookDescAuthor := bookFields[2].Descriptor()
 	// book.AuthorValidator is a validator for the "author" field. It is called by the builders before save.
 	book.AuthorValidator = bookDescAuthor.Validators[0].(func(string) error)
-	// bookDescRegisteredAt is the schema descriptor for registered_at field.
-	bookDescRegisteredAt := bookFields[4].Descriptor()
-	// book.DefaultRegisteredAt holds the default value on creation for the registered_at field.
-	book.DefaultRegisteredAt = bookDescRegisteredAt.Default.(time.Time)
-	// bookDescComplatedAt is the schema descriptor for complated_at field.
-	bookDescComplatedAt := bookFields[5].Descriptor()
-	// book.DefaultComplatedAt holds the default value on creation for the complated_at field.
-	book.DefaultComplatedAt = bookDescComplatedAt.Default.(time.Time)
+	// bookDescStatus is the schema descriptor for status field.
+	bookDescStatus := bookFields[5].Descriptor()
+	// book.DefaultStatus holds the default value on creation for the status field.
+	book.DefaultStatus = bookDescStatus.Default.(int)
+	// bookDescCreatedAt is the schema descriptor for created_at field.
+	bookDescCreatedAt := bookFields[6].Descriptor()
+	// book.DefaultCreatedAt holds the default value on creation for the created_at field.
+	book.DefaultCreatedAt = bookDescCreatedAt.Default.(time.Time)
+	// bookDescUpdatedAt is the schema descriptor for updated_at field.
+	bookDescUpdatedAt := bookFields[7].Descriptor()
+	// book.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	book.DefaultUpdatedAt = bookDescUpdatedAt.Default.(time.Time)
+	// book.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	book.UpdateDefaultUpdatedAt = bookDescUpdatedAt.UpdateDefault.(func() time.Time)
 	bookmarkFields := schema.Bookmark{}.Fields()
 	_ = bookmarkFields
 	// bookmarkDescCreatedAt is the schema descriptor for created_at field.

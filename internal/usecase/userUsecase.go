@@ -3,18 +3,17 @@ package usecase
 import (
 	"github.com/dev-hyunsang/home-library/internal/domain"
 	repository "github.com/dev-hyunsang/home-library/internal/repository/mysql"
-	redisRepository "github.com/dev-hyunsang/home-library/internal/repository/redis"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
 
 type userUseCase struct {
 	userRepo domain.UserRepository
-	authRepo domain.AuthRepository
+	authRepo domain.AuthUseCase
 }
 
-func NewUserUseCase(userRepo *repository.UserRepository, authRepo *redisRepository.AuthRepository) *userUseCase {
-	return &userUseCase{userRepo: userRepo, authRepo: authRepo}
+func NewUserUseCase(userRepo *repository.UserRepository, authUseCase domain.AuthUseCase) *userUseCase {
+	return &userUseCase{userRepo: userRepo, authRepo: authUseCase}
 }
 
 func ErrResponse(err error) map[string]string {

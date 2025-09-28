@@ -1,78 +1,93 @@
-package memory
+package redis
 
 import (
 	"fmt"
-	"log"
+	"strings"
+	"time"
 
+	"github.com/dev-hyunsang/home-library/internal/auth"
+	"github.com/dev-hyunsang/home-library/internal/cache"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/session"
+	"github.com/google/uuid"
 )
 
 type AuthRepository struct {
-	store *session.Store
+	jwtManager      *auth.JWTManager
+	securityManager *auth.SecurityManager
 }
 
-func NewAuthRepository(store *session.Store) *AuthRepository {
+func NewAuthRepository(secretKey string, accessTTL, refreshTTL time.Duration, redisClient *cache.RedisClient) *AuthRepository {
+	securityManager := auth.NewSecurityManager(redisClient)
 	return &AuthRepository{
-		store: store,
+		jwtManager:      auth.NewJWTManager(secretKey, accessTTL, refreshTTL, securityManager),
+		securityManager: securityManager,
 	}
 }
 
+func (repo *AuthRepository) GenerateTokenPair(userID uuid.UUID) (accessToken, refreshToken string, err error) {
+	return repo.jwtManager.GenerateTokenPair(userID)
+}
+
+func (repo *AuthRepository) GenerateToken(userID uuid.UUID) (string, error) {
+	accessToken, _, err := repo.jwtManager.GenerateTokenPair(userID)
+	return accessToken, err
+}
+
+func (repo *AuthRepository) ValidateToken(tokenString string) (*auth.JWTClaims, error) {
+	return repo.jwtManager.ValidateToken(tokenString)
+}
+
+func (repo *AuthRepository) ExtractTokenFromHeader(ctx *fiber.Ctx) (string, error) {
+	authHeader := ctx.Get("Authorization")
+	if authHeader == "" {
+		return "", fmt.Errorf("authorization header not found")
+	}
+
+	if !strings.HasPrefix(authHeader, "Bearer ") {
+		return "", fmt.Errorf("invalid authorization header format")
+	}
+
+	return strings.TrimPrefix(authHeader, "Bearer "), nil
+}
+
+func (repo *AuthRepository) GetUserIDFromToken(ctx *fiber.Ctx) (uuid.UUID, error) {
+	token, err := repo.ExtractTokenFromHeader(ctx)
+	if err != nil {
+		return uuid.Nil, err
+	}
+
+	return repo.jwtManager.ExtractUserID(token)
+}
+
+func (repo *AuthRepository) RefreshToken(refreshToken string) (newAccessToken, newRefreshToken string, err error) {
+	return repo.jwtManager.RefreshToken(refreshToken)
+}
+
+func (repo *AuthRepository) InvalidateToken(token string) error {
+	return repo.jwtManager.InvalidateToken(token)
+}
+
+func (repo *AuthRepository) InvalidateAllUserTokens(userID uuid.UUID) error {
+	return repo.jwtManager.InvalidateAllUserTokens(userID)
+}
+
+func (repo *AuthRepository) CheckRateLimit(userID uuid.UUID, action string, limit int, window time.Duration) (bool, error) {
+	return repo.securityManager.CheckRateLimit(userID, action, limit, window)
+}
+
+// Legacy methods for backward compatibility - these will be removed
 func (repo *AuthRepository) SetSession(userID string, ctx *fiber.Ctx) error {
-	sess, err := repo.store.Get(ctx)
-	if err != nil {
-		return fmt.Errorf("failed to get session: %w", err)
-	}
-
-	sess.Set("user_id", userID)
-
-	err = sess.Save()
-	if err != nil {
-		return fmt.Errorf("failed to save session: %w", err)
-	}
-
-	return nil
+	return fmt.Errorf("session-based auth is deprecated, use JWT tokens")
 }
 
 func (repo *AuthRepository) GetSessionByID(userID string, ctx *fiber.Ctx) (string, error) {
-	sess, err := repo.store.Get(ctx)
-	if err != nil {
-		return "", fmt.Errorf("failed to get session: %w", err)
-	}
-
-	raw := sess.Get("user_id")
-	if raw == nil {
-		return "", fmt.Errorf("user not logged in: %s", userID)
-	}
-
-	userID, ok := raw.(string)
-	log.Println(userID)
-
-	if !ok {
-		return "", fmt.Errorf("invalid user ID type: %T", raw)
-	}
-
-	return userID, nil
+	return "", fmt.Errorf("session-based auth is deprecated, use JWT tokens")
 }
 
 func (repo *AuthRepository) GetAllSession(ctx *fiber.Ctx) ([]string, error) {
-	sess, err := repo.store.Get(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get session: %w", err)
-	}
-
-	return sess.Keys(), nil
+	return nil, fmt.Errorf("session-based auth is deprecated, use JWT tokens")
 }
 
 func (repo *AuthRepository) DeleteSession(ctx *fiber.Ctx) error {
-	sess, err := repo.store.Get(ctx)
-	if err != nil {
-		return fmt.Errorf("failed to get session: %w", err)
-	}
-
-	if err := sess.Destroy(); err != nil {
-		return fmt.Errorf("failed to destroy session: %w", err)
-	}
-
-	return nil
+	return fmt.Errorf("session-based auth is deprecated, use JWT tokens")
 }

@@ -1,6 +1,6 @@
 # API Docs
 
-## POST `/api/users/login`
+## POST `/api/users/signin`
 
 ### Request
 
@@ -25,7 +25,7 @@
 }
 ```
 
-## POST `/api/users/register`
+## POST `/api/users/signup`
 
 ### Requset
 
@@ -49,6 +49,25 @@
   "is_published": true,
   "created_at": "2025-08-24T20:57:25.636597+09:00",
   "updated_at": "2025-08-24T20:57:25.636597+09:00"
+}
+```
+
+### POST `/api/users/rest-password`
+
+- 변경 시 변경된 비밀번호로 로그인 성공
+
+#### Request
+```json
+{
+    "email": "me@hyunsang.dev"
+}
+```
+
+#### Response
+```json
+{
+    "email": "me@hyunsang.dev",
+    "message": "비밀번호 재설정 이메일이 발송되었습니다"
 }
 ```
 
@@ -154,5 +173,26 @@
       }
     ]
   }
+}
+```
+
+### POST `/api/books/reviews/get`
+
+#### Response
+```json
+{
+    "data": [
+        {
+            "id": "ea6fe0a1-1f6f-40cd-a568-b0895e76d139",
+            "book_id": "db00f4e8-95f5-11f0-aa2d-420b6f780d98",
+            "owner_id": "9681c23c-95de-11f0-8288-420b6f780d98",
+            "content": "제목도, 저자도, 첫 문장도, 이미 유명한 '알베르 카뮈'의 <이방인>을 이제야 읽었다. 책은 잊힌 책과 남은 책. 두 가지로 나뉜다고 한다. 기억에 남은 책으로 남겨두고 싶어서 기록해 보기로 한다. 이방인, 낯선 곳에서 온 사람,이라고 막연하게 생각하고 읽었다. 이민자들의 이야기를 많이 접하기도 했고, 이방인이라는 단어에 대한 나의 선입견이 컸기 때문이다. 책을 읽다 보니 같은 사회나 울타리 안에서도 다른 생각을 가진 사람이 이방인이라는 생각이 들었다. 책은 흥미롭게 읽었는데 작가가 말하고자 하는 의미를 찾는 건 무척이나 어려웠다. 파도 파도 파헤칠 게 많은 소설.",
+            "rating": 4,
+            "created_at": "2025-09-20T10:49:28Z",
+            "updated_at": "2025-09-20T10:49:28Z"
+        }
+    ],
+    "is_success": true,
+    "responsed_at": "2025-09-20T20:39:25.965901+09:00"
 }
 ```

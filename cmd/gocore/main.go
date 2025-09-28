@@ -3,13 +3,14 @@ package main
 import (
 	"flag"
 	"log"
-	"runtime"
 	"strings"
 	"time"
 
+	"github.com/dev-hyunsang/home-library/internal/cache"
 	"github.com/dev-hyunsang/home-library/internal/config"
 	"github.com/dev-hyunsang/home-library/internal/db"
 	"github.com/dev-hyunsang/home-library/internal/handler"
+	"github.com/dev-hyunsang/home-library/internal/middleware"
 	repository "github.com/dev-hyunsang/home-library/internal/repository/mysql"
 	redisRepository "github.com/dev-hyunsang/home-library/internal/repository/redis"
 	"github.com/dev-hyunsang/home-library/internal/usecase"
@@ -18,34 +19,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/encryptcookie"
-	"github.com/gofiber/fiber/v2/middleware/session"
-	"github.com/gofiber/storage/redis/v3"
 )
-
-// USING REDIS IN SESSION STORAGE
-func NewSessionStore(cfg *config.Config) *session.Store {
-	storage := redis.New(redis.Config{
-		Host:      cfg.DB.Redis.Host,
-		Port:      cfg.DB.Redis.Port,
-		Password:  cfg.DB.Redis.Password,
-		Database:  cfg.DB.Redis.DB,
-		Reset:     false,
-		TLSConfig: nil,
-		PoolSize:  10 * runtime.GOMAXPROCS(0),
-	})
-
-	store := session.New(session.Config{
-		Storage:           storage,
-		Expiration:        24 * time.Hour,
-		KeyLookup:         "cookie:session",
-		CookieSessionOnly: true,
-		CookieSecure:      true,
-		CookieHTTPOnly:    true,
-		CookieSameSite:    "None",
-	})
-
-	return store
-}
 
 func main() {
 	app := fiber.New()
@@ -62,7 +36,7 @@ func main() {
 
 	app.Use(cors.New(cors.Config{
 		// TODO: production 에서 수정
-		AllowOrigins: "http://localhost:3000, http://localhost:5173/, http://192.168.0.13:5173/",
+		AllowOrigins: "http://localhost:3000, http://localhost:5173/, http://192.168.0.6:5173/",
 		AllowMethods: strings.Join([]string{
 			fiber.MethodGet,
 			fiber.MethodPost,
@@ -92,9 +66,15 @@ func main() {
 
 	logger.Init().Sugar().Info("성공적으로 데이터베이스(MySQL)에 연결되었습니다.")
 
-	store := NewSessionStore(cfg)
+	// Redis 클라이언트 초기화
+	redisClient := cache.NewRedisClient(
+		cfg.DB.Redis.Host,
+		cfg.DB.Redis.Port,
+		cfg.DB.Redis.Password,
+		cfg.DB.Redis.DB,
+	)
 
-	logger.Init().Sugar().Info("성공적으로 Redis에 세션 저장소가 초기화되었습니다.")
+	logger.Init().Sugar().Info("성공적으로 Redis 클라이언트가 초기화되었습니다.")
 
 	// csrfConfig := csrf.Config{
 	// 	Session:        store,
@@ -113,37 +93,49 @@ func main() {
 	// _ := csrf.New(csrfConfig)
 
 	// 사용자 관련 의존성 주입
-	authRepo := redisRepository.NewAuthRepository(store)
-	userRepo := repository.NewUserRepository(dbConn, store)
-	userUseCase := usecase.NewUserUseCase(userRepo, authRepo)
-	userHandler := handler.NewUserHandler(userUseCase, userUseCase)
+	authRepo := redisRepository.NewAuthRepository(cfg.JWT.Secret, 1*time.Hour, 24*time.Hour, redisClient)
+	userRepo := repository.NewUserRepository(dbConn, nil)
+	authUseCase := usecase.NewAuthUseCase(authRepo)
+	userUseCase := usecase.NewUserUseCase(userRepo, authUseCase)
+	userHandler := handler.NewUserHandler(userUseCase, authUseCase)
+	authHandler := handler.NewAuthHandler(authUseCase)
 
 	// 책 관련 의존성 주입
 	bookRepo := repository.NewBookRepository(dbConn)
 	bookUseCase := usecase.NewBookUseCase(bookRepo)
-	bookHandler := handler.NewBookHandler(bookUseCase, authRepo)
+	bookHandler := handler.NewBookHandler(bookUseCase, authUseCase)
 
 	api := app.Group("/api")
 	user := api.Group("/users")
 	user.Post("/signup", userHandler.UserSignUpHandler)
 	user.Post("/signin", userHandler.UserSignInHandler)
-	user.Post("/signout", userHandler.UserSignOutHandler)
-	user.Post("/rest-password", userHandler.UserRestPasswordHandler)
-	user.Post("/me", userHandler.UserVerifyHandler)
-	user.Get("/:id", userHandler.UserGetByIdHandler)
-	user.Put("/:id", userHandler.UserEditHandler)
-	user.Delete("/:id", userHandler.UserDeleteHandler)
+	user.Post("/signout", middleware.JWTAuthMiddleware(authUseCase), userHandler.UserSignOutHandler)
+	user.Post("/forgot-password", userHandler.UserRestPasswordHandler)
+	user.Post("/me", middleware.JWTAuthMiddleware(authUseCase), userHandler.UserVerifyHandler)
+	user.Get("/:id", middleware.JWTAuthMiddleware(authUseCase), userHandler.UserGetByIdHandler)
+	user.Put("/edit/:id", middleware.JWTAuthMiddleware(authUseCase), userHandler.UserEditHandler)
+	user.Delete("/:id", middleware.JWTAuthMiddleware(authUseCase), userHandler.UserDeleteHandler)
 
 	books := api.Group("/books")
-	books.Post("/", bookHandler.SaveBookHandler)
-	books.Get("/get", bookHandler.GetBooksHandler)
-	books.Delete("/:id", bookHandler.BookDeleteHandler)
-	books.Get("/:name", bookHandler.GetBooksByUserNameHandler)
-	books.Post("/search", bookHandler.SearchBookIsbnHandler)
+	books.Post("/add", middleware.JWTAuthMiddleware(authUseCase), bookHandler.SaveBookHandler)
+	books.Get("/get", middleware.JWTAuthMiddleware(authUseCase), bookHandler.GetBooksHandler)
+	books.Delete("/delete/:id", middleware.JWTAuthMiddleware(authUseCase), bookHandler.BookDeleteHandler)
+	books.Get("/:name", middleware.JWTAuthMiddleware(authUseCase), bookHandler.GetBooksByUserNameHandler)
+	books.Post("/search", middleware.JWTAuthMiddleware(authUseCase), bookHandler.SearchBookIsbnHandler)
 
 	reviews := books.Group("/reviews")
-	reviews.Post("/", bookHandler.SaveBookReviewHandler)
-	reviews.Get("/get", bookHandler.GetBookReviewByUserIDHandler)
+	reviews.Post("/", middleware.JWTAuthMiddleware(authUseCase), bookHandler.SaveBookReviewHandler)
+	reviews.Get("/get", middleware.JWTAuthMiddleware(authUseCase), bookHandler.GetBookReviewByUserIDHandler)
+
+	bookmarks := books.Group("/bookmarks")
+	bookmarks.Post("/add/:id", middleware.JWTAuthMiddleware(authUseCase), bookHandler.AddBookmarkHandler)
+	bookmarks.Get("/get", middleware.JWTAuthMiddleware(authUseCase), bookHandler.GetBookmarksByUserIDHandler)
+	bookmarks.Delete("/delete/:id", middleware.JWTAuthMiddleware(authUseCase), bookHandler.DeleteBookmarkHandler)
+
+	auth := api.Group("/auth")
+	auth.Post("/refresh", authHandler.RefreshTokenHandler)
+	auth.Post("/revoke-all", middleware.JWTAuthMiddleware(authUseCase), authHandler.RevokeAllTokensHandler)
+	auth.Get("/rate-limit", middleware.JWTAuthMiddleware(authUseCase), authHandler.CheckRateLimitHandler)
 
 	if err := app.Listen(":3000"); err != nil {
 		logger.Init().Sugar().Fatalf("서버를 시작하는 도중 오류가 발생했습니다: %v", err)
