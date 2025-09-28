@@ -41,6 +41,7 @@ func main() {
 			fiber.MethodGet,
 			fiber.MethodPost,
 			fiber.MethodDelete,
+			fiber.MethodPut,
 			fiber.MethodPatch,
 		}, ","),
 		AllowCredentials: true,
@@ -113,7 +114,7 @@ func main() {
 	user.Post("/forgot-password", userHandler.UserRestPasswordHandler)
 	user.Post("/me", middleware.JWTAuthMiddleware(authUseCase), userHandler.UserVerifyHandler)
 	user.Get("/:id", middleware.JWTAuthMiddleware(authUseCase), userHandler.UserGetByIdHandler)
-	user.Put("/edit/:id", middleware.JWTAuthMiddleware(authUseCase), userHandler.UserEditHandler)
+	user.Put("/update/:id", middleware.JWTAuthMiddleware(authUseCase), userHandler.UserEditHandler)
 	user.Delete("/:id", middleware.JWTAuthMiddleware(authUseCase), userHandler.UserDeleteHandler)
 
 	books := api.Group("/books")

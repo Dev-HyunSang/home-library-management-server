@@ -28,6 +28,13 @@ type RegisterationRequest struct {
 	IsPublished bool   `json:"is_published"`
 }
 
+type UpdateUserRequest struct {
+	NickName    string `json:"nick_name"`
+	Email       string `json:"email"`
+	Password    *string `json:"password,omitempty"` // 포인터로 설정하여 nil일 때 비밀번호 변경 안함
+	IsPublished bool   `json:"is_published"`
+}
+
 type LoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
@@ -234,7 +241,7 @@ func (h *UserHandler) UserRestPasswordHandler(ctx *fiber.Ctx) error {
 	}
 
 	// 기존 사용자 정보를 유지하면서 비밀번호만 업데이트
-	err = h.userUseCase.Edit(&domain.User{
+	err = h.userUseCase.Update(&domain.User{
 		ID:          existingUser.ID,          // 기존 ID 유지
 		NickName:    existingUser.NickName,    // 기존 닉네임 유지
 		Email:       existingUser.Email,       // 기존 이메일 유지
@@ -306,14 +313,58 @@ func (h *UserHandler) UserEditHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusForbidden).JSON(ErrorHandler(domain.ErrPermissionDenied))
 	}
 
-	user := new(domain.User)
-	if err := ctx.BodyParser(user); err != nil {
+	// 기존 사용자 정보 조회
+	existingUser, err := h.userUseCase.GetByID(uuid.MustParse(id))
+	if err != nil {
+		logger.Init().Sugar().Errorf("기존 사용자 정보를 조회하는 도중 오류가 발생했습니다: %v", err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(domain.ErrInternal))
+	}
+
+	updateReq := new(UpdateUserRequest)
+	if err := ctx.BodyParser(updateReq); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
 	}
 
-	logger.Init().Sugar().Infof("사용자 정보가 성공적으로 업데이트되었습니다 / 사용자ID: %s", user.ID.String())
+	// 업데이트할 사용자 정보 구성
+	updatedUser := &domain.User{
+		ID:          existingUser.ID,
+		NickName:    updateReq.NickName,
+		Email:       updateReq.Email,
+		Password:    existingUser.Password, // 기본값으로 기존 비밀번호 유지
+		IsPublished: updateReq.IsPublished,
+		CreatedAt:   existingUser.CreatedAt,
+		UpdatedAt:   time.Now(),
+	}
 
-	return ctx.Status(fiber.StatusOK).JSON(user)
+	// 비밀번호가 제공된 경우에만 해시화 후 업데이트
+	if updateReq.Password != nil && *updateReq.Password != "" {
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(*updateReq.Password), bcrypt.DefaultCost)
+		if err != nil {
+			logger.Init().Sugar().Errorf("비밀번호 해시화 중 오류가 발생했습니다: %v", err)
+			return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(domain.ErrInternal))
+		}
+		updatedUser.Password = string(hashedPassword)
+		logger.Init().Sugar().Infof("사용자 비밀번호가 변경되었습니다 / 사용자ID: %s", id)
+	}
+
+	if err = h.userUseCase.Update(updatedUser); err != nil {
+		logger.Init().Sugar().Errorf("사용자 정보를 업데이트하는 도중 오류가 발생했습니다: %v", err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(domain.ErrInternal))
+	}
+
+	logger.Init().Sugar().Infof("사용자 정보가 성공적으로 업데이트되었습니다 / 사용자ID: %s", updatedUser.ID.String())
+
+	// 응답에서 비밀번호 제거
+	responseUser := &domain.User{
+		ID:          updatedUser.ID,
+		NickName:    updatedUser.NickName,
+		Email:       updatedUser.Email,
+		IsPublished: updatedUser.IsPublished,
+		CreatedAt:   updatedUser.CreatedAt,
+		UpdatedAt:   updatedUser.UpdatedAt,
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(responseUser)
 }
 
 func (h *UserHandler) UserVerifyHandler(ctx *fiber.Ctx) error {

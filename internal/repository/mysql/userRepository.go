@@ -124,13 +124,14 @@ func (r *UserRepository) GetByEmail(email string) (*domain.User, error) {
 	}
 }
 
-func (r *UserRepository) Edit(user *domain.User) error {
+func (r *UserRepository) Update(user *domain.User) error {
 	client := r.client
 
 	err := client.User.UpdateOneID(user.ID).
 		SetEmail(user.Email).
 		SetNickName(user.NickName).
 		SetPassword(user.Password).
+		SetIsPublished(user.IsPublished).
 		SetUpdatedAt(time.Now()).
 		Exec(context.Background())
 
