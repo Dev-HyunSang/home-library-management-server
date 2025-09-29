@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 	"net/smtp"
 	"regexp"
@@ -29,10 +30,10 @@ type RegisterationRequest struct {
 }
 
 type UpdateUserRequest struct {
-	NickName    string `json:"nick_name"`
-	Email       string `json:"email"`
+	NickName    string  `json:"nick_name"`
+	Email       string  `json:"email"`
 	Password    *string `json:"password,omitempty"` // 포인터로 설정하여 nil일 때 비밀번호 변경 안함
-	IsPublished bool   `json:"is_published"`
+	IsPublished bool    `json:"is_published"`
 }
 
 type LoginRequest struct {
@@ -101,10 +102,19 @@ func (h *UserHandler) UserSignUpHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidNickname))
 	}
 
-	result, err := h.userUseCase.CreateUser(&domain.User{
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		logger.Init().Sugar().Errorf("사용자 비밀번호 해시화 중 오류가 발생했습니다: %v", err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(domain.ErrInternal))
+	}
+
+	log.Println(string(hashedPassword))
+
+	result, err := h.userUseCase.Save(&domain.User{
+		ID:          uuid.New(),
 		NickName:    user.NickName,
 		Email:       user.Email,
-		Password:    user.Password,
+		Password:    string(hashedPassword),
 		IsPublished: user.IsPublished,
 	})
 	if err != nil {
@@ -128,6 +138,9 @@ func (h *UserHandler) UserSignInHandler(ctx *fiber.Ctx) error {
 		logger.Init().Sugar().Errorf("사용자 이메일로 사용자를 조회하는 도중 오류가 발생했습니다: %v", err)
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
 	}
+
+	log.Println(result)
+	log.Println(user.Password)
 
 	err = bcrypt.CompareHashAndPassword([]byte(result.Password), []byte(user.Password))
 	if err != nil {
@@ -290,7 +303,23 @@ func (h *UserHandler) UserVerifyByEmailHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
 	}
 
-	return nil
+	result, err := h.userUseCase.GetByEmail(email)
+	if err != nil {
+		logger.Init().Sugar().Errorf("사용자 정보를 이메일로 조회하는 도중 오류가 발생했습니다: %v", err)
+		return ctx.Status(fiber.StatusNotFound).JSON(ErrorHandler(domain.ErrNotFound))
+	}
+
+	if result.Email == email {
+		return ctx.Status(fiber.StatusConflict).JSON(fiber.Map{
+			"is_success": false,
+			"message":    "이미 사용 중인 이메일입니다.",
+		})
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"is_success": true,
+		"message":    "사용 가능한 이메일이며, 해당 이메일로 인증번호를 발송했습니다.",
+	})
 }
 
 func (h *UserHandler) UserEditHandler(ctx *fiber.Ctx) error {

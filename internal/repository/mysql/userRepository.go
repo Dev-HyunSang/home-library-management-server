@@ -12,7 +12,6 @@ import (
 	"github.com/dev-hyunsang/home-library/logger"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type UserRepository struct {
@@ -30,23 +29,11 @@ func NewUserRepository(client *ent.Client, store *session.Store) *UserRepository
 func (r *UserRepository) Save(user *domain.User) (*domain.User, error) {
 	client := r.client
 
-	// Create User ID(UUID)
-	userID, err := uuid.NewUUID()
-	if err != nil {
-		return nil, fmt.Errorf("사용자의 UUID를 생성하던 도중 오류가 발생했습니다: %w", err)
-	}
-
-	// 평문 사용자 비밀번호를 해쉬화하여 데이터베이스에 저장합니다.
-	hashedPw, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return nil, fmt.Errorf("사용자의 암호를 안전하게 해쉬하던 도중 오류가 발생했습니다: %w", err)
-	}
-
 	u, err := client.User.Create().
-		SetID(userID).
+		SetID(user.ID).
 		SetNickName(user.NickName).
 		SetEmail(user.Email).
-		SetPassword(string(hashedPw)).    // 절대 평문 비밀번호를 저장하지 마시오.
+		SetPassword(user.Password).       // 절대 평문 비밀번호를 저장하지 마시오.
 		SetIsPublished(user.IsPublished). // 기본값은 비공개인 false로 설정
 		SetUpdatedAt(time.Now()).
 		SetCreatedAt(time.Now()).

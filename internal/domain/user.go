@@ -27,7 +27,7 @@ type UserRepository interface {
 }
 
 type UserUseCase interface {
-	CreateUser(user *User) (*User, error)
+	Save(user *User) (*User, error)
 	GetByID(id uuid.UUID) (*User, error)
 	GetByEmail(email string) (*User, error)
 	Update(user *User) error

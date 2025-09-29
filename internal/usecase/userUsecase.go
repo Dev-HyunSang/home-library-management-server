@@ -20,7 +20,7 @@ func ErrResponse(err error) map[string]string {
 	return map[string]string{"error": err.Error()}
 }
 
-func (uc *userUseCase) CreateUser(user *domain.User) (*domain.User, error) {
+func (uc *userUseCase) Save(user *domain.User) (*domain.User, error) {
 	if user.NickName == "" || user.Email == "" || user.Password == "" {
 		return nil, domain.ErrInvalidInput
 	}
