@@ -1,8 +1,10 @@
 # 데이터베이스 및 각종 보안 관련 설정 파일
 *.yaml
-.env*
+.env
+.env.dev
 
 # IDE 설정 파일
 .idea/
+.vscode
 
 .DS_Store
