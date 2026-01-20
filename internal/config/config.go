@@ -4,16 +4,19 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/dev-hyunsang/home-library/logger"
 	"github.com/joho/godotenv"
 )
 
 type Config struct {
-	App  AppConfig  `json:"app"`
-	DB   DBConfig   `json:"db"`
-	Auth AuthConfig `json:"auth"`
-	JWT  JWTConfig  `json:"jwt"`
+	App   AppConfig   `json:"app"`
+	DB    DBConfig    `json:"db"`
+	Auth  AuthConfig  `json:"auth"`
+	JWT   JWTConfig   `json:"jwt"`
+	Kafka KafkaConfig `json:"kafka"`
+	FCM   FCMConfig   `json:"fcm"`
 }
 
 type AppConfig struct {
@@ -120,6 +123,14 @@ func LoadConfig(env string) (*Config, error) {
 			Secret: getEnvOrDefault("JWT_SECRET", ""),
 			TTL:    getEnvOrDefault("JWT_TTL", "24h"),
 		},
+		Kafka: KafkaConfig{
+			Brokers: strings.Split(getEnvOrDefault("KAFKA_BROKERS", "localhost:29092"), ","),
+			Topic:   getEnvOrDefault("KAFKA_TOPIC", "notifications"),
+			GroupID: getEnvOrDefault("KAFKA_GROUP_ID", "home-library-notification-group"),
+		},
+		FCM: FCMConfig{
+			ServiceAccountPath: getEnvOrDefault("FCM_SERVICE_ACCOUNT_PATH", "serviceAccountKey.json"),
+		},
 	}
 
 	// 필수 값 검증
@@ -145,6 +156,16 @@ func validateConfig(config *Config) error {
 		return fmt.Errorf("JWT_SECRET is required")
 	}
 	return nil
+}
+
+type KafkaConfig struct {
+	Brokers []string `json:"brokers"`
+	Topic   string   `json:"topic"`
+	GroupID string   `json:"group_id"`
+}
+
+type FCMConfig struct {
+	ServiceAccountPath string `json:"service_account_path"`
 }
 
 func GetEnv(key string) string {

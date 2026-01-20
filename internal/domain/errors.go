@@ -17,4 +17,5 @@ var (
 	ErrTooManyRequests    = errors.New("너무 많은 요청입니다. 잠시 후 다시 시도해주세요.")
 	ErrTokenExpired       = errors.New("토큰이 만료되었습니다.")
 	ErrInvalidToken       = errors.New("유효하지 않은 토큰입니다.")
+	ErrTermsNotAgreed     = errors.New("이용약관에 동의해야 합니다.")
 )

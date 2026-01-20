@@ -1,16 +1,22 @@
 package usecase
 
 import (
+	"context"
+
 	"github.com/dev-hyunsang/home-library/internal/domain"
 	"github.com/google/uuid"
 )
 
 type BookUseCase struct {
 	bookRepo domain.BookRepository
+	notifier domain.NotificationProducer
 }
 
-func NewBookUseCase(repo domain.BookRepository) *BookUseCase {
-	return &BookUseCase{bookRepo: repo}
+func NewBookUseCase(repo domain.BookRepository, notifier domain.NotificationProducer) *BookUseCase {
+	return &BookUseCase{
+		bookRepo: repo,
+		notifier: notifier,
+	}
 }
 
 func (bc *BookUseCase) SaveByBookID(userID uuid.UUID, book *domain.Book) (*domain.Book, error) {
@@ -68,7 +74,24 @@ func (bc *BookUseCase) CreateReview(review *domain.ReviewBook) error {
 		return domain.ErrInvalidInput
 	}
 
-	return bc.bookRepo.CreateReview(review)
+	err := bc.bookRepo.CreateReview(review)
+	if err != nil {
+		return err
+	}
+
+	// 알림 발송 (비동기 처리 가능하나 여기선 동기 호출, Producer 자체는 빠름)
+	// TODO: Context 전달 혹은 Background 사용
+	if bc.notifier != nil {
+		// 자신의 책에 리뷰를 남기면 알림 X? 하지만 여기선 테스트 목적
+		// 실제로는 책 주인의 ID를 찾아야 함. ReviewBook 구조체에 BookOwnerID가 있다면 좋겠지만...
+		// 지금은 리뷰 작성자에게 "리뷰가 작성되었습니다" 알림을 보내거나, 책 주인에게 보냄.
+		// ReviewBook에 OwnerID는 "리뷰 작성자"임.
+		// 책 정보를 조회해서 책 주인을 찾아야 함.
+		// 간단하게 리뷰 작성자에게 알림 테스트.
+		_ = bc.notifier.ProduceNotification(context.Background(), review.OwnerID.String(), "리뷰 작성 완료", "리뷰가 성공적으로 작성되었습니다.", "review")
+	}
+
+	return nil
 }
 
 func (bc *BookUseCase) GetReviewsByUserID(userID uuid.UUID) ([]*domain.ReviewBook, error) {

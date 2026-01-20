@@ -2126,6 +2126,7 @@ type UserMutation struct {
 	email            *string
 	password         *string
 	is_published     *bool
+	is_terms_agreed  *bool
 	created_at       *time.Time
 	updated_at       *time.Time
 	clearedFields    map[string]struct{}
@@ -2350,9 +2351,22 @@ func (m *UserMutation) OldPassword(ctx context.Context) (v string, err error) {
 	return oldValue.Password, nil
 }
 
+// ClearPassword clears the value of the "password" field.
+func (m *UserMutation) ClearPassword() {
+	m.password = nil
+	m.clearedFields[user.FieldPassword] = struct{}{}
+}
+
+// PasswordCleared returns if the "password" field was cleared in this mutation.
+func (m *UserMutation) PasswordCleared() bool {
+	_, ok := m.clearedFields[user.FieldPassword]
+	return ok
+}
+
 // ResetPassword resets all changes to the "password" field.
 func (m *UserMutation) ResetPassword() {
 	m.password = nil
+	delete(m.clearedFields, user.FieldPassword)
 }
 
 // SetIsPublished sets the "is_published" field.
@@ -2389,6 +2403,42 @@ func (m *UserMutation) OldIsPublished(ctx context.Context) (v bool, err error) {
 // ResetIsPublished resets all changes to the "is_published" field.
 func (m *UserMutation) ResetIsPublished() {
 	m.is_published = nil
+}
+
+// SetIsTermsAgreed sets the "is_terms_agreed" field.
+func (m *UserMutation) SetIsTermsAgreed(b bool) {
+	m.is_terms_agreed = &b
+}
+
+// IsTermsAgreed returns the value of the "is_terms_agreed" field in the mutation.
+func (m *UserMutation) IsTermsAgreed() (r bool, exists bool) {
+	v := m.is_terms_agreed
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsTermsAgreed returns the old "is_terms_agreed" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldIsTermsAgreed(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsTermsAgreed is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsTermsAgreed requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsTermsAgreed: %w", err)
+	}
+	return oldValue.IsTermsAgreed, nil
+}
+
+// ResetIsTermsAgreed resets all changes to the "is_terms_agreed" field.
+func (m *UserMutation) ResetIsTermsAgreed() {
+	m.is_terms_agreed = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -2659,7 +2709,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m.nick_name != nil {
 		fields = append(fields, user.FieldNickName)
 	}
@@ -2671,6 +2721,9 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.is_published != nil {
 		fields = append(fields, user.FieldIsPublished)
+	}
+	if m.is_terms_agreed != nil {
+		fields = append(fields, user.FieldIsTermsAgreed)
 	}
 	if m.created_at != nil {
 		fields = append(fields, user.FieldCreatedAt)
@@ -2694,6 +2747,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.Password()
 	case user.FieldIsPublished:
 		return m.IsPublished()
+	case user.FieldIsTermsAgreed:
+		return m.IsTermsAgreed()
 	case user.FieldCreatedAt:
 		return m.CreatedAt()
 	case user.FieldUpdatedAt:
@@ -2715,6 +2770,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldPassword(ctx)
 	case user.FieldIsPublished:
 		return m.OldIsPublished(ctx)
+	case user.FieldIsTermsAgreed:
+		return m.OldIsTermsAgreed(ctx)
 	case user.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case user.FieldUpdatedAt:
@@ -2755,6 +2812,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIsPublished(v)
+		return nil
+	case user.FieldIsTermsAgreed:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsTermsAgreed(v)
 		return nil
 	case user.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -2799,7 +2863,11 @@ func (m *UserMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *UserMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(user.FieldPassword) {
+		fields = append(fields, user.FieldPassword)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -2812,6 +2880,11 @@ func (m *UserMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *UserMutation) ClearField(name string) error {
+	switch name {
+	case user.FieldPassword:
+		m.ClearPassword()
+		return nil
+	}
 	return fmt.Errorf("unknown User nullable field %s", name)
 }
 
@@ -2830,6 +2903,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldIsPublished:
 		m.ResetIsPublished()
+		return nil
+	case user.FieldIsTermsAgreed:
+		m.ResetIsTermsAgreed()
 		return nil
 	case user.FieldCreatedAt:
 		m.ResetCreatedAt()

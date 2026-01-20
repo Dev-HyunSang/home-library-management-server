@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
 	"strings"
@@ -10,6 +11,8 @@ import (
 	"github.com/dev-hyunsang/home-library/internal/config"
 	"github.com/dev-hyunsang/home-library/internal/db"
 	"github.com/dev-hyunsang/home-library/internal/handler"
+	"github.com/dev-hyunsang/home-library/internal/infrastructure/fcm"
+	"github.com/dev-hyunsang/home-library/internal/infrastructure/kafka"
 	"github.com/dev-hyunsang/home-library/internal/middleware"
 	repository "github.com/dev-hyunsang/home-library/internal/repository/mysql"
 	redisRepository "github.com/dev-hyunsang/home-library/internal/repository/redis"
@@ -36,7 +39,7 @@ func main() {
 
 	app.Use(cors.New(cors.Config{
 		// TODO: production 에서 수정
-		AllowOrigins: "http://localhost:3000, http://localhost:5173/, http://192.168.0.6:5173/",
+		AllowOrigins: "http://localhost:3000, http://localhost:5173/, http://192.168.219.100:5173",
 		AllowMethods: strings.Join([]string{
 			fiber.MethodGet,
 			fiber.MethodPost,
@@ -93,6 +96,28 @@ func main() {
 
 	// _ := csrf.New(csrfConfig)
 
+	// Kafka & FCM 초기화
+	// 1. FCM Service
+	fcmService, err := fcm.NewFCMService(cfg.FCM.ServiceAccountPath)
+	if err != nil {
+		logger.Init().Sugar().Warnf("FCM 서비스를 초기화하는데 실패했습니다(알림 기능 비활성화): %v", err)
+	} else {
+		logger.Init().Sugar().Info("FCM 서비스가 성공적으로 초기화되었습니다.")
+	}
+
+	// 2. Kafka Producer
+	kafkaProducer := kafka.NewProducer(cfg.Kafka.Brokers, cfg.Kafka.Topic)
+	defer kafkaProducer.Close()
+	logger.Init().Sugar().Info("Kafka Producer가 초기화되었습니다.")
+
+	// 3. Kafka Consumer (백그라운드 실행)
+	kafkaConsumer := kafka.NewConsumer(cfg.Kafka.Brokers, cfg.Kafka.Topic, cfg.Kafka.GroupID, fcmService)
+	go func() {
+		logger.Init().Sugar().Info("Kafka Consumer가 시작되었습니다.")
+		kafkaConsumer.Start(context.Background())
+	}()
+	defer kafkaConsumer.Close()
+
 	// 사용자 관련 의존성 주입
 	authRepo := redisRepository.NewAuthRepository(cfg.JWT.Secret, 1*time.Hour, 24*time.Hour, redisClient)
 	userRepo := repository.NewUserRepository(dbConn, nil)
@@ -103,7 +128,7 @@ func main() {
 
 	// 책 관련 의존성 주입
 	bookRepo := repository.NewBookRepository(dbConn)
-	bookUseCase := usecase.NewBookUseCase(bookRepo)
+	bookUseCase := usecase.NewBookUseCase(bookRepo, kafkaProducer)
 	bookHandler := handler.NewBookHandler(bookUseCase, authUseCase)
 
 	api := app.Group("/api")

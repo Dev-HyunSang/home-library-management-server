@@ -23,10 +23,11 @@ type UserHandler struct {
 }
 
 type RegisterationRequest struct {
-	NickName    string `json:"nick_name"`
-	Email       string `json:"email"`
-	Password    string `json:"password"`
-	IsPublished bool   `json:"is_published"`
+	NickName      string `json:"nick_name"`
+	Email         string `json:"email"`
+	Password      string `json:"password"`
+	IsPublished   bool   `json:"is_published"`
+	IsTermsAgreed bool   `json:"is_terms_agreed"`
 }
 
 type UpdateUserRequest struct {
@@ -102,6 +103,18 @@ func (h *UserHandler) UserSignUpHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidNickname))
 	}
 
+	// 이메일 중복 확인
+	_, err := h.userUseCase.GetByEmail(user.Email)
+	if err == nil {
+		logger.Init().Sugar().Warnf("이미 존재하는 이메일로 가입 시도: %s", user.Email)
+		return ctx.Status(fiber.StatusConflict).JSON(ErrorHandler(domain.ErrAlreadyExists))
+	}
+
+	if !user.IsTermsAgreed {
+		logger.Init().Sugar().Warn("회원가입시 이용약관에 동의하지 않았습니다.")
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrTermsNotAgreed))
+	}
+
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		logger.Init().Sugar().Errorf("사용자 비밀번호 해시화 중 오류가 발생했습니다: %v", err)
@@ -111,11 +124,12 @@ func (h *UserHandler) UserSignUpHandler(ctx *fiber.Ctx) error {
 	log.Println(string(hashedPassword))
 
 	result, err := h.userUseCase.Save(&domain.User{
-		ID:          uuid.New(),
-		NickName:    user.NickName,
-		Email:       user.Email,
-		Password:    string(hashedPassword),
-		IsPublished: user.IsPublished,
+		ID:            uuid.New(),
+		NickName:      user.NickName,
+		Email:         user.Email,
+		Password:      string(hashedPassword),
+		IsPublished:   user.IsPublished,
+		IsTermsAgreed: user.IsTermsAgreed,
 	})
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))

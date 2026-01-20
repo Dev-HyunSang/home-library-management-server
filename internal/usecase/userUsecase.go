@@ -21,7 +21,13 @@ func ErrResponse(err error) map[string]string {
 }
 
 func (uc *userUseCase) Save(user *domain.User) (*domain.User, error) {
-	if user.NickName == "" || user.Email == "" || user.Password == "" {
+	// 필수 필드 검사 (비밀번호는 OAuth 로그인 시 없을 수 있음)
+	if user.NickName == "" || user.Email == "" {
+		return nil, domain.ErrInvalidInput
+	}
+
+	// Provider가 없는 경우(일반 회원가입)에는 비밀번호가 필수
+	if user.Password == "" {
 		return nil, domain.ErrInvalidInput
 	}
 

@@ -24,13 +24,17 @@ func (User) Fields() []ent.Field {
 			Comment("사용자 닉네임"),
 		field.String("email").
 			NotEmpty().
+			Unique().
 			Comment("사용자 이메일"),
 		field.String("password").
-			NotEmpty().
-			Comment("사용자 비밀번호"),
+			Optional().
+			Comment("사용자 비밀번호 (OAuth 사용자의 경우 비어있을 수 있음)"),
 		field.Bool("is_published").
 			Default(false).
 			Comment("사용자 계정의 책 공개 여부"),
+		field.Bool("is_terms_agreed").
+			Default(false).
+			Comment("사용자 이용약관 동의 여부"),
 		field.Time("created_at").
 			Immutable().
 			Default(time.Now).

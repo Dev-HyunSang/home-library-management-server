@@ -76,6 +76,11 @@ func IsPublished(v bool) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldIsPublished, v))
 }
 
+// IsTermsAgreed applies equality check predicate on the "is_terms_agreed" field. It's identical to IsTermsAgreedEQ.
+func IsTermsAgreed(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldIsTermsAgreed, v))
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldCreatedAt, v))
@@ -271,6 +276,16 @@ func PasswordHasSuffix(v string) predicate.User {
 	return predicate.User(sql.FieldHasSuffix(FieldPassword, v))
 }
 
+// PasswordIsNil applies the IsNil predicate on the "password" field.
+func PasswordIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldPassword))
+}
+
+// PasswordNotNil applies the NotNil predicate on the "password" field.
+func PasswordNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldPassword))
+}
+
 // PasswordEqualFold applies the EqualFold predicate on the "password" field.
 func PasswordEqualFold(v string) predicate.User {
 	return predicate.User(sql.FieldEqualFold(FieldPassword, v))
@@ -289,6 +304,16 @@ func IsPublishedEQ(v bool) predicate.User {
 // IsPublishedNEQ applies the NEQ predicate on the "is_published" field.
 func IsPublishedNEQ(v bool) predicate.User {
 	return predicate.User(sql.FieldNEQ(FieldIsPublished, v))
+}
+
+// IsTermsAgreedEQ applies the EQ predicate on the "is_terms_agreed" field.
+func IsTermsAgreedEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldIsTermsAgreed, v))
+}
+
+// IsTermsAgreedNEQ applies the NEQ predicate on the "is_terms_agreed" field.
+func IsTermsAgreedNEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldIsTermsAgreed, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

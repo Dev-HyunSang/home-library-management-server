@@ -29,25 +29,33 @@ func NewUserRepository(client *ent.Client, store *session.Store) *UserRepository
 func (r *UserRepository) Save(user *domain.User) (*domain.User, error) {
 	client := r.client
 
-	u, err := client.User.Create().
+	// User Create Builder 생성
+	builder := client.User.Create().
 		SetID(user.ID).
 		SetNickName(user.NickName).
 		SetEmail(user.Email).
-		SetPassword(user.Password).       // 절대 평문 비밀번호를 저장하지 마시오.
 		SetIsPublished(user.IsPublished). // 기본값은 비공개인 false로 설정
+		SetIsTermsAgreed(user.IsTermsAgreed).
 		SetUpdatedAt(time.Now()).
-		SetCreatedAt(time.Now()).
-		Save(context.Background())
+		SetCreatedAt(time.Now())
+
+	if user.Password != "" {
+		builder.SetPassword(user.Password)
+	}
+
+	u, err := builder.Save(context.Background())
+
 	if err == nil {
 		logger.Init().Sugar().Infof("새로운 유저를 생성하였습니다. 새로운 유저: %s", u.ID.String())
 		return &domain.User{
-			ID:          u.ID,
-			NickName:    u.NickName,
-			Email:       u.Email,
-			Password:    u.Password,
-			IsPublished: u.IsPublished,
-			CreatedAt:   u.CreatedAt,
-			UpdatedAt:   u.UpdatedAt,
+			ID:            u.ID,
+			NickName:      u.NickName,
+			Email:         u.Email,
+			Password:      u.Password,
+			IsPublished:   u.IsPublished,
+			IsTermsAgreed: u.IsTermsAgreed,
+			CreatedAt:     u.CreatedAt,
+			UpdatedAt:     u.UpdatedAt,
 		}, nil
 	}
 
@@ -68,12 +76,14 @@ func (r *UserRepository) GetByID(id uuid.UUID) (*domain.User, error) {
 	if err == nil {
 		logger.Init().Sugar().Infof("사용자 정보를 ID로 조회했습니다. 사용자ID: %s", u.ID.String())
 		return &domain.User{
-			ID:        u.ID,
-			NickName:  u.NickName,
-			Email:     u.Email,
-			Password:  u.Password,
-			CreatedAt: u.CreatedAt,
-			UpdatedAt: u.UpdatedAt,
+			ID:            u.ID,
+			NickName:      u.NickName,
+			Email:         u.Email,
+			Password:      u.Password,
+			IsPublished:   u.IsPublished,
+			IsTermsAgreed: u.IsTermsAgreed,
+			CreatedAt:     u.CreatedAt,
+			UpdatedAt:     u.UpdatedAt,
 		}, nil
 	}
 
@@ -94,12 +104,14 @@ func (r *UserRepository) GetByEmail(email string) (*domain.User, error) {
 	if err == nil {
 		logger.Init().Sugar().Infof("사용자 정보를 이메일로 조회했습니다. 사용자 이메일: %s", u.Email)
 		return &domain.User{
-			ID:        u.ID,
-			NickName:  u.NickName,
-			Email:     u.Email,
-			Password:  u.Password,
-			CreatedAt: u.CreatedAt,
-			UpdatedAt: u.UpdatedAt,
+			ID:            u.ID,
+			NickName:      u.NickName,
+			Email:         u.Email,
+			Password:      u.Password,
+			IsPublished:   u.IsPublished,
+			IsTermsAgreed: u.IsTermsAgreed,
+			CreatedAt:     u.CreatedAt,
+			UpdatedAt:     u.UpdatedAt,
 		}, nil
 	}
 

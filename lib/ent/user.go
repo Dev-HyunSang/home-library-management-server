@@ -22,10 +22,12 @@ type User struct {
 	NickName string `json:"nick_name,omitempty"`
 	// 사용자 이메일
 	Email string `json:"email,omitempty"`
-	// 사용자 비밀번호
+	// 사용자 비밀번호 (OAuth 사용자의 경우 비어있을 수 있음)
 	Password string `json:"password,omitempty"`
 	// 사용자 계정의 책 공개 여부
 	IsPublished bool `json:"is_published,omitempty"`
+	// 사용자 이용약관 동의 여부
+	IsTermsAgreed bool `json:"is_terms_agreed,omitempty"`
 	// 사용자 생성 시간
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// 사용자 수정 시간
@@ -81,7 +83,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldIsPublished:
+		case user.FieldIsPublished, user.FieldIsTermsAgreed:
 			values[i] = new(sql.NullBool)
 		case user.FieldNickName, user.FieldEmail, user.FieldPassword:
 			values[i] = new(sql.NullString)
@@ -133,6 +135,12 @@ func (u *User) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field is_published", values[i])
 			} else if value.Valid {
 				u.IsPublished = value.Bool
+			}
+		case user.FieldIsTermsAgreed:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_terms_agreed", values[i])
+			} else if value.Valid {
+				u.IsTermsAgreed = value.Bool
 			}
 		case user.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -208,6 +216,9 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("is_published=")
 	builder.WriteString(fmt.Sprintf("%v", u.IsPublished))
+	builder.WriteString(", ")
+	builder.WriteString("is_terms_agreed=")
+	builder.WriteString(fmt.Sprintf("%v", u.IsTermsAgreed))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(u.CreatedAt.Format(time.ANSIC))

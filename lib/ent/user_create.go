@@ -42,6 +42,14 @@ func (uc *UserCreate) SetPassword(s string) *UserCreate {
 	return uc
 }
 
+// SetNillablePassword sets the "password" field if the given value is not nil.
+func (uc *UserCreate) SetNillablePassword(s *string) *UserCreate {
+	if s != nil {
+		uc.SetPassword(*s)
+	}
+	return uc
+}
+
 // SetIsPublished sets the "is_published" field.
 func (uc *UserCreate) SetIsPublished(b bool) *UserCreate {
 	uc.mutation.SetIsPublished(b)
@@ -52,6 +60,20 @@ func (uc *UserCreate) SetIsPublished(b bool) *UserCreate {
 func (uc *UserCreate) SetNillableIsPublished(b *bool) *UserCreate {
 	if b != nil {
 		uc.SetIsPublished(*b)
+	}
+	return uc
+}
+
+// SetIsTermsAgreed sets the "is_terms_agreed" field.
+func (uc *UserCreate) SetIsTermsAgreed(b bool) *UserCreate {
+	uc.mutation.SetIsTermsAgreed(b)
+	return uc
+}
+
+// SetNillableIsTermsAgreed sets the "is_terms_agreed" field if the given value is not nil.
+func (uc *UserCreate) SetNillableIsTermsAgreed(b *bool) *UserCreate {
+	if b != nil {
+		uc.SetIsTermsAgreed(*b)
 	}
 	return uc
 }
@@ -174,6 +196,10 @@ func (uc *UserCreate) defaults() {
 		v := user.DefaultIsPublished
 		uc.mutation.SetIsPublished(v)
 	}
+	if _, ok := uc.mutation.IsTermsAgreed(); !ok {
+		v := user.DefaultIsTermsAgreed
+		uc.mutation.SetIsTermsAgreed(v)
+	}
 	if _, ok := uc.mutation.CreatedAt(); !ok {
 		v := user.DefaultCreatedAt()
 		uc.mutation.SetCreatedAt(v)
@@ -202,16 +228,11 @@ func (uc *UserCreate) check() error {
 			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "User.email": %w`, err)}
 		}
 	}
-	if _, ok := uc.mutation.Password(); !ok {
-		return &ValidationError{Name: "password", err: errors.New(`ent: missing required field "User.password"`)}
-	}
-	if v, ok := uc.mutation.Password(); ok {
-		if err := user.PasswordValidator(v); err != nil {
-			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "User.password": %w`, err)}
-		}
-	}
 	if _, ok := uc.mutation.IsPublished(); !ok {
 		return &ValidationError{Name: "is_published", err: errors.New(`ent: missing required field "User.is_published"`)}
+	}
+	if _, ok := uc.mutation.IsTermsAgreed(); !ok {
+		return &ValidationError{Name: "is_terms_agreed", err: errors.New(`ent: missing required field "User.is_terms_agreed"`)}
 	}
 	if _, ok := uc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "User.created_at"`)}
@@ -269,6 +290,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.IsPublished(); ok {
 		_spec.SetField(user.FieldIsPublished, field.TypeBool, value)
 		_node.IsPublished = value
+	}
+	if value, ok := uc.mutation.IsTermsAgreed(); ok {
+		_spec.SetField(user.FieldIsTermsAgreed, field.TypeBool, value)
+		_node.IsTermsAgreed = value
 	}
 	if value, ok := uc.mutation.CreatedAt(); ok {
 		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)

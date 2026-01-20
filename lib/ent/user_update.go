@@ -74,6 +74,12 @@ func (uu *UserUpdate) SetNillablePassword(s *string) *UserUpdate {
 	return uu
 }
 
+// ClearPassword clears the value of the "password" field.
+func (uu *UserUpdate) ClearPassword() *UserUpdate {
+	uu.mutation.ClearPassword()
+	return uu
+}
+
 // SetIsPublished sets the "is_published" field.
 func (uu *UserUpdate) SetIsPublished(b bool) *UserUpdate {
 	uu.mutation.SetIsPublished(b)
@@ -84,6 +90,20 @@ func (uu *UserUpdate) SetIsPublished(b bool) *UserUpdate {
 func (uu *UserUpdate) SetNillableIsPublished(b *bool) *UserUpdate {
 	if b != nil {
 		uu.SetIsPublished(*b)
+	}
+	return uu
+}
+
+// SetIsTermsAgreed sets the "is_terms_agreed" field.
+func (uu *UserUpdate) SetIsTermsAgreed(b bool) *UserUpdate {
+	uu.mutation.SetIsTermsAgreed(b)
+	return uu
+}
+
+// SetNillableIsTermsAgreed sets the "is_terms_agreed" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableIsTermsAgreed(b *bool) *UserUpdate {
+	if b != nil {
+		uu.SetIsTermsAgreed(*b)
 	}
 	return uu
 }
@@ -254,11 +274,6 @@ func (uu *UserUpdate) check() error {
 			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "User.email": %w`, err)}
 		}
 	}
-	if v, ok := uu.mutation.Password(); ok {
-		if err := user.PasswordValidator(v); err != nil {
-			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "User.password": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -283,8 +298,14 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := uu.mutation.Password(); ok {
 		_spec.SetField(user.FieldPassword, field.TypeString, value)
 	}
+	if uu.mutation.PasswordCleared() {
+		_spec.ClearField(user.FieldPassword, field.TypeString)
+	}
 	if value, ok := uu.mutation.IsPublished(); ok {
 		_spec.SetField(user.FieldIsPublished, field.TypeBool, value)
+	}
+	if value, ok := uu.mutation.IsTermsAgreed(); ok {
+		_spec.SetField(user.FieldIsTermsAgreed, field.TypeBool, value)
 	}
 	if value, ok := uu.mutation.UpdatedAt(); ok {
 		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
@@ -486,6 +507,12 @@ func (uuo *UserUpdateOne) SetNillablePassword(s *string) *UserUpdateOne {
 	return uuo
 }
 
+// ClearPassword clears the value of the "password" field.
+func (uuo *UserUpdateOne) ClearPassword() *UserUpdateOne {
+	uuo.mutation.ClearPassword()
+	return uuo
+}
+
 // SetIsPublished sets the "is_published" field.
 func (uuo *UserUpdateOne) SetIsPublished(b bool) *UserUpdateOne {
 	uuo.mutation.SetIsPublished(b)
@@ -496,6 +523,20 @@ func (uuo *UserUpdateOne) SetIsPublished(b bool) *UserUpdateOne {
 func (uuo *UserUpdateOne) SetNillableIsPublished(b *bool) *UserUpdateOne {
 	if b != nil {
 		uuo.SetIsPublished(*b)
+	}
+	return uuo
+}
+
+// SetIsTermsAgreed sets the "is_terms_agreed" field.
+func (uuo *UserUpdateOne) SetIsTermsAgreed(b bool) *UserUpdateOne {
+	uuo.mutation.SetIsTermsAgreed(b)
+	return uuo
+}
+
+// SetNillableIsTermsAgreed sets the "is_terms_agreed" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableIsTermsAgreed(b *bool) *UserUpdateOne {
+	if b != nil {
+		uuo.SetIsTermsAgreed(*b)
 	}
 	return uuo
 }
@@ -679,11 +720,6 @@ func (uuo *UserUpdateOne) check() error {
 			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "User.email": %w`, err)}
 		}
 	}
-	if v, ok := uuo.mutation.Password(); ok {
-		if err := user.PasswordValidator(v); err != nil {
-			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "User.password": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -725,8 +761,14 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	if value, ok := uuo.mutation.Password(); ok {
 		_spec.SetField(user.FieldPassword, field.TypeString, value)
 	}
+	if uuo.mutation.PasswordCleared() {
+		_spec.ClearField(user.FieldPassword, field.TypeString)
+	}
 	if value, ok := uuo.mutation.IsPublished(); ok {
 		_spec.SetField(user.FieldIsPublished, field.TypeBool, value)
+	}
+	if value, ok := uuo.mutation.IsTermsAgreed(); ok {
+		_spec.SetField(user.FieldIsTermsAgreed, field.TypeBool, value)
 	}
 	if value, ok := uuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)

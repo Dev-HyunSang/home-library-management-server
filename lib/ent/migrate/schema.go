@@ -95,9 +95,10 @@ var (
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
 		{Name: "nick_name", Type: field.TypeString},
-		{Name: "email", Type: field.TypeString},
-		{Name: "password", Type: field.TypeString},
+		{Name: "email", Type: field.TypeString, Unique: true},
+		{Name: "password", Type: field.TypeString, Nullable: true},
 		{Name: "is_published", Type: field.TypeBool, Default: false},
+		{Name: "is_terms_agreed", Type: field.TypeBool, Default: false},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 	}

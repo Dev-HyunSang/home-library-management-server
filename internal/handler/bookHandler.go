@@ -235,6 +235,7 @@ func (h *BookHandler) SearchBookIsbnHandler(ctx *fiber.Ctx) error {
 	}
 
 	logger.Init().Sugar().Infof("네이버 책 검색 API 요청이 성공적으로 완료되었습니다. / 사용자ID: %s", userID.String())
+	logger.Init().Sugar().Infof("네이버 책 검색 API 응답: %v", res)
 
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"is_success":   true,
