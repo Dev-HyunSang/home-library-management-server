@@ -23,6 +23,7 @@ type UserRepository interface {
 	Save(user *User) (*User, error)
 	GetByID(id uuid.UUID) (*User, error)
 	GetByEmail(email string) (*User, error)
+	GetByNickname(nickname string) (*User, error)
 	Update(user *User) error
 	Delete(id uuid.UUID) error
 }
@@ -31,6 +32,7 @@ type UserUseCase interface {
 	Save(user *User) (*User, error)
 	GetByID(id uuid.UUID) (*User, error)
 	GetByEmail(email string) (*User, error)
+	GetByNickname(nickname string) (*User, error)
 	Update(user *User) error
 	Delete(id uuid.UUID) error
 }

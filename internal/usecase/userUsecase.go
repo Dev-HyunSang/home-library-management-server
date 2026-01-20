@@ -46,6 +46,13 @@ func (uc *userUseCase) GetByEmail(email string) (*domain.User, error) {
 	return uc.userRepo.GetByEmail(email)
 }
 
+func (uc *userUseCase) GetByNickname(nickname string) (*domain.User, error) {
+	if nickname == "" {
+		return nil, domain.ErrInvalidInput
+	}
+	return uc.userRepo.GetByNickname(nickname)
+}
+
 func (uc *userUseCase) Update(user *domain.User) error {
 	return uc.userRepo.Update(user)
 

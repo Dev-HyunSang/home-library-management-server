@@ -123,6 +123,34 @@ func (r *UserRepository) GetByEmail(email string) (*domain.User, error) {
 	}
 }
 
+func (r *UserRepository) GetByNickname(nickname string) (*domain.User, error) {
+	client := r.client
+
+	u, err := client.User.Query().
+		Where(user.NickName(nickname)).
+		Only(context.Background())
+	if err == nil {
+		logger.Init().Sugar().Infof("사용자 정보를 닉네임으로 조회했습니다. 사용자 닉네임: %s", u.NickName)
+		return &domain.User{
+			ID:            u.ID,
+			NickName:      u.NickName,
+			Email:         u.Email,
+			Password:      u.Password,
+			IsPublished:   u.IsPublished,
+			IsTermsAgreed: u.IsTermsAgreed,
+			CreatedAt:     u.CreatedAt,
+			UpdatedAt:     u.UpdatedAt,
+		}, nil
+	}
+
+	switch {
+	case ent.IsNotFound(err):
+		return nil, fmt.Errorf("해당하는 닉네임으로 사용자를 찾을 수 없습니다: %w", err)
+	default:
+		return nil, fmt.Errorf("사용자 정보를 닉네임으로 조회하는 도중 오류가 발생했습니다: %w", err)
+	}
+}
+
 func (r *UserRepository) Update(user *domain.User) error {
 	client := r.client
 

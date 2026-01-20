@@ -134,6 +134,7 @@ func main() {
 	api := app.Group("/api")
 	user := api.Group("/users")
 	user.Post("/signup", userHandler.UserSignUpHandler)
+	user.Get("/check/nickname", userHandler.UserVerifyByNicknameHandler)
 	user.Post("/signin", userHandler.UserSignInHandler)
 	user.Post("/signout", middleware.JWTAuthMiddleware(authUseCase), userHandler.UserSignOutHandler)
 	user.Post("/forgot-password", userHandler.UserRestPasswordHandler)

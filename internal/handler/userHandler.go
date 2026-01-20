@@ -336,6 +336,34 @@ func (h *UserHandler) UserVerifyByEmailHandler(ctx *fiber.Ctx) error {
 	})
 }
 
+func (h *UserHandler) UserVerifyByNicknameHandler(ctx *fiber.Ctx) error {
+	nickname := ctx.Query("nickname")
+	if len(nickname) == 0 {
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+
+	if !IsValidNickname(nickname) {
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidNickname))
+	}
+
+	_, err := h.userUseCase.GetByNickname(nickname)
+	if err == nil {
+		return ctx.Status(fiber.StatusConflict).JSON(fiber.Map{
+			"is_success": false,
+			"message":    "이미 사용 중인 닉네임입니다.",
+		})
+	}
+
+	if ent.IsNotFound(err) {
+		return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+			"is_success": true,
+			"message":    "사용 가능한 닉네임입니다.",
+		})
+	}
+
+	return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
+}
+
 func (h *UserHandler) UserEditHandler(ctx *fiber.Ctx) error {
 	id := ctx.Params("id")
 	if len(id) == 0 {
