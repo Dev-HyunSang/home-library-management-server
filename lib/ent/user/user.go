@@ -24,6 +24,10 @@ const (
 	FieldIsPublished = "is_published"
 	// FieldIsTermsAgreed holds the string denoting the is_terms_agreed field in the database.
 	FieldIsTermsAgreed = "is_terms_agreed"
+	// FieldFcmToken holds the string denoting the fcm_token field in the database.
+	FieldFcmToken = "fcm_token"
+	// FieldTimezone holds the string denoting the timezone field in the database.
+	FieldTimezone = "timezone"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -34,6 +38,8 @@ const (
 	EdgeReviews = "reviews"
 	// EdgeBookmarks holds the string denoting the bookmarks edge name in mutations.
 	EdgeBookmarks = "bookmarks"
+	// EdgeReadingReminders holds the string denoting the reading_reminders edge name in mutations.
+	EdgeReadingReminders = "reading_reminders"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// BooksTable is the table that holds the books relation/edge.
@@ -57,6 +63,13 @@ const (
 	BookmarksInverseTable = "bookmarks"
 	// BookmarksColumn is the table column denoting the bookmarks relation/edge.
 	BookmarksColumn = "user_bookmarks"
+	// ReadingRemindersTable is the table that holds the reading_reminders relation/edge.
+	ReadingRemindersTable = "reading_reminders"
+	// ReadingRemindersInverseTable is the table name for the ReadingReminder entity.
+	// It exists in this package in order to avoid circular dependency with the "readingreminder" package.
+	ReadingRemindersInverseTable = "reading_reminders"
+	// ReadingRemindersColumn is the table column denoting the reading_reminders relation/edge.
+	ReadingRemindersColumn = "user_reading_reminders"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -67,6 +80,8 @@ var Columns = []string{
 	FieldPassword,
 	FieldIsPublished,
 	FieldIsTermsAgreed,
+	FieldFcmToken,
+	FieldTimezone,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
@@ -90,6 +105,8 @@ var (
 	DefaultIsPublished bool
 	// DefaultIsTermsAgreed holds the default value on creation for the "is_terms_agreed" field.
 	DefaultIsTermsAgreed bool
+	// DefaultTimezone holds the default value on creation for the "timezone" field.
+	DefaultTimezone string
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
@@ -127,6 +144,16 @@ func ByIsPublished(opts ...sql.OrderTermOption) OrderOption {
 // ByIsTermsAgreed orders the results by the is_terms_agreed field.
 func ByIsTermsAgreed(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsTermsAgreed, opts...).ToFunc()
+}
+
+// ByFcmToken orders the results by the fcm_token field.
+func ByFcmToken(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFcmToken, opts...).ToFunc()
+}
+
+// ByTimezone orders the results by the timezone field.
+func ByTimezone(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTimezone, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.
@@ -180,6 +207,20 @@ func ByBookmarks(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newBookmarksStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByReadingRemindersCount orders the results by reading_reminders count.
+func ByReadingRemindersCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newReadingRemindersStep(), opts...)
+	}
+}
+
+// ByReadingReminders orders the results by reading_reminders terms.
+func ByReadingReminders(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newReadingRemindersStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newBooksStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -199,5 +240,12 @@ func newBookmarksStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(BookmarksInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, BookmarksTable, BookmarksColumn),
+	)
+}
+func newReadingRemindersStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ReadingRemindersInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ReadingRemindersTable, ReadingRemindersColumn),
 	)
 }

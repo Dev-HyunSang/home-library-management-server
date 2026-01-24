@@ -1,8 +1,10 @@
 # API Docs
 
-## POST `/api/users/signin`
+## Users
 
-### Request
+### POST `/api/users/signin`
+
+#### Request
 
 ```json
 {
@@ -11,69 +13,265 @@
 }
 ```
 
-### Response
+#### Response
 
 ```json
 {
-  "id": "dcb05d32-79c7-11f0-ad24-acde48001122",
-  "nick_name": "hyunsang",
-  "email": "me@hyunsang.dev",
-  "password": "$2a$10$2ChYRO3mBvMYr7.iLsk5XeMPYFRJW1q/ZV9olS.PJCW53k1VFzgk2",
-  "is_published": false,
-  "created_at": "2025-08-15T11:06:16Z",
-  "updated_at": "2025-08-15T11:06:16Z"
+  "user": {
+    "id": "dcb05d32-79c7-11f0-ad24-acde48001122",
+    "nick_name": "hyunsang",
+    "email": "me@hyunsang.dev",
+    "is_published": false,
+    "is_terms_agreed": true,
+    "timezone": "Asia/Seoul",
+    "created_at": "2025-08-15T11:06:16Z",
+    "updated_at": "2025-08-15T11:06:16Z"
+  },
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "Bearer",
+  "expires_in": 3600
 }
 ```
 
-## POST `/api/users/signup`
+### POST `/api/users/signup`
 
-### Requset
+#### Request
 
 ```json
 {
   "nick_name": "example",
   "email": "example@example.com",
   "password": "example",
-  "is_published": true
+  "is_published": true,
+  "is_terms_agreed": true
 }
 ```
 
-### Response
+#### Response
 
 ```json
 {
   "id": "803a215c-80e1-11f0-b1ad-acde48001122",
   "nick_name": "example",
   "email": "example@example.com",
-  "password": "$2a$10$ENbcBVNwy.rbV.rkUugr/uNsUmecD0IRAdTMmvS4K1G7Oc2JZKguG",
   "is_published": true,
+  "is_terms_agreed": true,
+  "timezone": "Asia/Seoul",
   "created_at": "2025-08-24T20:57:25.636597+09:00",
   "updated_at": "2025-08-24T20:57:25.636597+09:00"
 }
 ```
 
-### POST `/api/users/rest-password`
+### POST `/api/users/forgot-password`
 
 - 변경 시 변경된 비밀번호로 로그인 성공
 
 #### Request
+
 ```json
 {
-    "email": "me@hyunsang.dev"
+  "email": "me@hyunsang.dev"
 }
 ```
 
 #### Response
+
 ```json
 {
-    "email": "me@hyunsang.dev",
-    "message": "비밀번호 재설정 이메일이 발송되었습니다"
+  "email": "me@hyunsang.dev",
+  "message": "비밀번호 재설정 이메일이 발송되었습니다"
 }
 ```
 
-### GET `/api/books/`
+### PUT `/api/users/fcm-token`
 
-### Response
+- FCM 디바이스 토큰 업데이트 (푸시 알림용)
+- Authorization: Bearer {token} 필요
+
+#### Request
+
+```json
+{
+  "fcm_token": "dGVzdC10b2tlbi1mb3ItZmNtLXB1c2gtbm90aWZpY2F0aW9u..."
+}
+```
+
+#### Response
+
+```json
+{
+  "message": "FCM 토큰이 성공적으로 업데이트되었습니다."
+}
+```
+
+### PUT `/api/users/timezone`
+
+- 사용자 타임존 업데이트 (알림 시간 계산용)
+- Authorization: Bearer {token} 필요
+
+#### Request
+
+```json
+{
+  "timezone": "Asia/Seoul"
+}
+```
+
+#### Response
+
+```json
+{
+  "message": "타임존이 성공적으로 업데이트되었습니다.",
+  "timezone": "Asia/Seoul"
+}
+```
+
+---
+
+## Reading Reminders
+
+독서 리마인더 기능 - 사용자가 설정한 시간에 "책 읽을 시간이에요" 알림을 받을 수 있음
+
+### POST `/api/reminders`
+
+- 새 알림 생성
+- Authorization: Bearer {token} 필요
+
+#### Request
+
+```json
+{
+  "reminder_time": "20:00",
+  "day_of_week": "everyday",
+  "message": "책 읽을 시간이에요!"
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| reminder_time | string | Yes | HH:MM 형식 (예: "09:00", "20:30") |
+| day_of_week | string | No | everyday, monday, tuesday, wednesday, thursday, friday, saturday, sunday (기본값: everyday) |
+| message | string | No | 알림 메시지 (기본값: "책 읽을 시간이에요!") |
+
+#### Response
+
+```json
+{
+  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "user_id": "dcb05d32-79c7-11f0-ad24-acde48001122",
+  "reminder_time": "20:00",
+  "day_of_week": "everyday",
+  "is_enabled": true,
+  "message": "책 읽을 시간이에요!",
+  "created_at": "2025-01-24T10:00:00Z",
+  "updated_at": "2025-01-24T10:00:00Z"
+}
+```
+
+### GET `/api/reminders`
+
+- 내 알림 목록 조회
+- Authorization: Bearer {token} 필요
+
+#### Response
+
+```json
+{
+  "reminders": [
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "user_id": "dcb05d32-79c7-11f0-ad24-acde48001122",
+      "reminder_time": "20:00",
+      "day_of_week": "everyday",
+      "is_enabled": true,
+      "message": "책 읽을 시간이에요!",
+      "created_at": "2025-01-24T10:00:00Z",
+      "updated_at": "2025-01-24T10:00:00Z"
+    },
+    {
+      "id": "b2c3d4e5-f6a7-8901-bcde-f23456789012",
+      "user_id": "dcb05d32-79c7-11f0-ad24-acde48001122",
+      "reminder_time": "08:00",
+      "day_of_week": "monday",
+      "is_enabled": false,
+      "message": "월요일 아침 독서!",
+      "created_at": "2025-01-24T11:00:00Z",
+      "updated_at": "2025-01-24T11:00:00Z"
+    }
+  ],
+  "count": 2
+}
+```
+
+### PUT `/api/reminders/:id`
+
+- 알림 수정
+- Authorization: Bearer {token} 필요
+
+#### Request
+
+```json
+{
+  "reminder_time": "21:00",
+  "day_of_week": "friday",
+  "message": "금요일 저녁 독서 시간!"
+}
+```
+
+#### Response
+
+```json
+{
+  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "user_id": "dcb05d32-79c7-11f0-ad24-acde48001122",
+  "reminder_time": "21:00",
+  "day_of_week": "friday",
+  "is_enabled": true,
+  "message": "금요일 저녁 독서 시간!",
+  "created_at": "2025-01-24T10:00:00Z",
+  "updated_at": "2025-01-24T12:00:00Z"
+}
+```
+
+### PATCH `/api/reminders/:id/toggle`
+
+- 알림 활성화/비활성화 토글
+- Authorization: Bearer {token} 필요
+
+#### Response
+
+```json
+{
+  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "user_id": "dcb05d32-79c7-11f0-ad24-acde48001122",
+  "reminder_time": "20:00",
+  "day_of_week": "everyday",
+  "is_enabled": false,
+  "message": "책 읽을 시간이에요!",
+  "created_at": "2025-01-24T10:00:00Z",
+  "updated_at": "2025-01-24T13:00:00Z"
+}
+```
+
+### DELETE `/api/reminders/:id`
+
+- 알림 삭제
+- Authorization: Bearer {token} 필요
+
+#### Response
+
+- 204 No Content
+
+---
+
+## Books
+
+### GET `/api/books/get`
+
+- Authorization: Bearer {token} 필요
+
+#### Response
 
 ```json
 {
@@ -102,9 +300,11 @@
 }
 ```
 
-## POST `/api/books/`
+### POST `/api/books/add`
 
-### Request
+- Authorization: Bearer {token} 필요
+
+#### Request
 
 ```json
 {
@@ -114,7 +314,7 @@
 }
 ```
 
-### Response
+#### Response
 
 ```json
 {
@@ -132,17 +332,21 @@
 }
 ```
 
-## DELETE `/api/books/:id`
+### DELETE `/api/books/delete/:id`
 
-- Ex) `/books/ef6e7a96-7da8-11f0-9a1c-acde48001122`
+- Ex) `/api/books/delete/ef6e7a96-7da8-11f0-9a1c-acde48001122`
+- Authorization: Bearer {token} 필요
 
-### Response
+#### Response
 
 - 204 No Content
 
-## POST `/api/books/search`
+### POST `/api/books/search`
 
-### Request
+- ISBN으로 책 정보 검색 (네이버 API)
+- Authorization: Bearer {token} 필요
+
+#### Request
 
 ```json
 {
@@ -150,7 +354,7 @@
 }
 ```
 
-### Response
+#### Response
 
 ```json
 {
@@ -169,30 +373,84 @@
         "publisher": "녹색광선",
         "pubdate": "20230804",
         "isbn": "9791198375308",
-        "description": "영원한 청춘의 책, 알베르 카뮈의 『결혼 · 여름』이 교보문고 특별 리커버 판으로 새롭게 선보인다. 북 디자인 키워드는 ‘포레스트(Forest)’\n『결혼 · 여름』은 카뮈 사상의 핵심인 ‘부조리’와 ‘반항’의 출발 및 완성 과정이 육성으로 들리는 듯한 자전적 기록이다. 하지만 수많은 이들을 벅차 오르게 했던 『결혼 · 여름』의 가장 큰 매력은 감각적이며 관능적인 문체다. 드물게 시와 사상, 예술과 철학이 완벽하게 결합된 에세이가 우리에게 닿았다.\n\n이 에세이가 출간된 시기는 카뮈가 『이방인』으로 최고의 작가가 되기 전이다. 카뮈의 유년기부터 20대 초중반까지의 시간은 그야말로 좌절과 불확실함의 연속이었다. 학교에 다니는 것조차 사치였던 가난한 유년시절, 열일곱 살에 발병해 그를 죽음 근처로 몰아갔던 폐결핵, 스물한 살에 감행한 사랑하는 사람과의 이른 결혼과 파국, 폐결핵 병력으로 인한 교수 응시 자격의 박탈.\n\n그럼에도 불구하고 그는 다음과 같이 쓴다. 사는 것이 파멸을 향해 달려가는 것이라 해도, 이 세계 속에서 사랑과 욕망을 찾아 걸어 나가겠다고.\n\n『결혼 · 여름』의 오리지널 표지가 티파사의 바다 이미지를 표현한 것이라면, \n리커버:k 표지는 흰색과 녹색 컬러를 메인으로 작업하여 알제의 여름 이미지를 표현했다.\n\n어떤 글은 시간이 흘러도 전혀 나이를 먹지 않는다. 그는 불의의 사고로 세상을 떠났지만, 『결혼 · 여름』이 지닌 청춘의 생명력은 읽는 이로 하여금 젊음을 마주한 느낌, 다시 젊음을 되찾는 기분을 선사할 것이다."
+        "description": "..."
       }
     ]
   }
 }
 ```
 
-### POST `/api/books/reviews/get`
+---
+
+## Reviews
+
+### POST `/api/books/reviews/`
+
+- 책 리뷰 작성
+- Authorization: Bearer {token} 필요
+
+### GET `/api/books/reviews/get`
+
+- 내 리뷰 목록 조회
+- Authorization: Bearer {token} 필요
 
 #### Response
+
 ```json
 {
-    "data": [
-        {
-            "id": "ea6fe0a1-1f6f-40cd-a568-b0895e76d139",
-            "book_id": "db00f4e8-95f5-11f0-aa2d-420b6f780d98",
-            "owner_id": "9681c23c-95de-11f0-8288-420b6f780d98",
-            "content": "제목도, 저자도, 첫 문장도, 이미 유명한 '알베르 카뮈'의 <이방인>을 이제야 읽었다. 책은 잊힌 책과 남은 책. 두 가지로 나뉜다고 한다. 기억에 남은 책으로 남겨두고 싶어서 기록해 보기로 한다. 이방인, 낯선 곳에서 온 사람,이라고 막연하게 생각하고 읽었다. 이민자들의 이야기를 많이 접하기도 했고, 이방인이라는 단어에 대한 나의 선입견이 컸기 때문이다. 책을 읽다 보니 같은 사회나 울타리 안에서도 다른 생각을 가진 사람이 이방인이라는 생각이 들었다. 책은 흥미롭게 읽었는데 작가가 말하고자 하는 의미를 찾는 건 무척이나 어려웠다. 파도 파도 파헤칠 게 많은 소설.",
-            "rating": 4,
-            "created_at": "2025-09-20T10:49:28Z",
-            "updated_at": "2025-09-20T10:49:28Z"
-        }
-    ],
-    "is_success": true,
-    "responsed_at": "2025-09-20T20:39:25.965901+09:00"
+  "data": [
+    {
+      "id": "ea6fe0a1-1f6f-40cd-a568-b0895e76d139",
+      "book_id": "db00f4e8-95f5-11f0-aa2d-420b6f780d98",
+      "owner_id": "9681c23c-95de-11f0-8288-420b6f780d98",
+      "content": "제목도, 저자도, 첫 문장도, 이미 유명한 '알베르 카뮈'의 <이방인>을 이제야 읽었다...",
+      "rating": 4,
+      "created_at": "2025-09-20T10:49:28Z",
+      "updated_at": "2025-09-20T10:49:28Z"
+    }
+  ],
+  "is_success": true,
+  "responsed_at": "2025-09-20T20:39:25.965901+09:00"
 }
 ```
+
+### GET `/api/books/reviews/:book_id`
+
+- 특정 책의 공개 리뷰 조회 (인증 불필요)
+
+---
+
+## Bookmarks
+
+### POST `/api/books/bookmarks/add/:id`
+
+- 북마크 추가
+- Authorization: Bearer {token} 필요
+
+### GET `/api/books/bookmarks/get`
+
+- 내 북마크 목록 조회
+- Authorization: Bearer {token} 필요
+
+### DELETE `/api/books/bookmarks/delete/:id`
+
+- 북마크 삭제
+- Authorization: Bearer {token} 필요
+
+---
+
+## Auth
+
+### POST `/api/auth/refresh`
+
+- 토큰 갱신
+
+### POST `/api/auth/revoke-all`
+
+- 모든 토큰 무효화
+- Authorization: Bearer {token} 필요
+
+### GET `/api/auth/rate-limit`
+
+- Rate limit 상태 확인
+- Authorization: Bearer {token} 필요

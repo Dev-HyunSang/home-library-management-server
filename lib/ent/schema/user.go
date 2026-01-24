@@ -35,6 +35,12 @@ func (User) Fields() []ent.Field {
 		field.Bool("is_terms_agreed").
 			Default(false).
 			Comment("사용자 이용약관 동의 여부"),
+		field.String("fcm_token").
+			Optional().
+			Comment("FCM 디바이스 토큰"),
+		field.String("timezone").
+			Default("Asia/Seoul").
+			Comment("사용자 타임존"),
 		field.Time("created_at").
 			Immutable().
 			Default(time.Now).
@@ -53,6 +59,8 @@ func (User) Edges() []ent.Edge {
 		edge.To("reviews", Review.Type).
 			Annotations(entsql.OnDelete(entsql.Cascade)),
 		edge.To("bookmarks", Bookmark.Type).
+			Annotations(entsql.OnDelete(entsql.Cascade)),
+		edge.To("reading_reminders", ReadingReminder.Type).
 			Annotations(entsql.OnDelete(entsql.Cascade)),
 	}
 }

@@ -13,6 +13,7 @@ import (
 	"github.com/dev-hyunsang/home-library/internal/handler"
 	"github.com/dev-hyunsang/home-library/internal/infrastructure/fcm"
 	"github.com/dev-hyunsang/home-library/internal/infrastructure/kafka"
+	"github.com/dev-hyunsang/home-library/internal/infrastructure/scheduler"
 	"github.com/dev-hyunsang/home-library/internal/middleware"
 	repository "github.com/dev-hyunsang/home-library/internal/repository/mysql"
 	redisRepository "github.com/dev-hyunsang/home-library/internal/repository/redis"
@@ -131,6 +132,23 @@ func main() {
 	bookUseCase := usecase.NewBookUseCase(bookRepo, kafkaProducer)
 	bookHandler := handler.NewBookHandler(bookUseCase, authUseCase)
 
+	// 읽기 리마인더 관련 의존성 주입
+	reminderRepo := repository.NewReadingReminderRepository(dbConn)
+	reminderUseCase := usecase.NewReadingReminderUseCase(reminderRepo)
+	reminderHandler := handler.NewReadingReminderHandler(reminderUseCase, authUseCase)
+
+	// 리마인더 스케줄러 시작
+	reminderScheduler, err := scheduler.NewReminderScheduler(reminderRepo, kafkaProducer)
+	if err != nil {
+		logger.Init().Sugar().Warnf("리마인더 스케줄러 초기화 실패: %v", err)
+	} else {
+		if err := reminderScheduler.Start(); err != nil {
+			logger.Init().Sugar().Warnf("리마인더 스케줄러 시작 실패: %v", err)
+		} else {
+			defer reminderScheduler.Stop()
+		}
+	}
+
 	api := app.Group("/api")
 	user := api.Group("/users")
 	user.Post("/signup", userHandler.UserSignUpHandler)
@@ -142,6 +160,8 @@ func main() {
 	user.Get("/:id", middleware.JWTAuthMiddleware(authUseCase), userHandler.UserGetByIdHandler)
 	user.Put("/update/:id", middleware.JWTAuthMiddleware(authUseCase), userHandler.UserEditHandler)
 	user.Delete("/:id", middleware.JWTAuthMiddleware(authUseCase), userHandler.UserDeleteHandler)
+	user.Put("/fcm-token", middleware.JWTAuthMiddleware(authUseCase), userHandler.UpdateFCMTokenHandler)
+	user.Put("/timezone", middleware.JWTAuthMiddleware(authUseCase), userHandler.UpdateTimezoneHandler)
 
 	books := api.Group("/books")
 	books.Post("/add", middleware.JWTAuthMiddleware(authUseCase), bookHandler.SaveBookHandler)
@@ -159,6 +179,13 @@ func main() {
 	bookmarks.Post("/add/:id", middleware.JWTAuthMiddleware(authUseCase), bookHandler.AddBookmarkHandler)
 	bookmarks.Get("/get", middleware.JWTAuthMiddleware(authUseCase), bookHandler.GetBookmarksByUserIDHandler)
 	bookmarks.Delete("/delete/:id", middleware.JWTAuthMiddleware(authUseCase), bookHandler.DeleteBookmarkHandler)
+
+	reminders := api.Group("/reminders")
+	reminders.Post("/", middleware.JWTAuthMiddleware(authUseCase), reminderHandler.CreateReminderHandler)
+	reminders.Get("/", middleware.JWTAuthMiddleware(authUseCase), reminderHandler.GetRemindersHandler)
+	reminders.Put("/:id", middleware.JWTAuthMiddleware(authUseCase), reminderHandler.UpdateReminderHandler)
+	reminders.Patch("/:id/toggle", middleware.JWTAuthMiddleware(authUseCase), reminderHandler.ToggleReminderHandler)
+	reminders.Delete("/:id", middleware.JWTAuthMiddleware(authUseCase), reminderHandler.DeleteReminderHandler)
 
 	auth := api.Group("/auth")
 	auth.Post("/refresh", authHandler.RefreshTokenHandler)

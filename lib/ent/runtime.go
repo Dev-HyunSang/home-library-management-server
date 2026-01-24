@@ -7,6 +7,7 @@ import (
 
 	"github.com/dev-hyunsang/home-library/lib/ent/book"
 	"github.com/dev-hyunsang/home-library/lib/ent/bookmark"
+	"github.com/dev-hyunsang/home-library/lib/ent/readingreminder"
 	"github.com/dev-hyunsang/home-library/lib/ent/review"
 	"github.com/dev-hyunsang/home-library/lib/ent/schema"
 	"github.com/dev-hyunsang/home-library/lib/ent/user"
@@ -51,6 +52,30 @@ func init() {
 	bookmarkDescID := bookmarkFields[0].Descriptor()
 	// bookmark.DefaultID holds the default value on creation for the id field.
 	bookmark.DefaultID = bookmarkDescID.Default.(func() uuid.UUID)
+	readingreminderFields := schema.ReadingReminder{}.Fields()
+	_ = readingreminderFields
+	// readingreminderDescReminderTime is the schema descriptor for reminder_time field.
+	readingreminderDescReminderTime := readingreminderFields[1].Descriptor()
+	// readingreminder.ReminderTimeValidator is a validator for the "reminder_time" field. It is called by the builders before save.
+	readingreminder.ReminderTimeValidator = readingreminderDescReminderTime.Validators[0].(func(string) error)
+	// readingreminderDescIsEnabled is the schema descriptor for is_enabled field.
+	readingreminderDescIsEnabled := readingreminderFields[3].Descriptor()
+	// readingreminder.DefaultIsEnabled holds the default value on creation for the is_enabled field.
+	readingreminder.DefaultIsEnabled = readingreminderDescIsEnabled.Default.(bool)
+	// readingreminderDescMessage is the schema descriptor for message field.
+	readingreminderDescMessage := readingreminderFields[4].Descriptor()
+	// readingreminder.DefaultMessage holds the default value on creation for the message field.
+	readingreminder.DefaultMessage = readingreminderDescMessage.Default.(string)
+	// readingreminderDescCreatedAt is the schema descriptor for created_at field.
+	readingreminderDescCreatedAt := readingreminderFields[5].Descriptor()
+	// readingreminder.DefaultCreatedAt holds the default value on creation for the created_at field.
+	readingreminder.DefaultCreatedAt = readingreminderDescCreatedAt.Default.(func() time.Time)
+	// readingreminderDescUpdatedAt is the schema descriptor for updated_at field.
+	readingreminderDescUpdatedAt := readingreminderFields[6].Descriptor()
+	// readingreminder.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	readingreminder.DefaultUpdatedAt = readingreminderDescUpdatedAt.Default.(func() time.Time)
+	// readingreminder.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	readingreminder.UpdateDefaultUpdatedAt = readingreminderDescUpdatedAt.UpdateDefault.(func() time.Time)
 	reviewFields := schema.Review{}.Fields()
 	_ = reviewFields
 	// reviewDescContent is the schema descriptor for content field.
@@ -111,12 +136,16 @@ func init() {
 	userDescIsTermsAgreed := userFields[5].Descriptor()
 	// user.DefaultIsTermsAgreed holds the default value on creation for the is_terms_agreed field.
 	user.DefaultIsTermsAgreed = userDescIsTermsAgreed.Default.(bool)
+	// userDescTimezone is the schema descriptor for timezone field.
+	userDescTimezone := userFields[7].Descriptor()
+	// user.DefaultTimezone holds the default value on creation for the timezone field.
+	user.DefaultTimezone = userDescTimezone.Default.(string)
 	// userDescCreatedAt is the schema descriptor for created_at field.
-	userDescCreatedAt := userFields[6].Descriptor()
+	userDescCreatedAt := userFields[8].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
 	// userDescUpdatedAt is the schema descriptor for updated_at field.
-	userDescUpdatedAt := userFields[7].Descriptor()
+	userDescUpdatedAt := userFields[9].Descriptor()
 	// user.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() time.Time)
 }

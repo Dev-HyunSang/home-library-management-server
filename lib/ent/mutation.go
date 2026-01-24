@@ -14,6 +14,7 @@ import (
 	"github.com/dev-hyunsang/home-library/lib/ent/book"
 	"github.com/dev-hyunsang/home-library/lib/ent/bookmark"
 	"github.com/dev-hyunsang/home-library/lib/ent/predicate"
+	"github.com/dev-hyunsang/home-library/lib/ent/readingreminder"
 	"github.com/dev-hyunsang/home-library/lib/ent/review"
 	"github.com/dev-hyunsang/home-library/lib/ent/user"
 	"github.com/google/uuid"
@@ -28,10 +29,11 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeBook     = "Book"
-	TypeBookmark = "Bookmark"
-	TypeReview   = "Review"
-	TypeUser     = "User"
+	TypeBook            = "Book"
+	TypeBookmark        = "Bookmark"
+	TypeReadingReminder = "ReadingReminder"
+	TypeReview          = "Review"
+	TypeUser            = "User"
 )
 
 // BookMutation represents an operation that mutates the Book nodes in the graph.
@@ -1460,6 +1462,675 @@ func (m *BookmarkMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Bookmark edge %s", name)
 }
 
+// ReadingReminderMutation represents an operation that mutates the ReadingReminder nodes in the graph.
+type ReadingReminderMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *uuid.UUID
+	reminder_time *string
+	day_of_week   *readingreminder.DayOfWeek
+	is_enabled    *bool
+	message       *string
+	created_at    *time.Time
+	updated_at    *time.Time
+	clearedFields map[string]struct{}
+	owner         *uuid.UUID
+	clearedowner  bool
+	done          bool
+	oldValue      func(context.Context) (*ReadingReminder, error)
+	predicates    []predicate.ReadingReminder
+}
+
+var _ ent.Mutation = (*ReadingReminderMutation)(nil)
+
+// readingreminderOption allows management of the mutation configuration using functional options.
+type readingreminderOption func(*ReadingReminderMutation)
+
+// newReadingReminderMutation creates new mutation for the ReadingReminder entity.
+func newReadingReminderMutation(c config, op Op, opts ...readingreminderOption) *ReadingReminderMutation {
+	m := &ReadingReminderMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeReadingReminder,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withReadingReminderID sets the ID field of the mutation.
+func withReadingReminderID(id uuid.UUID) readingreminderOption {
+	return func(m *ReadingReminderMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ReadingReminder
+		)
+		m.oldValue = func(ctx context.Context) (*ReadingReminder, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ReadingReminder.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withReadingReminder sets the old ReadingReminder of the mutation.
+func withReadingReminder(node *ReadingReminder) readingreminderOption {
+	return func(m *ReadingReminderMutation) {
+		m.oldValue = func(context.Context) (*ReadingReminder, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ReadingReminderMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ReadingReminderMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of ReadingReminder entities.
+func (m *ReadingReminderMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ReadingReminderMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ReadingReminderMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().ReadingReminder.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetReminderTime sets the "reminder_time" field.
+func (m *ReadingReminderMutation) SetReminderTime(s string) {
+	m.reminder_time = &s
+}
+
+// ReminderTime returns the value of the "reminder_time" field in the mutation.
+func (m *ReadingReminderMutation) ReminderTime() (r string, exists bool) {
+	v := m.reminder_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReminderTime returns the old "reminder_time" field's value of the ReadingReminder entity.
+// If the ReadingReminder object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReadingReminderMutation) OldReminderTime(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReminderTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReminderTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReminderTime: %w", err)
+	}
+	return oldValue.ReminderTime, nil
+}
+
+// ResetReminderTime resets all changes to the "reminder_time" field.
+func (m *ReadingReminderMutation) ResetReminderTime() {
+	m.reminder_time = nil
+}
+
+// SetDayOfWeek sets the "day_of_week" field.
+func (m *ReadingReminderMutation) SetDayOfWeek(row readingreminder.DayOfWeek) {
+	m.day_of_week = &row
+}
+
+// DayOfWeek returns the value of the "day_of_week" field in the mutation.
+func (m *ReadingReminderMutation) DayOfWeek() (r readingreminder.DayOfWeek, exists bool) {
+	v := m.day_of_week
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDayOfWeek returns the old "day_of_week" field's value of the ReadingReminder entity.
+// If the ReadingReminder object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReadingReminderMutation) OldDayOfWeek(ctx context.Context) (v readingreminder.DayOfWeek, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDayOfWeek is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDayOfWeek requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDayOfWeek: %w", err)
+	}
+	return oldValue.DayOfWeek, nil
+}
+
+// ResetDayOfWeek resets all changes to the "day_of_week" field.
+func (m *ReadingReminderMutation) ResetDayOfWeek() {
+	m.day_of_week = nil
+}
+
+// SetIsEnabled sets the "is_enabled" field.
+func (m *ReadingReminderMutation) SetIsEnabled(b bool) {
+	m.is_enabled = &b
+}
+
+// IsEnabled returns the value of the "is_enabled" field in the mutation.
+func (m *ReadingReminderMutation) IsEnabled() (r bool, exists bool) {
+	v := m.is_enabled
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsEnabled returns the old "is_enabled" field's value of the ReadingReminder entity.
+// If the ReadingReminder object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReadingReminderMutation) OldIsEnabled(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsEnabled is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsEnabled requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsEnabled: %w", err)
+	}
+	return oldValue.IsEnabled, nil
+}
+
+// ResetIsEnabled resets all changes to the "is_enabled" field.
+func (m *ReadingReminderMutation) ResetIsEnabled() {
+	m.is_enabled = nil
+}
+
+// SetMessage sets the "message" field.
+func (m *ReadingReminderMutation) SetMessage(s string) {
+	m.message = &s
+}
+
+// Message returns the value of the "message" field in the mutation.
+func (m *ReadingReminderMutation) Message() (r string, exists bool) {
+	v := m.message
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMessage returns the old "message" field's value of the ReadingReminder entity.
+// If the ReadingReminder object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReadingReminderMutation) OldMessage(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMessage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMessage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMessage: %w", err)
+	}
+	return oldValue.Message, nil
+}
+
+// ResetMessage resets all changes to the "message" field.
+func (m *ReadingReminderMutation) ResetMessage() {
+	m.message = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ReadingReminderMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ReadingReminderMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the ReadingReminder entity.
+// If the ReadingReminder object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReadingReminderMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ReadingReminderMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *ReadingReminderMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *ReadingReminderMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the ReadingReminder entity.
+// If the ReadingReminder object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReadingReminderMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *ReadingReminderMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetOwnerID sets the "owner" edge to the User entity by id.
+func (m *ReadingReminderMutation) SetOwnerID(id uuid.UUID) {
+	m.owner = &id
+}
+
+// ClearOwner clears the "owner" edge to the User entity.
+func (m *ReadingReminderMutation) ClearOwner() {
+	m.clearedowner = true
+}
+
+// OwnerCleared reports if the "owner" edge to the User entity was cleared.
+func (m *ReadingReminderMutation) OwnerCleared() bool {
+	return m.clearedowner
+}
+
+// OwnerID returns the "owner" edge ID in the mutation.
+func (m *ReadingReminderMutation) OwnerID() (id uuid.UUID, exists bool) {
+	if m.owner != nil {
+		return *m.owner, true
+	}
+	return
+}
+
+// OwnerIDs returns the "owner" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// OwnerID instead. It exists only for internal usage by the builders.
+func (m *ReadingReminderMutation) OwnerIDs() (ids []uuid.UUID) {
+	if id := m.owner; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetOwner resets all changes to the "owner" edge.
+func (m *ReadingReminderMutation) ResetOwner() {
+	m.owner = nil
+	m.clearedowner = false
+}
+
+// Where appends a list predicates to the ReadingReminderMutation builder.
+func (m *ReadingReminderMutation) Where(ps ...predicate.ReadingReminder) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ReadingReminderMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ReadingReminderMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.ReadingReminder, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ReadingReminderMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ReadingReminderMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (ReadingReminder).
+func (m *ReadingReminderMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ReadingReminderMutation) Fields() []string {
+	fields := make([]string, 0, 6)
+	if m.reminder_time != nil {
+		fields = append(fields, readingreminder.FieldReminderTime)
+	}
+	if m.day_of_week != nil {
+		fields = append(fields, readingreminder.FieldDayOfWeek)
+	}
+	if m.is_enabled != nil {
+		fields = append(fields, readingreminder.FieldIsEnabled)
+	}
+	if m.message != nil {
+		fields = append(fields, readingreminder.FieldMessage)
+	}
+	if m.created_at != nil {
+		fields = append(fields, readingreminder.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, readingreminder.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ReadingReminderMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case readingreminder.FieldReminderTime:
+		return m.ReminderTime()
+	case readingreminder.FieldDayOfWeek:
+		return m.DayOfWeek()
+	case readingreminder.FieldIsEnabled:
+		return m.IsEnabled()
+	case readingreminder.FieldMessage:
+		return m.Message()
+	case readingreminder.FieldCreatedAt:
+		return m.CreatedAt()
+	case readingreminder.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ReadingReminderMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case readingreminder.FieldReminderTime:
+		return m.OldReminderTime(ctx)
+	case readingreminder.FieldDayOfWeek:
+		return m.OldDayOfWeek(ctx)
+	case readingreminder.FieldIsEnabled:
+		return m.OldIsEnabled(ctx)
+	case readingreminder.FieldMessage:
+		return m.OldMessage(ctx)
+	case readingreminder.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case readingreminder.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown ReadingReminder field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ReadingReminderMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case readingreminder.FieldReminderTime:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReminderTime(v)
+		return nil
+	case readingreminder.FieldDayOfWeek:
+		v, ok := value.(readingreminder.DayOfWeek)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDayOfWeek(v)
+		return nil
+	case readingreminder.FieldIsEnabled:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsEnabled(v)
+		return nil
+	case readingreminder.FieldMessage:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMessage(v)
+		return nil
+	case readingreminder.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case readingreminder.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ReadingReminder field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ReadingReminderMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ReadingReminderMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ReadingReminderMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown ReadingReminder numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ReadingReminderMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ReadingReminderMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ReadingReminderMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown ReadingReminder nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ReadingReminderMutation) ResetField(name string) error {
+	switch name {
+	case readingreminder.FieldReminderTime:
+		m.ResetReminderTime()
+		return nil
+	case readingreminder.FieldDayOfWeek:
+		m.ResetDayOfWeek()
+		return nil
+	case readingreminder.FieldIsEnabled:
+		m.ResetIsEnabled()
+		return nil
+	case readingreminder.FieldMessage:
+		m.ResetMessage()
+		return nil
+	case readingreminder.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case readingreminder.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown ReadingReminder field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ReadingReminderMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.owner != nil {
+		edges = append(edges, readingreminder.EdgeOwner)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ReadingReminderMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case readingreminder.EdgeOwner:
+		if id := m.owner; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ReadingReminderMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ReadingReminderMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ReadingReminderMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedowner {
+		edges = append(edges, readingreminder.EdgeOwner)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ReadingReminderMutation) EdgeCleared(name string) bool {
+	switch name {
+	case readingreminder.EdgeOwner:
+		return m.clearedowner
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ReadingReminderMutation) ClearEdge(name string) error {
+	switch name {
+	case readingreminder.EdgeOwner:
+		m.ClearOwner()
+		return nil
+	}
+	return fmt.Errorf("unknown ReadingReminder unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ReadingReminderMutation) ResetEdge(name string) error {
+	switch name {
+	case readingreminder.EdgeOwner:
+		m.ResetOwner()
+		return nil
+	}
+	return fmt.Errorf("unknown ReadingReminder edge %s", name)
+}
+
 // ReviewMutation represents an operation that mutates the Review nodes in the graph.
 type ReviewMutation struct {
 	config
@@ -2173,29 +2844,34 @@ func (m *ReviewMutation) ResetEdge(name string) error {
 // UserMutation represents an operation that mutates the User nodes in the graph.
 type UserMutation struct {
 	config
-	op               Op
-	typ              string
-	id               *uuid.UUID
-	nick_name        *string
-	email            *string
-	password         *string
-	is_published     *bool
-	is_terms_agreed  *bool
-	created_at       *time.Time
-	updated_at       *time.Time
-	clearedFields    map[string]struct{}
-	books            map[uuid.UUID]struct{}
-	removedbooks     map[uuid.UUID]struct{}
-	clearedbooks     bool
-	reviews          map[uuid.UUID]struct{}
-	removedreviews   map[uuid.UUID]struct{}
-	clearedreviews   bool
-	bookmarks        map[uuid.UUID]struct{}
-	removedbookmarks map[uuid.UUID]struct{}
-	clearedbookmarks bool
-	done             bool
-	oldValue         func(context.Context) (*User, error)
-	predicates       []predicate.User
+	op                       Op
+	typ                      string
+	id                       *uuid.UUID
+	nick_name                *string
+	email                    *string
+	password                 *string
+	is_published             *bool
+	is_terms_agreed          *bool
+	fcm_token                *string
+	timezone                 *string
+	created_at               *time.Time
+	updated_at               *time.Time
+	clearedFields            map[string]struct{}
+	books                    map[uuid.UUID]struct{}
+	removedbooks             map[uuid.UUID]struct{}
+	clearedbooks             bool
+	reviews                  map[uuid.UUID]struct{}
+	removedreviews           map[uuid.UUID]struct{}
+	clearedreviews           bool
+	bookmarks                map[uuid.UUID]struct{}
+	removedbookmarks         map[uuid.UUID]struct{}
+	clearedbookmarks         bool
+	reading_reminders        map[uuid.UUID]struct{}
+	removedreading_reminders map[uuid.UUID]struct{}
+	clearedreading_reminders bool
+	done                     bool
+	oldValue                 func(context.Context) (*User, error)
+	predicates               []predicate.User
 }
 
 var _ ent.Mutation = (*UserMutation)(nil)
@@ -2495,6 +3171,91 @@ func (m *UserMutation) ResetIsTermsAgreed() {
 	m.is_terms_agreed = nil
 }
 
+// SetFcmToken sets the "fcm_token" field.
+func (m *UserMutation) SetFcmToken(s string) {
+	m.fcm_token = &s
+}
+
+// FcmToken returns the value of the "fcm_token" field in the mutation.
+func (m *UserMutation) FcmToken() (r string, exists bool) {
+	v := m.fcm_token
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFcmToken returns the old "fcm_token" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldFcmToken(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFcmToken is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFcmToken requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFcmToken: %w", err)
+	}
+	return oldValue.FcmToken, nil
+}
+
+// ClearFcmToken clears the value of the "fcm_token" field.
+func (m *UserMutation) ClearFcmToken() {
+	m.fcm_token = nil
+	m.clearedFields[user.FieldFcmToken] = struct{}{}
+}
+
+// FcmTokenCleared returns if the "fcm_token" field was cleared in this mutation.
+func (m *UserMutation) FcmTokenCleared() bool {
+	_, ok := m.clearedFields[user.FieldFcmToken]
+	return ok
+}
+
+// ResetFcmToken resets all changes to the "fcm_token" field.
+func (m *UserMutation) ResetFcmToken() {
+	m.fcm_token = nil
+	delete(m.clearedFields, user.FieldFcmToken)
+}
+
+// SetTimezone sets the "timezone" field.
+func (m *UserMutation) SetTimezone(s string) {
+	m.timezone = &s
+}
+
+// Timezone returns the value of the "timezone" field in the mutation.
+func (m *UserMutation) Timezone() (r string, exists bool) {
+	v := m.timezone
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTimezone returns the old "timezone" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldTimezone(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTimezone is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTimezone requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTimezone: %w", err)
+	}
+	return oldValue.Timezone, nil
+}
+
+// ResetTimezone resets all changes to the "timezone" field.
+func (m *UserMutation) ResetTimezone() {
+	m.timezone = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *UserMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -2729,6 +3490,60 @@ func (m *UserMutation) ResetBookmarks() {
 	m.removedbookmarks = nil
 }
 
+// AddReadingReminderIDs adds the "reading_reminders" edge to the ReadingReminder entity by ids.
+func (m *UserMutation) AddReadingReminderIDs(ids ...uuid.UUID) {
+	if m.reading_reminders == nil {
+		m.reading_reminders = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.reading_reminders[ids[i]] = struct{}{}
+	}
+}
+
+// ClearReadingReminders clears the "reading_reminders" edge to the ReadingReminder entity.
+func (m *UserMutation) ClearReadingReminders() {
+	m.clearedreading_reminders = true
+}
+
+// ReadingRemindersCleared reports if the "reading_reminders" edge to the ReadingReminder entity was cleared.
+func (m *UserMutation) ReadingRemindersCleared() bool {
+	return m.clearedreading_reminders
+}
+
+// RemoveReadingReminderIDs removes the "reading_reminders" edge to the ReadingReminder entity by IDs.
+func (m *UserMutation) RemoveReadingReminderIDs(ids ...uuid.UUID) {
+	if m.removedreading_reminders == nil {
+		m.removedreading_reminders = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.reading_reminders, ids[i])
+		m.removedreading_reminders[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedReadingReminders returns the removed IDs of the "reading_reminders" edge to the ReadingReminder entity.
+func (m *UserMutation) RemovedReadingRemindersIDs() (ids []uuid.UUID) {
+	for id := range m.removedreading_reminders {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ReadingRemindersIDs returns the "reading_reminders" edge IDs in the mutation.
+func (m *UserMutation) ReadingRemindersIDs() (ids []uuid.UUID) {
+	for id := range m.reading_reminders {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetReadingReminders resets all changes to the "reading_reminders" edge.
+func (m *UserMutation) ResetReadingReminders() {
+	m.reading_reminders = nil
+	m.clearedreading_reminders = false
+	m.removedreading_reminders = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -2763,7 +3578,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 9)
 	if m.nick_name != nil {
 		fields = append(fields, user.FieldNickName)
 	}
@@ -2778,6 +3593,12 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.is_terms_agreed != nil {
 		fields = append(fields, user.FieldIsTermsAgreed)
+	}
+	if m.fcm_token != nil {
+		fields = append(fields, user.FieldFcmToken)
+	}
+	if m.timezone != nil {
+		fields = append(fields, user.FieldTimezone)
 	}
 	if m.created_at != nil {
 		fields = append(fields, user.FieldCreatedAt)
@@ -2803,6 +3624,10 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.IsPublished()
 	case user.FieldIsTermsAgreed:
 		return m.IsTermsAgreed()
+	case user.FieldFcmToken:
+		return m.FcmToken()
+	case user.FieldTimezone:
+		return m.Timezone()
 	case user.FieldCreatedAt:
 		return m.CreatedAt()
 	case user.FieldUpdatedAt:
@@ -2826,6 +3651,10 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldIsPublished(ctx)
 	case user.FieldIsTermsAgreed:
 		return m.OldIsTermsAgreed(ctx)
+	case user.FieldFcmToken:
+		return m.OldFcmToken(ctx)
+	case user.FieldTimezone:
+		return m.OldTimezone(ctx)
 	case user.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case user.FieldUpdatedAt:
@@ -2874,6 +3703,20 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetIsTermsAgreed(v)
 		return nil
+	case user.FieldFcmToken:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFcmToken(v)
+		return nil
+	case user.FieldTimezone:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTimezone(v)
+		return nil
 	case user.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -2921,6 +3764,9 @@ func (m *UserMutation) ClearedFields() []string {
 	if m.FieldCleared(user.FieldPassword) {
 		fields = append(fields, user.FieldPassword)
 	}
+	if m.FieldCleared(user.FieldFcmToken) {
+		fields = append(fields, user.FieldFcmToken)
+	}
 	return fields
 }
 
@@ -2937,6 +3783,9 @@ func (m *UserMutation) ClearField(name string) error {
 	switch name {
 	case user.FieldPassword:
 		m.ClearPassword()
+		return nil
+	case user.FieldFcmToken:
+		m.ClearFcmToken()
 		return nil
 	}
 	return fmt.Errorf("unknown User nullable field %s", name)
@@ -2961,6 +3810,12 @@ func (m *UserMutation) ResetField(name string) error {
 	case user.FieldIsTermsAgreed:
 		m.ResetIsTermsAgreed()
 		return nil
+	case user.FieldFcmToken:
+		m.ResetFcmToken()
+		return nil
+	case user.FieldTimezone:
+		m.ResetTimezone()
+		return nil
 	case user.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
@@ -2973,7 +3828,7 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.books != nil {
 		edges = append(edges, user.EdgeBooks)
 	}
@@ -2982,6 +3837,9 @@ func (m *UserMutation) AddedEdges() []string {
 	}
 	if m.bookmarks != nil {
 		edges = append(edges, user.EdgeBookmarks)
+	}
+	if m.reading_reminders != nil {
+		edges = append(edges, user.EdgeReadingReminders)
 	}
 	return edges
 }
@@ -3008,13 +3866,19 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeReadingReminders:
+		ids := make([]ent.Value, 0, len(m.reading_reminders))
+		for id := range m.reading_reminders {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.removedbooks != nil {
 		edges = append(edges, user.EdgeBooks)
 	}
@@ -3023,6 +3887,9 @@ func (m *UserMutation) RemovedEdges() []string {
 	}
 	if m.removedbookmarks != nil {
 		edges = append(edges, user.EdgeBookmarks)
+	}
+	if m.removedreading_reminders != nil {
+		edges = append(edges, user.EdgeReadingReminders)
 	}
 	return edges
 }
@@ -3049,13 +3916,19 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeReadingReminders:
+		ids := make([]ent.Value, 0, len(m.removedreading_reminders))
+		for id := range m.removedreading_reminders {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.clearedbooks {
 		edges = append(edges, user.EdgeBooks)
 	}
@@ -3064,6 +3937,9 @@ func (m *UserMutation) ClearedEdges() []string {
 	}
 	if m.clearedbookmarks {
 		edges = append(edges, user.EdgeBookmarks)
+	}
+	if m.clearedreading_reminders {
+		edges = append(edges, user.EdgeReadingReminders)
 	}
 	return edges
 }
@@ -3078,6 +3954,8 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.clearedreviews
 	case user.EdgeBookmarks:
 		return m.clearedbookmarks
+	case user.EdgeReadingReminders:
+		return m.clearedreading_reminders
 	}
 	return false
 }
@@ -3102,6 +3980,9 @@ func (m *UserMutation) ResetEdge(name string) error {
 		return nil
 	case user.EdgeBookmarks:
 		m.ResetBookmarks()
+		return nil
+	case user.EdgeReadingReminders:
+		m.ResetReadingReminders()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)

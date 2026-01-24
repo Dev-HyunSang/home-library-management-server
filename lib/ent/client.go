@@ -18,6 +18,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/dev-hyunsang/home-library/lib/ent/book"
 	"github.com/dev-hyunsang/home-library/lib/ent/bookmark"
+	"github.com/dev-hyunsang/home-library/lib/ent/readingreminder"
 	"github.com/dev-hyunsang/home-library/lib/ent/review"
 	"github.com/dev-hyunsang/home-library/lib/ent/user"
 )
@@ -31,6 +32,8 @@ type Client struct {
 	Book *BookClient
 	// Bookmark is the client for interacting with the Bookmark builders.
 	Bookmark *BookmarkClient
+	// ReadingReminder is the client for interacting with the ReadingReminder builders.
+	ReadingReminder *ReadingReminderClient
 	// Review is the client for interacting with the Review builders.
 	Review *ReviewClient
 	// User is the client for interacting with the User builders.
@@ -48,6 +51,7 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Book = NewBookClient(c.config)
 	c.Bookmark = NewBookmarkClient(c.config)
+	c.ReadingReminder = NewReadingReminderClient(c.config)
 	c.Review = NewReviewClient(c.config)
 	c.User = NewUserClient(c.config)
 }
@@ -140,12 +144,13 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:      ctx,
-		config:   cfg,
-		Book:     NewBookClient(cfg),
-		Bookmark: NewBookmarkClient(cfg),
-		Review:   NewReviewClient(cfg),
-		User:     NewUserClient(cfg),
+		ctx:             ctx,
+		config:          cfg,
+		Book:            NewBookClient(cfg),
+		Bookmark:        NewBookmarkClient(cfg),
+		ReadingReminder: NewReadingReminderClient(cfg),
+		Review:          NewReviewClient(cfg),
+		User:            NewUserClient(cfg),
 	}, nil
 }
 
@@ -163,12 +168,13 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:      ctx,
-		config:   cfg,
-		Book:     NewBookClient(cfg),
-		Bookmark: NewBookmarkClient(cfg),
-		Review:   NewReviewClient(cfg),
-		User:     NewUserClient(cfg),
+		ctx:             ctx,
+		config:          cfg,
+		Book:            NewBookClient(cfg),
+		Bookmark:        NewBookmarkClient(cfg),
+		ReadingReminder: NewReadingReminderClient(cfg),
+		Review:          NewReviewClient(cfg),
+		User:            NewUserClient(cfg),
 	}, nil
 }
 
@@ -199,6 +205,7 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	c.Book.Use(hooks...)
 	c.Bookmark.Use(hooks...)
+	c.ReadingReminder.Use(hooks...)
 	c.Review.Use(hooks...)
 	c.User.Use(hooks...)
 }
@@ -208,6 +215,7 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	c.Book.Intercept(interceptors...)
 	c.Bookmark.Intercept(interceptors...)
+	c.ReadingReminder.Intercept(interceptors...)
 	c.Review.Intercept(interceptors...)
 	c.User.Intercept(interceptors...)
 }
@@ -219,6 +227,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Book.mutate(ctx, m)
 	case *BookmarkMutation:
 		return c.Bookmark.mutate(ctx, m)
+	case *ReadingReminderMutation:
+		return c.ReadingReminder.mutate(ctx, m)
 	case *ReviewMutation:
 		return c.Review.mutate(ctx, m)
 	case *UserMutation:
@@ -574,6 +584,155 @@ func (c *BookmarkClient) mutate(ctx context.Context, m *BookmarkMutation) (Value
 	}
 }
 
+// ReadingReminderClient is a client for the ReadingReminder schema.
+type ReadingReminderClient struct {
+	config
+}
+
+// NewReadingReminderClient returns a client for the ReadingReminder from the given config.
+func NewReadingReminderClient(c config) *ReadingReminderClient {
+	return &ReadingReminderClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `readingreminder.Hooks(f(g(h())))`.
+func (c *ReadingReminderClient) Use(hooks ...Hook) {
+	c.hooks.ReadingReminder = append(c.hooks.ReadingReminder, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `readingreminder.Intercept(f(g(h())))`.
+func (c *ReadingReminderClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ReadingReminder = append(c.inters.ReadingReminder, interceptors...)
+}
+
+// Create returns a builder for creating a ReadingReminder entity.
+func (c *ReadingReminderClient) Create() *ReadingReminderCreate {
+	mutation := newReadingReminderMutation(c.config, OpCreate)
+	return &ReadingReminderCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ReadingReminder entities.
+func (c *ReadingReminderClient) CreateBulk(builders ...*ReadingReminderCreate) *ReadingReminderCreateBulk {
+	return &ReadingReminderCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ReadingReminderClient) MapCreateBulk(slice any, setFunc func(*ReadingReminderCreate, int)) *ReadingReminderCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ReadingReminderCreateBulk{err: fmt.Errorf("calling to ReadingReminderClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ReadingReminderCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ReadingReminderCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ReadingReminder.
+func (c *ReadingReminderClient) Update() *ReadingReminderUpdate {
+	mutation := newReadingReminderMutation(c.config, OpUpdate)
+	return &ReadingReminderUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ReadingReminderClient) UpdateOne(rr *ReadingReminder) *ReadingReminderUpdateOne {
+	mutation := newReadingReminderMutation(c.config, OpUpdateOne, withReadingReminder(rr))
+	return &ReadingReminderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ReadingReminderClient) UpdateOneID(id uuid.UUID) *ReadingReminderUpdateOne {
+	mutation := newReadingReminderMutation(c.config, OpUpdateOne, withReadingReminderID(id))
+	return &ReadingReminderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ReadingReminder.
+func (c *ReadingReminderClient) Delete() *ReadingReminderDelete {
+	mutation := newReadingReminderMutation(c.config, OpDelete)
+	return &ReadingReminderDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ReadingReminderClient) DeleteOne(rr *ReadingReminder) *ReadingReminderDeleteOne {
+	return c.DeleteOneID(rr.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ReadingReminderClient) DeleteOneID(id uuid.UUID) *ReadingReminderDeleteOne {
+	builder := c.Delete().Where(readingreminder.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ReadingReminderDeleteOne{builder}
+}
+
+// Query returns a query builder for ReadingReminder.
+func (c *ReadingReminderClient) Query() *ReadingReminderQuery {
+	return &ReadingReminderQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeReadingReminder},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ReadingReminder entity by its id.
+func (c *ReadingReminderClient) Get(ctx context.Context, id uuid.UUID) (*ReadingReminder, error) {
+	return c.Query().Where(readingreminder.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ReadingReminderClient) GetX(ctx context.Context, id uuid.UUID) *ReadingReminder {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryOwner queries the owner edge of a ReadingReminder.
+func (c *ReadingReminderClient) QueryOwner(rr *ReadingReminder) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := rr.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(readingreminder.Table, readingreminder.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, readingreminder.OwnerTable, readingreminder.OwnerColumn),
+		)
+		fromV = sqlgraph.Neighbors(rr.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ReadingReminderClient) Hooks() []Hook {
+	return c.hooks.ReadingReminder
+}
+
+// Interceptors returns the client interceptors.
+func (c *ReadingReminderClient) Interceptors() []Interceptor {
+	return c.inters.ReadingReminder
+}
+
+func (c *ReadingReminderClient) mutate(ctx context.Context, m *ReadingReminderMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ReadingReminderCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ReadingReminderUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ReadingReminderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ReadingReminderDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ReadingReminder mutation op: %q", m.Op())
+	}
+}
+
 // ReviewClient is a client for the Review schema.
 type ReviewClient struct {
 	config
@@ -895,6 +1054,22 @@ func (c *UserClient) QueryBookmarks(u *User) *BookmarkQuery {
 	return query
 }
 
+// QueryReadingReminders queries the reading_reminders edge of a User.
+func (c *UserClient) QueryReadingReminders(u *User) *ReadingReminderQuery {
+	query := (&ReadingReminderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(readingreminder.Table, readingreminder.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.ReadingRemindersTable, user.ReadingRemindersColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
 	return c.hooks.User
@@ -923,9 +1098,9 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Book, Bookmark, Review, User []ent.Hook
+		Book, Bookmark, ReadingReminder, Review, User []ent.Hook
 	}
 	inters struct {
-		Book, Bookmark, Review, User []ent.Interceptor
+		Book, Bookmark, ReadingReminder, Review, User []ent.Interceptor
 	}
 )

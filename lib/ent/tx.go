@@ -16,6 +16,8 @@ type Tx struct {
 	Book *BookClient
 	// Bookmark is the client for interacting with the Bookmark builders.
 	Bookmark *BookmarkClient
+	// ReadingReminder is the client for interacting with the ReadingReminder builders.
+	ReadingReminder *ReadingReminderClient
 	// Review is the client for interacting with the Review builders.
 	Review *ReviewClient
 	// User is the client for interacting with the User builders.
@@ -153,6 +155,7 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.Book = NewBookClient(tx.config)
 	tx.Bookmark = NewBookmarkClient(tx.config)
+	tx.ReadingReminder = NewReadingReminderClient(tx.config)
 	tx.Review = NewReviewClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }

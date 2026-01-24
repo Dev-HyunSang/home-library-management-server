@@ -81,6 +81,16 @@ func IsTermsAgreed(v bool) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldIsTermsAgreed, v))
 }
 
+// FcmToken applies equality check predicate on the "fcm_token" field. It's identical to FcmTokenEQ.
+func FcmToken(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldFcmToken, v))
+}
+
+// Timezone applies equality check predicate on the "timezone" field. It's identical to TimezoneEQ.
+func Timezone(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldTimezone, v))
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldCreatedAt, v))
@@ -316,6 +326,146 @@ func IsTermsAgreedNEQ(v bool) predicate.User {
 	return predicate.User(sql.FieldNEQ(FieldIsTermsAgreed, v))
 }
 
+// FcmTokenEQ applies the EQ predicate on the "fcm_token" field.
+func FcmTokenEQ(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldFcmToken, v))
+}
+
+// FcmTokenNEQ applies the NEQ predicate on the "fcm_token" field.
+func FcmTokenNEQ(v string) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldFcmToken, v))
+}
+
+// FcmTokenIn applies the In predicate on the "fcm_token" field.
+func FcmTokenIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldIn(FieldFcmToken, vs...))
+}
+
+// FcmTokenNotIn applies the NotIn predicate on the "fcm_token" field.
+func FcmTokenNotIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldFcmToken, vs...))
+}
+
+// FcmTokenGT applies the GT predicate on the "fcm_token" field.
+func FcmTokenGT(v string) predicate.User {
+	return predicate.User(sql.FieldGT(FieldFcmToken, v))
+}
+
+// FcmTokenGTE applies the GTE predicate on the "fcm_token" field.
+func FcmTokenGTE(v string) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldFcmToken, v))
+}
+
+// FcmTokenLT applies the LT predicate on the "fcm_token" field.
+func FcmTokenLT(v string) predicate.User {
+	return predicate.User(sql.FieldLT(FieldFcmToken, v))
+}
+
+// FcmTokenLTE applies the LTE predicate on the "fcm_token" field.
+func FcmTokenLTE(v string) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldFcmToken, v))
+}
+
+// FcmTokenContains applies the Contains predicate on the "fcm_token" field.
+func FcmTokenContains(v string) predicate.User {
+	return predicate.User(sql.FieldContains(FieldFcmToken, v))
+}
+
+// FcmTokenHasPrefix applies the HasPrefix predicate on the "fcm_token" field.
+func FcmTokenHasPrefix(v string) predicate.User {
+	return predicate.User(sql.FieldHasPrefix(FieldFcmToken, v))
+}
+
+// FcmTokenHasSuffix applies the HasSuffix predicate on the "fcm_token" field.
+func FcmTokenHasSuffix(v string) predicate.User {
+	return predicate.User(sql.FieldHasSuffix(FieldFcmToken, v))
+}
+
+// FcmTokenIsNil applies the IsNil predicate on the "fcm_token" field.
+func FcmTokenIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldFcmToken))
+}
+
+// FcmTokenNotNil applies the NotNil predicate on the "fcm_token" field.
+func FcmTokenNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldFcmToken))
+}
+
+// FcmTokenEqualFold applies the EqualFold predicate on the "fcm_token" field.
+func FcmTokenEqualFold(v string) predicate.User {
+	return predicate.User(sql.FieldEqualFold(FieldFcmToken, v))
+}
+
+// FcmTokenContainsFold applies the ContainsFold predicate on the "fcm_token" field.
+func FcmTokenContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsFold(FieldFcmToken, v))
+}
+
+// TimezoneEQ applies the EQ predicate on the "timezone" field.
+func TimezoneEQ(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldTimezone, v))
+}
+
+// TimezoneNEQ applies the NEQ predicate on the "timezone" field.
+func TimezoneNEQ(v string) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldTimezone, v))
+}
+
+// TimezoneIn applies the In predicate on the "timezone" field.
+func TimezoneIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldIn(FieldTimezone, vs...))
+}
+
+// TimezoneNotIn applies the NotIn predicate on the "timezone" field.
+func TimezoneNotIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldTimezone, vs...))
+}
+
+// TimezoneGT applies the GT predicate on the "timezone" field.
+func TimezoneGT(v string) predicate.User {
+	return predicate.User(sql.FieldGT(FieldTimezone, v))
+}
+
+// TimezoneGTE applies the GTE predicate on the "timezone" field.
+func TimezoneGTE(v string) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldTimezone, v))
+}
+
+// TimezoneLT applies the LT predicate on the "timezone" field.
+func TimezoneLT(v string) predicate.User {
+	return predicate.User(sql.FieldLT(FieldTimezone, v))
+}
+
+// TimezoneLTE applies the LTE predicate on the "timezone" field.
+func TimezoneLTE(v string) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldTimezone, v))
+}
+
+// TimezoneContains applies the Contains predicate on the "timezone" field.
+func TimezoneContains(v string) predicate.User {
+	return predicate.User(sql.FieldContains(FieldTimezone, v))
+}
+
+// TimezoneHasPrefix applies the HasPrefix predicate on the "timezone" field.
+func TimezoneHasPrefix(v string) predicate.User {
+	return predicate.User(sql.FieldHasPrefix(FieldTimezone, v))
+}
+
+// TimezoneHasSuffix applies the HasSuffix predicate on the "timezone" field.
+func TimezoneHasSuffix(v string) predicate.User {
+	return predicate.User(sql.FieldHasSuffix(FieldTimezone, v))
+}
+
+// TimezoneEqualFold applies the EqualFold predicate on the "timezone" field.
+func TimezoneEqualFold(v string) predicate.User {
+	return predicate.User(sql.FieldEqualFold(FieldTimezone, v))
+}
+
+// TimezoneContainsFold applies the ContainsFold predicate on the "timezone" field.
+func TimezoneContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsFold(FieldTimezone, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldCreatedAt, v))
@@ -457,6 +607,29 @@ func HasBookmarks() predicate.User {
 func HasBookmarksWith(preds ...predicate.Bookmark) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := newBookmarksStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasReadingReminders applies the HasEdge predicate on the "reading_reminders" edge.
+func HasReadingReminders() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ReadingRemindersTable, ReadingRemindersColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasReadingRemindersWith applies the HasEdge predicate on the "reading_reminders" edge with a given conditions (other predicates).
+func HasReadingRemindersWith(preds ...predicate.ReadingReminder) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newReadingRemindersStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

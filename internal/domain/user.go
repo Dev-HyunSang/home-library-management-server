@@ -15,6 +15,8 @@ type User struct {
 	Password      string    `json:"password,omitempty"`
 	IsPublished   bool      `json:"is_published"`
 	IsTermsAgreed bool      `json:"is_terms_agreed"`
+	FCMToken      string    `json:"fcm_token,omitempty"`
+	Timezone      string    `json:"timezone"`
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
 }
@@ -26,6 +28,9 @@ type UserRepository interface {
 	GetByNickname(nickname string) (*User, error)
 	Update(user *User) error
 	Delete(id uuid.UUID) error
+	UpdateFCMToken(userID uuid.UUID, fcmToken string) error
+	UpdateTimezone(userID uuid.UUID, timezone string) error
+	GetUserWithFCM(userID uuid.UUID) (*User, error)
 }
 
 type UserUseCase interface {
@@ -35,6 +40,8 @@ type UserUseCase interface {
 	GetByNickname(nickname string) (*User, error)
 	Update(user *User) error
 	Delete(id uuid.UUID) error
+	UpdateFCMToken(userID uuid.UUID, fcmToken string) error
+	UpdateTimezone(userID uuid.UUID, timezone string) error
 }
 
 type AuthUseCase interface {

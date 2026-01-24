@@ -14,6 +14,7 @@ import (
 	"github.com/dev-hyunsang/home-library/lib/ent/book"
 	"github.com/dev-hyunsang/home-library/lib/ent/bookmark"
 	"github.com/dev-hyunsang/home-library/lib/ent/predicate"
+	"github.com/dev-hyunsang/home-library/lib/ent/readingreminder"
 	"github.com/dev-hyunsang/home-library/lib/ent/review"
 	"github.com/dev-hyunsang/home-library/lib/ent/user"
 	"github.com/google/uuid"
@@ -108,6 +109,40 @@ func (uu *UserUpdate) SetNillableIsTermsAgreed(b *bool) *UserUpdate {
 	return uu
 }
 
+// SetFcmToken sets the "fcm_token" field.
+func (uu *UserUpdate) SetFcmToken(s string) *UserUpdate {
+	uu.mutation.SetFcmToken(s)
+	return uu
+}
+
+// SetNillableFcmToken sets the "fcm_token" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableFcmToken(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetFcmToken(*s)
+	}
+	return uu
+}
+
+// ClearFcmToken clears the value of the "fcm_token" field.
+func (uu *UserUpdate) ClearFcmToken() *UserUpdate {
+	uu.mutation.ClearFcmToken()
+	return uu
+}
+
+// SetTimezone sets the "timezone" field.
+func (uu *UserUpdate) SetTimezone(s string) *UserUpdate {
+	uu.mutation.SetTimezone(s)
+	return uu
+}
+
+// SetNillableTimezone sets the "timezone" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableTimezone(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetTimezone(*s)
+	}
+	return uu
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (uu *UserUpdate) SetUpdatedAt(t time.Time) *UserUpdate {
 	uu.mutation.SetUpdatedAt(t)
@@ -165,6 +200,21 @@ func (uu *UserUpdate) AddBookmarks(b ...*Bookmark) *UserUpdate {
 		ids[i] = b[i].ID
 	}
 	return uu.AddBookmarkIDs(ids...)
+}
+
+// AddReadingReminderIDs adds the "reading_reminders" edge to the ReadingReminder entity by IDs.
+func (uu *UserUpdate) AddReadingReminderIDs(ids ...uuid.UUID) *UserUpdate {
+	uu.mutation.AddReadingReminderIDs(ids...)
+	return uu
+}
+
+// AddReadingReminders adds the "reading_reminders" edges to the ReadingReminder entity.
+func (uu *UserUpdate) AddReadingReminders(r ...*ReadingReminder) *UserUpdate {
+	ids := make([]uuid.UUID, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uu.AddReadingReminderIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -233,6 +283,27 @@ func (uu *UserUpdate) RemoveBookmarks(b ...*Bookmark) *UserUpdate {
 		ids[i] = b[i].ID
 	}
 	return uu.RemoveBookmarkIDs(ids...)
+}
+
+// ClearReadingReminders clears all "reading_reminders" edges to the ReadingReminder entity.
+func (uu *UserUpdate) ClearReadingReminders() *UserUpdate {
+	uu.mutation.ClearReadingReminders()
+	return uu
+}
+
+// RemoveReadingReminderIDs removes the "reading_reminders" edge to ReadingReminder entities by IDs.
+func (uu *UserUpdate) RemoveReadingReminderIDs(ids ...uuid.UUID) *UserUpdate {
+	uu.mutation.RemoveReadingReminderIDs(ids...)
+	return uu
+}
+
+// RemoveReadingReminders removes "reading_reminders" edges to ReadingReminder entities.
+func (uu *UserUpdate) RemoveReadingReminders(r ...*ReadingReminder) *UserUpdate {
+	ids := make([]uuid.UUID, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uu.RemoveReadingReminderIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -306,6 +377,15 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := uu.mutation.IsTermsAgreed(); ok {
 		_spec.SetField(user.FieldIsTermsAgreed, field.TypeBool, value)
+	}
+	if value, ok := uu.mutation.FcmToken(); ok {
+		_spec.SetField(user.FieldFcmToken, field.TypeString, value)
+	}
+	if uu.mutation.FcmTokenCleared() {
+		_spec.ClearField(user.FieldFcmToken, field.TypeString)
+	}
+	if value, ok := uu.mutation.Timezone(); ok {
+		_spec.SetField(user.FieldTimezone, field.TypeString, value)
 	}
 	if value, ok := uu.mutation.UpdatedAt(); ok {
 		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
@@ -445,6 +525,51 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.ReadingRemindersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReadingRemindersTable,
+			Columns: []string{user.ReadingRemindersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(readingreminder.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedReadingRemindersIDs(); len(nodes) > 0 && !uu.mutation.ReadingRemindersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReadingRemindersTable,
+			Columns: []string{user.ReadingRemindersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(readingreminder.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.ReadingRemindersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReadingRemindersTable,
+			Columns: []string{user.ReadingRemindersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(readingreminder.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -541,6 +666,40 @@ func (uuo *UserUpdateOne) SetNillableIsTermsAgreed(b *bool) *UserUpdateOne {
 	return uuo
 }
 
+// SetFcmToken sets the "fcm_token" field.
+func (uuo *UserUpdateOne) SetFcmToken(s string) *UserUpdateOne {
+	uuo.mutation.SetFcmToken(s)
+	return uuo
+}
+
+// SetNillableFcmToken sets the "fcm_token" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableFcmToken(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetFcmToken(*s)
+	}
+	return uuo
+}
+
+// ClearFcmToken clears the value of the "fcm_token" field.
+func (uuo *UserUpdateOne) ClearFcmToken() *UserUpdateOne {
+	uuo.mutation.ClearFcmToken()
+	return uuo
+}
+
+// SetTimezone sets the "timezone" field.
+func (uuo *UserUpdateOne) SetTimezone(s string) *UserUpdateOne {
+	uuo.mutation.SetTimezone(s)
+	return uuo
+}
+
+// SetNillableTimezone sets the "timezone" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableTimezone(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetTimezone(*s)
+	}
+	return uuo
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (uuo *UserUpdateOne) SetUpdatedAt(t time.Time) *UserUpdateOne {
 	uuo.mutation.SetUpdatedAt(t)
@@ -598,6 +757,21 @@ func (uuo *UserUpdateOne) AddBookmarks(b ...*Bookmark) *UserUpdateOne {
 		ids[i] = b[i].ID
 	}
 	return uuo.AddBookmarkIDs(ids...)
+}
+
+// AddReadingReminderIDs adds the "reading_reminders" edge to the ReadingReminder entity by IDs.
+func (uuo *UserUpdateOne) AddReadingReminderIDs(ids ...uuid.UUID) *UserUpdateOne {
+	uuo.mutation.AddReadingReminderIDs(ids...)
+	return uuo
+}
+
+// AddReadingReminders adds the "reading_reminders" edges to the ReadingReminder entity.
+func (uuo *UserUpdateOne) AddReadingReminders(r ...*ReadingReminder) *UserUpdateOne {
+	ids := make([]uuid.UUID, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uuo.AddReadingReminderIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -666,6 +840,27 @@ func (uuo *UserUpdateOne) RemoveBookmarks(b ...*Bookmark) *UserUpdateOne {
 		ids[i] = b[i].ID
 	}
 	return uuo.RemoveBookmarkIDs(ids...)
+}
+
+// ClearReadingReminders clears all "reading_reminders" edges to the ReadingReminder entity.
+func (uuo *UserUpdateOne) ClearReadingReminders() *UserUpdateOne {
+	uuo.mutation.ClearReadingReminders()
+	return uuo
+}
+
+// RemoveReadingReminderIDs removes the "reading_reminders" edge to ReadingReminder entities by IDs.
+func (uuo *UserUpdateOne) RemoveReadingReminderIDs(ids ...uuid.UUID) *UserUpdateOne {
+	uuo.mutation.RemoveReadingReminderIDs(ids...)
+	return uuo
+}
+
+// RemoveReadingReminders removes "reading_reminders" edges to ReadingReminder entities.
+func (uuo *UserUpdateOne) RemoveReadingReminders(r ...*ReadingReminder) *UserUpdateOne {
+	ids := make([]uuid.UUID, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uuo.RemoveReadingReminderIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -769,6 +964,15 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if value, ok := uuo.mutation.IsTermsAgreed(); ok {
 		_spec.SetField(user.FieldIsTermsAgreed, field.TypeBool, value)
+	}
+	if value, ok := uuo.mutation.FcmToken(); ok {
+		_spec.SetField(user.FieldFcmToken, field.TypeString, value)
+	}
+	if uuo.mutation.FcmTokenCleared() {
+		_spec.ClearField(user.FieldFcmToken, field.TypeString)
+	}
+	if value, ok := uuo.mutation.Timezone(); ok {
+		_spec.SetField(user.FieldTimezone, field.TypeString, value)
 	}
 	if value, ok := uuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
@@ -901,6 +1105,51 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(bookmark.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.ReadingRemindersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReadingRemindersTable,
+			Columns: []string{user.ReadingRemindersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(readingreminder.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedReadingRemindersIDs(); len(nodes) > 0 && !uuo.mutation.ReadingRemindersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReadingRemindersTable,
+			Columns: []string{user.ReadingRemindersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(readingreminder.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.ReadingRemindersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReadingRemindersTable,
+			Columns: []string{user.ReadingRemindersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(readingreminder.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

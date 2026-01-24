@@ -28,6 +28,10 @@ type User struct {
 	IsPublished bool `json:"is_published,omitempty"`
 	// 사용자 이용약관 동의 여부
 	IsTermsAgreed bool `json:"is_terms_agreed,omitempty"`
+	// FCM 디바이스 토큰
+	FcmToken string `json:"fcm_token,omitempty"`
+	// 사용자 타임존
+	Timezone string `json:"timezone,omitempty"`
 	// 사용자 생성 시간
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// 사용자 수정 시간
@@ -46,9 +50,11 @@ type UserEdges struct {
 	Reviews []*Review `json:"reviews,omitempty"`
 	// Bookmarks holds the value of the bookmarks edge.
 	Bookmarks []*Bookmark `json:"bookmarks,omitempty"`
+	// ReadingReminders holds the value of the reading_reminders edge.
+	ReadingReminders []*ReadingReminder `json:"reading_reminders,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // BooksOrErr returns the Books value or an error if the edge
@@ -78,6 +84,15 @@ func (e UserEdges) BookmarksOrErr() ([]*Bookmark, error) {
 	return nil, &NotLoadedError{edge: "bookmarks"}
 }
 
+// ReadingRemindersOrErr returns the ReadingReminders value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) ReadingRemindersOrErr() ([]*ReadingReminder, error) {
+	if e.loadedTypes[3] {
+		return e.ReadingReminders, nil
+	}
+	return nil, &NotLoadedError{edge: "reading_reminders"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -85,7 +100,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case user.FieldIsPublished, user.FieldIsTermsAgreed:
 			values[i] = new(sql.NullBool)
-		case user.FieldNickName, user.FieldEmail, user.FieldPassword:
+		case user.FieldNickName, user.FieldEmail, user.FieldPassword, user.FieldFcmToken, user.FieldTimezone:
 			values[i] = new(sql.NullString)
 		case user.FieldCreatedAt, user.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -142,6 +157,18 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.IsTermsAgreed = value.Bool
 			}
+		case user.FieldFcmToken:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field fcm_token", values[i])
+			} else if value.Valid {
+				u.FcmToken = value.String
+			}
+		case user.FieldTimezone:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field timezone", values[i])
+			} else if value.Valid {
+				u.Timezone = value.String
+			}
 		case user.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -182,6 +209,11 @@ func (u *User) QueryBookmarks() *BookmarkQuery {
 	return NewUserClient(u.config).QueryBookmarks(u)
 }
 
+// QueryReadingReminders queries the "reading_reminders" edge of the User entity.
+func (u *User) QueryReadingReminders() *ReadingReminderQuery {
+	return NewUserClient(u.config).QueryReadingReminders(u)
+}
+
 // Update returns a builder for updating this User.
 // Note that you need to call User.Unwrap() before calling this method if this User
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -219,6 +251,12 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("is_terms_agreed=")
 	builder.WriteString(fmt.Sprintf("%v", u.IsTermsAgreed))
+	builder.WriteString(", ")
+	builder.WriteString("fcm_token=")
+	builder.WriteString(u.FcmToken)
+	builder.WriteString(", ")
+	builder.WriteString("timezone=")
+	builder.WriteString(u.Timezone)
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(u.CreatedAt.Format(time.ANSIC))

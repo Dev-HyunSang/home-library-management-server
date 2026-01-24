@@ -73,3 +73,17 @@ func (uc *userUseCase) GetSessionByID(userID string, ctx *fiber.Ctx) (string, er
 func (uc *userUseCase) DeleteSession(ctx *fiber.Ctx) error {
 	return uc.authRepo.DeleteSession(ctx)
 }
+
+func (uc *userUseCase) UpdateFCMToken(userID uuid.UUID, fcmToken string) error {
+	if fcmToken == "" {
+		return domain.ErrInvalidInput
+	}
+	return uc.userRepo.UpdateFCMToken(userID, fcmToken)
+}
+
+func (uc *userUseCase) UpdateTimezone(userID uuid.UUID, timezone string) error {
+	if timezone == "" {
+		return domain.ErrInvalidInput
+	}
+	return uc.userRepo.UpdateTimezone(userID, timezone)
+}

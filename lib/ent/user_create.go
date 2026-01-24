@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/dev-hyunsang/home-library/lib/ent/book"
 	"github.com/dev-hyunsang/home-library/lib/ent/bookmark"
+	"github.com/dev-hyunsang/home-library/lib/ent/readingreminder"
 	"github.com/dev-hyunsang/home-library/lib/ent/review"
 	"github.com/dev-hyunsang/home-library/lib/ent/user"
 	"github.com/google/uuid"
@@ -74,6 +75,34 @@ func (uc *UserCreate) SetIsTermsAgreed(b bool) *UserCreate {
 func (uc *UserCreate) SetNillableIsTermsAgreed(b *bool) *UserCreate {
 	if b != nil {
 		uc.SetIsTermsAgreed(*b)
+	}
+	return uc
+}
+
+// SetFcmToken sets the "fcm_token" field.
+func (uc *UserCreate) SetFcmToken(s string) *UserCreate {
+	uc.mutation.SetFcmToken(s)
+	return uc
+}
+
+// SetNillableFcmToken sets the "fcm_token" field if the given value is not nil.
+func (uc *UserCreate) SetNillableFcmToken(s *string) *UserCreate {
+	if s != nil {
+		uc.SetFcmToken(*s)
+	}
+	return uc
+}
+
+// SetTimezone sets the "timezone" field.
+func (uc *UserCreate) SetTimezone(s string) *UserCreate {
+	uc.mutation.SetTimezone(s)
+	return uc
+}
+
+// SetNillableTimezone sets the "timezone" field if the given value is not nil.
+func (uc *UserCreate) SetNillableTimezone(s *string) *UserCreate {
+	if s != nil {
+		uc.SetTimezone(*s)
 	}
 	return uc
 }
@@ -157,6 +186,21 @@ func (uc *UserCreate) AddBookmarks(b ...*Bookmark) *UserCreate {
 	return uc.AddBookmarkIDs(ids...)
 }
 
+// AddReadingReminderIDs adds the "reading_reminders" edge to the ReadingReminder entity by IDs.
+func (uc *UserCreate) AddReadingReminderIDs(ids ...uuid.UUID) *UserCreate {
+	uc.mutation.AddReadingReminderIDs(ids...)
+	return uc
+}
+
+// AddReadingReminders adds the "reading_reminders" edges to the ReadingReminder entity.
+func (uc *UserCreate) AddReadingReminders(r ...*ReadingReminder) *UserCreate {
+	ids := make([]uuid.UUID, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uc.AddReadingReminderIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uc *UserCreate) Mutation() *UserMutation {
 	return uc.mutation
@@ -200,6 +244,10 @@ func (uc *UserCreate) defaults() {
 		v := user.DefaultIsTermsAgreed
 		uc.mutation.SetIsTermsAgreed(v)
 	}
+	if _, ok := uc.mutation.Timezone(); !ok {
+		v := user.DefaultTimezone
+		uc.mutation.SetTimezone(v)
+	}
 	if _, ok := uc.mutation.CreatedAt(); !ok {
 		v := user.DefaultCreatedAt()
 		uc.mutation.SetCreatedAt(v)
@@ -233,6 +281,9 @@ func (uc *UserCreate) check() error {
 	}
 	if _, ok := uc.mutation.IsTermsAgreed(); !ok {
 		return &ValidationError{Name: "is_terms_agreed", err: errors.New(`ent: missing required field "User.is_terms_agreed"`)}
+	}
+	if _, ok := uc.mutation.Timezone(); !ok {
+		return &ValidationError{Name: "timezone", err: errors.New(`ent: missing required field "User.timezone"`)}
 	}
 	if _, ok := uc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "User.created_at"`)}
@@ -295,6 +346,14 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldIsTermsAgreed, field.TypeBool, value)
 		_node.IsTermsAgreed = value
 	}
+	if value, ok := uc.mutation.FcmToken(); ok {
+		_spec.SetField(user.FieldFcmToken, field.TypeString, value)
+		_node.FcmToken = value
+	}
+	if value, ok := uc.mutation.Timezone(); ok {
+		_spec.SetField(user.FieldTimezone, field.TypeString, value)
+		_node.Timezone = value
+	}
 	if value, ok := uc.mutation.CreatedAt(); ok {
 		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
@@ -344,6 +403,22 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(bookmark.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.ReadingRemindersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReadingRemindersTable,
+			Columns: []string{user.ReadingRemindersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(readingreminder.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

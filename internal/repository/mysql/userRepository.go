@@ -54,6 +54,8 @@ func (r *UserRepository) Save(user *domain.User) (*domain.User, error) {
 			Password:      u.Password,
 			IsPublished:   u.IsPublished,
 			IsTermsAgreed: u.IsTermsAgreed,
+			FCMToken:      u.FcmToken,
+			Timezone:      u.Timezone,
 			CreatedAt:     u.CreatedAt,
 			UpdatedAt:     u.UpdatedAt,
 		}, nil
@@ -82,6 +84,8 @@ func (r *UserRepository) GetByID(id uuid.UUID) (*domain.User, error) {
 			Password:      u.Password,
 			IsPublished:   u.IsPublished,
 			IsTermsAgreed: u.IsTermsAgreed,
+			FCMToken:      u.FcmToken,
+			Timezone:      u.Timezone,
 			CreatedAt:     u.CreatedAt,
 			UpdatedAt:     u.UpdatedAt,
 		}, nil
@@ -110,6 +114,8 @@ func (r *UserRepository) GetByEmail(email string) (*domain.User, error) {
 			Password:      u.Password,
 			IsPublished:   u.IsPublished,
 			IsTermsAgreed: u.IsTermsAgreed,
+			FCMToken:      u.FcmToken,
+			Timezone:      u.Timezone,
 			CreatedAt:     u.CreatedAt,
 			UpdatedAt:     u.UpdatedAt,
 		}, nil
@@ -138,6 +144,8 @@ func (r *UserRepository) GetByNickname(nickname string) (*domain.User, error) {
 			Password:      u.Password,
 			IsPublished:   u.IsPublished,
 			IsTermsAgreed: u.IsTermsAgreed,
+			FCMToken:      u.FcmToken,
+			Timezone:      u.Timezone,
 			CreatedAt:     u.CreatedAt,
 			UpdatedAt:     u.UpdatedAt,
 		}, nil
@@ -189,4 +197,64 @@ func (r *UserRepository) Delete(id uuid.UUID) error {
 	logger.Init().Sugar().Infof("해당하는 사용자를 삭제하였습니다: %s", id.String())
 
 	return nil
+}
+
+func (r *UserRepository) UpdateFCMToken(userID uuid.UUID, fcmToken string) error {
+	err := r.client.User.UpdateOneID(userID).
+		SetFcmToken(fcmToken).
+		SetUpdatedAt(time.Now()).
+		Exec(context.Background())
+
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return fmt.Errorf("해당하는 ID로 사용자를 찾을 수 없습니다: %w", err)
+		}
+		return fmt.Errorf("FCM 토큰 업데이트 중 오류가 발생했습니다: %w", err)
+	}
+
+	logger.Init().Sugar().Infof("사용자 FCM 토큰이 업데이트되었습니다. 사용자ID: %s", userID.String())
+	return nil
+}
+
+func (r *UserRepository) UpdateTimezone(userID uuid.UUID, timezone string) error {
+	err := r.client.User.UpdateOneID(userID).
+		SetTimezone(timezone).
+		SetUpdatedAt(time.Now()).
+		Exec(context.Background())
+
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return fmt.Errorf("해당하는 ID로 사용자를 찾을 수 없습니다: %w", err)
+		}
+		return fmt.Errorf("타임존 업데이트 중 오류가 발생했습니다: %w", err)
+	}
+
+	logger.Init().Sugar().Infof("사용자 타임존이 업데이트되었습니다. 사용자ID: %s, 타임존: %s", userID.String(), timezone)
+	return nil
+}
+
+func (r *UserRepository) GetUserWithFCM(userID uuid.UUID) (*domain.User, error) {
+	u, err := r.client.User.Query().
+		Where(user.ID(userID)).
+		Only(context.Background())
+
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, fmt.Errorf("해당하는 ID로 사용자를 찾을 수 없습니다: %w", err)
+		}
+		return nil, fmt.Errorf("사용자 정보 조회 중 오류가 발생했습니다: %w", err)
+	}
+
+	return &domain.User{
+		ID:            u.ID,
+		NickName:      u.NickName,
+		Email:         u.Email,
+		Password:      u.Password,
+		IsPublished:   u.IsPublished,
+		IsTermsAgreed: u.IsTermsAgreed,
+		FCMToken:      u.FcmToken,
+		Timezone:      u.Timezone,
+		CreatedAt:     u.CreatedAt,
+		UpdatedAt:     u.UpdatedAt,
+	}, nil
 }

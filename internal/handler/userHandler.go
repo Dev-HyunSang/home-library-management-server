@@ -474,3 +474,70 @@ func (h *UserHandler) UserDeleteHandler(ctx *fiber.Ctx) error {
 	logger.Init().Sugar().Infof("사용자 정보가 성공적으로 삭제되었습니다 / 사용자ID: %s", id)
 	return ctx.Status(fiber.StatusNoContent).JSON("successfully deleted")
 }
+
+type UpdateFCMTokenRequest struct {
+	FCMToken string `json:"fcm_token"`
+}
+
+type UpdateTimezoneRequest struct {
+	Timezone string `json:"timezone"`
+}
+
+func (h *UserHandler) UpdateFCMTokenHandler(ctx *fiber.Ctx) error {
+	userID, err := h.AuthHandler.GetUserIDFromToken(ctx)
+	if err != nil {
+		logger.Init().Sugar().Errorf("JWT 토큰에서 사용자 ID 추출 실패: %v", err)
+		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
+	}
+
+	req := new(UpdateFCMTokenRequest)
+	if err := ctx.BodyParser(req); err != nil {
+		logger.Init().Sugar().Errorf("요청 바디 파싱 실패: %v", err)
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+
+	if req.FCMToken == "" {
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+
+	err = h.userUseCase.UpdateFCMToken(userID, req.FCMToken)
+	if err != nil {
+		logger.Init().Sugar().Errorf("FCM 토큰 업데이트 실패: %v", err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(domain.ErrInternal))
+	}
+
+	logger.Init().Sugar().Infof("FCM 토큰이 업데이트되었습니다. 사용자ID: %s", userID.String())
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "FCM 토큰이 성공적으로 업데이트되었습니다.",
+	})
+}
+
+func (h *UserHandler) UpdateTimezoneHandler(ctx *fiber.Ctx) error {
+	userID, err := h.AuthHandler.GetUserIDFromToken(ctx)
+	if err != nil {
+		logger.Init().Sugar().Errorf("JWT 토큰에서 사용자 ID 추출 실패: %v", err)
+		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
+	}
+
+	req := new(UpdateTimezoneRequest)
+	if err := ctx.BodyParser(req); err != nil {
+		logger.Init().Sugar().Errorf("요청 바디 파싱 실패: %v", err)
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+
+	if req.Timezone == "" {
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+
+	err = h.userUseCase.UpdateTimezone(userID, req.Timezone)
+	if err != nil {
+		logger.Init().Sugar().Errorf("타임존 업데이트 실패: %v", err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(domain.ErrInternal))
+	}
+
+	logger.Init().Sugar().Infof("타임존이 업데이트되었습니다. 사용자ID: %s, 타임존: %s", userID.String(), req.Timezone)
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message":  "타임존이 성공적으로 업데이트되었습니다.",
+		"timezone": req.Timezone,
+	})
+}

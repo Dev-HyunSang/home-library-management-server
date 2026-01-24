@@ -61,6 +61,31 @@ var (
 			},
 		},
 	}
+	// ReadingRemindersColumns holds the columns for the "reading_reminders" table.
+	ReadingRemindersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "reminder_time", Type: field.TypeString},
+		{Name: "day_of_week", Type: field.TypeEnum, Enums: []string{"everyday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"}, Default: "everyday"},
+		{Name: "is_enabled", Type: field.TypeBool, Default: true},
+		{Name: "message", Type: field.TypeString, Default: "책 읽을 시간이에요!"},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "user_reading_reminders", Type: field.TypeUUID},
+	}
+	// ReadingRemindersTable holds the schema information for the "reading_reminders" table.
+	ReadingRemindersTable = &schema.Table{
+		Name:       "reading_reminders",
+		Columns:    ReadingRemindersColumns,
+		PrimaryKey: []*schema.Column{ReadingRemindersColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "reading_reminders_users_reading_reminders",
+				Columns:    []*schema.Column{ReadingRemindersColumns[7]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// ReviewsColumns holds the columns for the "reviews" table.
 	ReviewsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -100,6 +125,8 @@ var (
 		{Name: "password", Type: field.TypeString, Nullable: true},
 		{Name: "is_published", Type: field.TypeBool, Default: false},
 		{Name: "is_terms_agreed", Type: field.TypeBool, Default: false},
+		{Name: "fcm_token", Type: field.TypeString, Nullable: true},
+		{Name: "timezone", Type: field.TypeString, Default: "Asia/Seoul"},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 	}
@@ -113,6 +140,7 @@ var (
 	Tables = []*schema.Table{
 		BooksTable,
 		BookmarksTable,
+		ReadingRemindersTable,
 		ReviewsTable,
 		UsersTable,
 	}
@@ -122,6 +150,7 @@ func init() {
 	BooksTable.ForeignKeys[0].RefTable = UsersTable
 	BookmarksTable.ForeignKeys[0].RefTable = BooksTable
 	BookmarksTable.ForeignKeys[1].RefTable = UsersTable
+	ReadingRemindersTable.ForeignKeys[0].RefTable = UsersTable
 	ReviewsTable.ForeignKeys[0].RefTable = BooksTable
 	ReviewsTable.ForeignKeys[1].RefTable = UsersTable
 }
