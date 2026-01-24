@@ -24,6 +24,8 @@ type Review struct {
 	Content string `json:"content,omitempty"`
 	// Rating holds the value of the "rating" field.
 	Rating int `json:"rating,omitempty"`
+	// IsPublic holds the value of the "is_public" field.
+	IsPublic bool `json:"is_public,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -74,6 +76,8 @@ func (*Review) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case review.FieldIsPublic:
+			values[i] = new(sql.NullBool)
 		case review.FieldRating:
 			values[i] = new(sql.NullInt64)
 		case review.FieldContent:
@@ -118,6 +122,12 @@ func (r *Review) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field rating", values[i])
 			} else if value.Valid {
 				r.Rating = int(value.Int64)
+			}
+		case review.FieldIsPublic:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_public", values[i])
+			} else if value.Valid {
+				r.IsPublic = value.Bool
 			}
 		case review.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -196,6 +206,9 @@ func (r *Review) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("rating=")
 	builder.WriteString(fmt.Sprintf("%v", r.Rating))
+	builder.WriteString(", ")
+	builder.WriteString("is_public=")
+	builder.WriteString(fmt.Sprintf("%v", r.IsPublic))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(r.CreatedAt.Format(time.ANSIC))

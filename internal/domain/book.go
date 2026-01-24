@@ -26,6 +26,7 @@ type ReviewBook struct {
 	BookAuthor string    `json:"book_author"`
 	Content    string    `json:"content"`
 	Rating     int       `json:"rating"`
+	IsPublic   bool      `json:"is_public"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
 }
@@ -49,6 +50,7 @@ type BookRepository interface {
 	GetReviewsByUserID(userID uuid.UUID) ([]*ReviewBook, error)
 	GetReviewByID(id uuid.UUID) (*ReviewBook, error)
 	UpdateReviewByID(review *ReviewBook) (ReviewBook, error)
+	GetPublicReviewsByBookID(bookID uuid.UUID) ([]*ReviewBook, error)
 	// Book Bookmark
 	AddBookmarkByBookID(userID, bookID uuid.UUID) (*Bookmark, error)
 	GetBookmarksByUserID(userID uuid.UUID) ([]*Bookmark, error)
@@ -67,6 +69,7 @@ type BookUseCase interface {
 	GetReviewsByUserID(userID uuid.UUID) ([]*ReviewBook, error)
 	GetReviewByID(id uuid.UUID) (*ReviewBook, error)
 	UpdateReviewByID(review *ReviewBook) (ReviewBook, error)
+	GetPublicReviewsByBookID(bookID uuid.UUID) ([]*ReviewBook, error)
 	// Book Bookmark
 	AddBookmarkByBookID(userID, bookID uuid.UUID) (*Bookmark, error)
 	GetBookmarksByUserID(userID uuid.UUID) ([]*Bookmark, error)

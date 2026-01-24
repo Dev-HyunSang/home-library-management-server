@@ -238,6 +238,7 @@ func (bc *BookRepository) CreateReview(review *domain.ReviewBook) error {
 		SetOwnerID(review.OwnerID).
 		SetContent(review.Content).
 		SetRating(review.Rating).
+		SetIsPublic(review.IsPublic).
 		SetCreatedAt(time.Now()).
 		SetUpdatedAt(time.Now()).
 		Save(context.Background())
@@ -271,6 +272,7 @@ func (bc *BookRepository) GetReviewsByUserID(userID uuid.UUID) ([]*domain.Review
 			BookAuthor: r.QueryBook().OnlyX(context.Background()).Author,
 			Content:    r.Content,
 			Rating:     r.Rating,
+			IsPublic:   r.IsPublic,
 			CreatedAt:  r.CreatedAt,
 			UpdatedAt:  r.UpdatedAt,
 		})
@@ -296,6 +298,7 @@ func (bc *BookRepository) GetReviewByID(reviewID uuid.UUID) (*domain.ReviewBook,
 		BookAuthor: r.QueryBook().OnlyX(context.Background()).Author,
 		Content:    r.Content,
 		Rating:     r.Rating,
+		IsPublic:   r.IsPublic,
 		CreatedAt:  r.CreatedAt,
 		UpdatedAt:  r.UpdatedAt,
 	}, nil
@@ -307,6 +310,7 @@ func (bc *BookRepository) UpdateReviewByID(review *domain.ReviewBook) (domain.Re
 	result, err := client.Review.UpdateOneID(review.ID).
 		SetContent(review.Content).
 		SetRating(review.Rating).
+		SetIsPublic(review.IsPublic).
 		SetUpdatedAt(time.Now()).
 		Save(context.Background())
 	if err != nil {
@@ -319,9 +323,41 @@ func (bc *BookRepository) UpdateReviewByID(review *domain.ReviewBook) (domain.Re
 		OwnerID:   result.QueryOwner().OnlyIDX(context.Background()),
 		Content:   result.Content,
 		Rating:    result.Rating,
+		IsPublic:  result.IsPublic,
 		CreatedAt: result.CreatedAt,
 		UpdatedAt: result.UpdatedAt,
 	}, nil
+}
+
+func (bc *BookRepository) GetPublicReviewsByBookID(bookID uuid.UUID) ([]*domain.ReviewBook, error) {
+	var result []*domain.ReviewBook
+
+	client := bc.client
+
+	reviews, err := client.Review.Query().
+		Where(review.HasBookWith(book.ID(bookID))).
+		Where(review.IsPublic(true)).
+		All(context.Background())
+	if err != nil {
+		return nil, fmt.Errorf("공개 리뷰 목록을 가져오는 도중 오류가 발생했습니다: %w", err)
+	}
+
+	for _, r := range reviews {
+		result = append(result, &domain.ReviewBook{
+			ID:         r.ID,
+			BookID:     r.QueryBook().OnlyIDX(context.Background()),
+			OwnerID:    r.QueryOwner().OnlyIDX(context.Background()),
+			BookTitle:  r.QueryBook().OnlyX(context.Background()).BookTitle,
+			BookAuthor: r.QueryBook().OnlyX(context.Background()).Author,
+			Content:    r.Content,
+			Rating:     r.Rating,
+			IsPublic:   r.IsPublic,
+			CreatedAt:  r.CreatedAt,
+			UpdatedAt:  r.UpdatedAt,
+		})
+	}
+
+	return result, nil
 }
 
 func (bc *BookRepository) DeleteByID(userID, id uuid.UUID) error {

@@ -118,6 +118,14 @@ func (bc *BookUseCase) UpdateReviewByID(review *domain.ReviewBook) (domain.Revie
 	return bc.bookRepo.UpdateReviewByID(review)
 }
 
+func (bc *BookUseCase) GetPublicReviewsByBookID(bookID uuid.UUID) ([]*domain.ReviewBook, error) {
+	if bookID == uuid.Nil {
+		return nil, domain.ErrInvalidInput
+	}
+
+	return bc.bookRepo.GetPublicReviewsByBookID(bookID)
+}
+
 func (bc *BookUseCase) AddBookmarkByBookID(userID, bookID uuid.UUID) (*domain.Bookmark, error) {
 	if userID == uuid.Nil || bookID == uuid.Nil {
 		return nil, domain.ErrInvalidInput

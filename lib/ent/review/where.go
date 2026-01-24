@@ -66,6 +66,11 @@ func Rating(v int) predicate.Review {
 	return predicate.Review(sql.FieldEQ(FieldRating, v))
 }
 
+// IsPublic applies equality check predicate on the "is_public" field. It's identical to IsPublicEQ.
+func IsPublic(v bool) predicate.Review {
+	return predicate.Review(sql.FieldEQ(FieldIsPublic, v))
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Review {
 	return predicate.Review(sql.FieldEQ(FieldCreatedAt, v))
@@ -179,6 +184,16 @@ func RatingLT(v int) predicate.Review {
 // RatingLTE applies the LTE predicate on the "rating" field.
 func RatingLTE(v int) predicate.Review {
 	return predicate.Review(sql.FieldLTE(FieldRating, v))
+}
+
+// IsPublicEQ applies the EQ predicate on the "is_public" field.
+func IsPublicEQ(v bool) predicate.Review {
+	return predicate.Review(sql.FieldEQ(FieldIsPublic, v))
+}
+
+// IsPublicNEQ applies the NEQ predicate on the "is_public" field.
+func IsPublicNEQ(v bool) predicate.Review {
+	return predicate.Review(sql.FieldNEQ(FieldIsPublic, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

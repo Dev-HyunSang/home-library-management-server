@@ -66,6 +66,20 @@ func (ru *ReviewUpdate) AddRating(i int) *ReviewUpdate {
 	return ru
 }
 
+// SetIsPublic sets the "is_public" field.
+func (ru *ReviewUpdate) SetIsPublic(b bool) *ReviewUpdate {
+	ru.mutation.SetIsPublic(b)
+	return ru
+}
+
+// SetNillableIsPublic sets the "is_public" field if the given value is not nil.
+func (ru *ReviewUpdate) SetNillableIsPublic(b *bool) *ReviewUpdate {
+	if b != nil {
+		ru.SetIsPublic(*b)
+	}
+	return ru
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (ru *ReviewUpdate) SetUpdatedAt(t time.Time) *ReviewUpdate {
 	ru.mutation.SetUpdatedAt(t)
@@ -189,6 +203,9 @@ func (ru *ReviewUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := ru.mutation.AddedRating(); ok {
 		_spec.AddField(review.FieldRating, field.TypeInt, value)
 	}
+	if value, ok := ru.mutation.IsPublic(); ok {
+		_spec.SetField(review.FieldIsPublic, field.TypeBool, value)
+	}
 	if value, ok := ru.mutation.UpdatedAt(); ok {
 		_spec.SetField(review.FieldUpdatedAt, field.TypeTime, value)
 	}
@@ -302,6 +319,20 @@ func (ruo *ReviewUpdateOne) SetNillableRating(i *int) *ReviewUpdateOne {
 // AddRating adds i to the "rating" field.
 func (ruo *ReviewUpdateOne) AddRating(i int) *ReviewUpdateOne {
 	ruo.mutation.AddRating(i)
+	return ruo
+}
+
+// SetIsPublic sets the "is_public" field.
+func (ruo *ReviewUpdateOne) SetIsPublic(b bool) *ReviewUpdateOne {
+	ruo.mutation.SetIsPublic(b)
+	return ruo
+}
+
+// SetNillableIsPublic sets the "is_public" field if the given value is not nil.
+func (ruo *ReviewUpdateOne) SetNillableIsPublic(b *bool) *ReviewUpdateOne {
+	if b != nil {
+		ruo.SetIsPublic(*b)
+	}
 	return ruo
 }
 
@@ -457,6 +488,9 @@ func (ruo *ReviewUpdateOne) sqlSave(ctx context.Context) (_node *Review, err err
 	}
 	if value, ok := ruo.mutation.AddedRating(); ok {
 		_spec.AddField(review.FieldRating, field.TypeInt, value)
+	}
+	if value, ok := ruo.mutation.IsPublic(); ok {
+		_spec.SetField(review.FieldIsPublic, field.TypeBool, value)
 	}
 	if value, ok := ruo.mutation.UpdatedAt(); ok {
 		_spec.SetField(review.FieldUpdatedAt, field.TypeTime, value)

@@ -26,6 +26,8 @@ func (Review) Fields() []ent.Field {
 		field.Int("rating").
 			Min(1).
 			Max(5),
+		field.Bool("is_public").
+			Default(false),
 		field.Time("created_at").
 			Default(time.Now).
 			Immutable(),

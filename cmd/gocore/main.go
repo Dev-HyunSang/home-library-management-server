@@ -153,6 +153,7 @@ func main() {
 	reviews := books.Group("/reviews")
 	reviews.Post("/", middleware.JWTAuthMiddleware(authUseCase), bookHandler.SaveBookReviewHandler)
 	reviews.Get("/get", middleware.JWTAuthMiddleware(authUseCase), bookHandler.GetBookReviewByUserIDHandler)
+	reviews.Get("/:book_id", bookHandler.GetPublicReviewsByBookIDHandler)
 
 	bookmarks := books.Group("/bookmarks")
 	bookmarks.Post("/add/:id", middleware.JWTAuthMiddleware(authUseCase), bookHandler.AddBookmarkHandler)

@@ -55,9 +55,10 @@ type Book struct {
 }
 
 type BookReviewRequest struct {
-	BookID  string `json:"book_id"`
-	Content string `json:"content"`
-	Rating  int    `json:"rating"`
+	BookID   string `json:"book_id"`
+	Content  string `json:"content"`
+	Rating   int    `json:"rating"`
+	IsPublic bool   `json:"is_public"`
 }
 
 func NewBookHandler(bookUseCase domain.BookUseCase, AuthHandler domain.AuthUseCase) *BookHandler {
@@ -277,6 +278,7 @@ func (h *BookHandler) SaveBookReviewHandler(ctx *fiber.Ctx) error {
 		OwnerID:   userID,
 		Content:   req.Content,
 		Rating:    req.Rating,
+		IsPublic:  req.IsPublic,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}); err != nil {
@@ -298,6 +300,26 @@ func (h *BookHandler) GetBookReviewByUserIDHandler(ctx *fiber.Ctx) error {
 	results, err := h.bookUseCase.GetReviewsByUserID(userID)
 	if err != nil {
 		logger.Init().Sugar().Errorf("책 리뷰 목록을 가져오는 도중 오류가 발생했습니다: %v", err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"is_success":   true,
+		"data":         results,
+		"responsed_at": time.Now(),
+	})
+}
+
+func (h *BookHandler) GetPublicReviewsByBookIDHandler(ctx *fiber.Ctx) error {
+	bookID := ctx.Params("book_id")
+	if len(bookID) == 0 {
+		logger.Init().Sugar().Error("책 ID가 입력되지 않았습니다.")
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+
+	results, err := h.bookUseCase.GetPublicReviewsByBookID(uuid.MustParse(bookID))
+	if err != nil {
+		logger.Init().Sugar().Errorf("공개 리뷰 목록을 가져오는 도중 오류가 발생했습니다: %v", err)
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
 	}
 

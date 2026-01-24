@@ -35,6 +35,20 @@ func (rc *ReviewCreate) SetRating(i int) *ReviewCreate {
 	return rc
 }
 
+// SetIsPublic sets the "is_public" field.
+func (rc *ReviewCreate) SetIsPublic(b bool) *ReviewCreate {
+	rc.mutation.SetIsPublic(b)
+	return rc
+}
+
+// SetNillableIsPublic sets the "is_public" field if the given value is not nil.
+func (rc *ReviewCreate) SetNillableIsPublic(b *bool) *ReviewCreate {
+	if b != nil {
+		rc.SetIsPublic(*b)
+	}
+	return rc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (rc *ReviewCreate) SetCreatedAt(t time.Time) *ReviewCreate {
 	rc.mutation.SetCreatedAt(t)
@@ -134,6 +148,10 @@ func (rc *ReviewCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (rc *ReviewCreate) defaults() {
+	if _, ok := rc.mutation.IsPublic(); !ok {
+		v := review.DefaultIsPublic
+		rc.mutation.SetIsPublic(v)
+	}
 	if _, ok := rc.mutation.CreatedAt(); !ok {
 		v := review.DefaultCreatedAt()
 		rc.mutation.SetCreatedAt(v)
@@ -165,6 +183,9 @@ func (rc *ReviewCreate) check() error {
 		if err := review.RatingValidator(v); err != nil {
 			return &ValidationError{Name: "rating", err: fmt.Errorf(`ent: validator failed for field "Review.rating": %w`, err)}
 		}
+	}
+	if _, ok := rc.mutation.IsPublic(); !ok {
+		return &ValidationError{Name: "is_public", err: errors.New(`ent: missing required field "Review.is_public"`)}
 	}
 	if _, ok := rc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Review.created_at"`)}
@@ -220,6 +241,10 @@ func (rc *ReviewCreate) createSpec() (*Review, *sqlgraph.CreateSpec) {
 	if value, ok := rc.mutation.Rating(); ok {
 		_spec.SetField(review.FieldRating, field.TypeInt, value)
 		_node.Rating = value
+	}
+	if value, ok := rc.mutation.IsPublic(); ok {
+		_spec.SetField(review.FieldIsPublic, field.TypeBool, value)
+		_node.IsPublic = value
 	}
 	if value, ok := rc.mutation.CreatedAt(); ok {
 		_spec.SetField(review.FieldCreatedAt, field.TypeTime, value)

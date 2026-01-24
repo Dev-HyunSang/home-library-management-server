@@ -1469,6 +1469,7 @@ type ReviewMutation struct {
 	content       *string
 	rating        *int
 	addrating     *int
+	is_public     *bool
 	created_at    *time.Time
 	updated_at    *time.Time
 	clearedFields map[string]struct{}
@@ -1677,6 +1678,42 @@ func (m *ReviewMutation) ResetRating() {
 	m.addrating = nil
 }
 
+// SetIsPublic sets the "is_public" field.
+func (m *ReviewMutation) SetIsPublic(b bool) {
+	m.is_public = &b
+}
+
+// IsPublic returns the value of the "is_public" field in the mutation.
+func (m *ReviewMutation) IsPublic() (r bool, exists bool) {
+	v := m.is_public
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsPublic returns the old "is_public" field's value of the Review entity.
+// If the Review object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReviewMutation) OldIsPublic(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsPublic is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsPublic requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsPublic: %w", err)
+	}
+	return oldValue.IsPublic, nil
+}
+
+// ResetIsPublic resets all changes to the "is_public" field.
+func (m *ReviewMutation) ResetIsPublic() {
+	m.is_public = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *ReviewMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -1861,12 +1898,15 @@ func (m *ReviewMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ReviewMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
 	if m.content != nil {
 		fields = append(fields, review.FieldContent)
 	}
 	if m.rating != nil {
 		fields = append(fields, review.FieldRating)
+	}
+	if m.is_public != nil {
+		fields = append(fields, review.FieldIsPublic)
 	}
 	if m.created_at != nil {
 		fields = append(fields, review.FieldCreatedAt)
@@ -1886,6 +1926,8 @@ func (m *ReviewMutation) Field(name string) (ent.Value, bool) {
 		return m.Content()
 	case review.FieldRating:
 		return m.Rating()
+	case review.FieldIsPublic:
+		return m.IsPublic()
 	case review.FieldCreatedAt:
 		return m.CreatedAt()
 	case review.FieldUpdatedAt:
@@ -1903,6 +1945,8 @@ func (m *ReviewMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldContent(ctx)
 	case review.FieldRating:
 		return m.OldRating(ctx)
+	case review.FieldIsPublic:
+		return m.OldIsPublic(ctx)
 	case review.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case review.FieldUpdatedAt:
@@ -1929,6 +1973,13 @@ func (m *ReviewMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRating(v)
+		return nil
+	case review.FieldIsPublic:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsPublic(v)
 		return nil
 	case review.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -2013,6 +2064,9 @@ func (m *ReviewMutation) ResetField(name string) error {
 		return nil
 	case review.FieldRating:
 		m.ResetRating()
+		return nil
+	case review.FieldIsPublic:
+		m.ResetIsPublic()
 		return nil
 	case review.FieldCreatedAt:
 		m.ResetCreatedAt()
