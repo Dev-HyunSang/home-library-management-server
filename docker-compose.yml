@@ -1,12 +1,28 @@
 services:
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/certbot:/var/www/certbot:ro
+    depends_on:
+      - my-home-library
+    restart: unless-stopped
+    networks:
+      - app-network
+
   my-home-library:
     image: myhomelibrary.azurecr.io/home-library-server
     container_name: home-library-server
     command: [ "./server", "prod" ]
     env_file:
       - .env.prod
-    ports:
-      - "8080:8080"
+    expose:
+      - "8080"
     networks:
       - app-network
 
@@ -78,7 +94,7 @@ services:
     depends_on:
       - kafka
     ports:
-      - 8080:8080
+      - 9090:8080
     environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
