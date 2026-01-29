@@ -258,3 +258,31 @@ func (r *UserRepository) GetUserWithFCM(userID uuid.UUID) (*domain.User, error) 
 		UpdatedAt:     u.UpdatedAt,
 	}, nil
 }
+
+func (r *UserRepository) GetAllUsersWithFCM() ([]*domain.User, error) {
+	users, err := r.client.User.Query().
+		Where(user.FcmTokenNEQ("")).
+		All(context.Background())
+
+	if err != nil {
+		return nil, fmt.Errorf("FCM 토큰이 있는 사용자 목록 조회 중 오류가 발생했습니다: %w", err)
+	}
+
+	result := make([]*domain.User, len(users))
+	for i, u := range users {
+		result[i] = &domain.User{
+			ID:            u.ID,
+			NickName:      u.NickName,
+			Email:         u.Email,
+			IsPublished:   u.IsPublished,
+			IsTermsAgreed: u.IsTermsAgreed,
+			FCMToken:      u.FcmToken,
+			Timezone:      u.Timezone,
+			CreatedAt:     u.CreatedAt,
+			UpdatedAt:     u.UpdatedAt,
+		}
+	}
+
+	logger.Init().Sugar().Infof("FCM 토큰이 있는 사용자 %d명 조회 완료", len(result))
+	return result, nil
+}

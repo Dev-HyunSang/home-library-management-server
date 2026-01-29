@@ -31,6 +31,7 @@ type UserRepository interface {
 	UpdateFCMToken(userID uuid.UUID, fcmToken string) error
 	UpdateTimezone(userID uuid.UUID, timezone string) error
 	GetUserWithFCM(userID uuid.UUID) (*User, error)
+	GetAllUsersWithFCM() ([]*User, error)
 }
 
 type UserUseCase interface {
