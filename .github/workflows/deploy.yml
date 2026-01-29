@@ -114,6 +114,7 @@ jobs:
           key: ${{ secrets.VM_SSH_KEY }}
           source: "docker-compose.yml,docker-compose.prod.yml,nginx"
           target: "/home/${{ secrets.VM_USERNAME }}/app"
+          overwrite: true
 
       - name: Generate SSL certificate if not exists
         uses: appleboy/ssh-action@v1.0.3
