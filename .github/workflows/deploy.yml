@@ -82,7 +82,7 @@ jobs:
             FCM_SERVICE_ACCOUNT_PATH=${{ secrets.FCM_SERVICE_ACCOUNT_PATH }}
             EOF
 
-      - name: Clean nginx config on VM
+      - name: Backup SSL certs and clean nginx on VM
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VM_HOST }}
@@ -94,16 +94,11 @@ jobs:
             # Backup SSL certs if they exist
             if [ -d nginx/ssl ] && [ "$(ls -A nginx/ssl 2>/dev/null)" ]; then
               mkdir -p /tmp/nginx-ssl-backup
-              cp -r nginx/ssl/* /tmp/nginx-ssl-backup/
+              sudo cp -r nginx/ssl/* /tmp/nginx-ssl-backup/
+              sudo chown -R $USER:$USER /tmp/nginx-ssl-backup
             fi
-            # Remove entire nginx directory
-            rm -rf nginx
-            # Restore SSL certs
-            if [ -d /tmp/nginx-ssl-backup ] && [ "$(ls -A /tmp/nginx-ssl-backup 2>/dev/null)" ]; then
-              mkdir -p nginx/ssl
-              cp -r /tmp/nginx-ssl-backup/* nginx/ssl/
-              rm -rf /tmp/nginx-ssl-backup
-            fi
+            # Remove entire nginx directory (may be owned by root from docker)
+            sudo rm -rf nginx
 
       - name: Copy docker-compose and nginx files to VM
         uses: appleboy/scp-action@v0.1.7
@@ -114,7 +109,21 @@ jobs:
           key: ${{ secrets.VM_SSH_KEY }}
           source: "docker-compose.yml,docker-compose.prod.yml,nginx"
           target: "/home/${{ secrets.VM_USERNAME }}/app"
-          overwrite: true
+
+      - name: Restore SSL certs on VM
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM_HOST }}
+          port: ${{ secrets.VM_PORT }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            cd /home/${{ secrets.VM_USERNAME }}/app
+            if [ -d /tmp/nginx-ssl-backup ] && [ "$(ls -A /tmp/nginx-ssl-backup 2>/dev/null)" ]; then
+              mkdir -p nginx/ssl
+              cp -r /tmp/nginx-ssl-backup/* nginx/ssl/
+              rm -rf /tmp/nginx-ssl-backup
+            fi
 
       - name: Generate SSL certificate if not exists
         uses: appleboy/ssh-action@v1.0.3
