@@ -39,7 +39,7 @@ jobs:
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
-      - name: Deploy to Azure VM via SSH
+      - name: Create .env file on VM
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VM_HOST }}
@@ -47,23 +47,99 @@ jobs:
           username: ${{ secrets.VM_USERNAME }}
           key: ${{ secrets.VM_SSH_KEY }}
           script: |
+            mkdir -p /home/${{ secrets.VM_USERNAME }}/app
+            cat > /home/${{ secrets.VM_USERNAME }}/app/.env << 'EOF'
+            # MYSQL
+            MYSQL_DRIVER=mysql
+            MYSQL_HOST=${{ secrets.MYSQL_HOST }}
+            MYSQL_USER=${{ secrets.MYSQL_USER }}
+            MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+            MYSQL_DBNAME=${{ secrets.MYSQL_DBNAME }}
+            MYSQL_SSLMODE=${{ secrets.MYSQL_SSLMODE }}
+
+            # REDIS
+            REDIS_HOST=${{ secrets.REDIS_HOST }}
+            REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}
+            REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+
+            # COOKIE
+            AUTH_COOKIE_KEY=${{ secrets.AUTH_COOKIE_KEY }}
+
+            # JWT
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            JWT_TTL=${{ secrets.JWT_TTL }}
+
+            # NAVER BOOK API
+            NAVER_API_CLIENT_ID=${{ secrets.NAVER_API_CLIENT_ID }}
+            NAVER_API_CLIENT_SECRET=${{ secrets.NAVER_API_CLIENT_SECRET }}
+
+            # GOOGLE MAIL API
+            GOOGLE_MAIL_ADDRESS=${{ secrets.GOOGLE_MAIL_ADDRESS }}
+            GOOGLE_MAIL_PASSWORD=${{ secrets.GOOGLE_MAIL_PASSWORD }}
+            GOOGLE_MAIL_SMTP=${{ secrets.GOOGLE_MAIL_SMTP }}
+
+            # FCM
+            FCM_SERVICE_ACCOUNT_PATH=${{ secrets.FCM_SERVICE_ACCOUNT_PATH }}
+            EOF
+
+      - name: Clean nginx config on VM
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM_HOST }}
+          port: ${{ secrets.VM_PORT }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            # Remove nginx.conf if it exists as a directory (docker mount issue)
+            if [ -d /home/${{ secrets.VM_USERNAME }}/app/nginx/nginx.conf ]; then
+              rm -rf /home/${{ secrets.VM_USERNAME }}/app/nginx/nginx.conf
+            fi
+            # Remove the config file to ensure fresh copy
+            rm -f /home/${{ secrets.VM_USERNAME }}/app/nginx/nginx.conf
+            rm -f /home/${{ secrets.VM_USERNAME }}/app/nginx/generate-ssl.sh
+
+      - name: Copy docker-compose and nginx files to VM
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VM_HOST }}
+          port: ${{ secrets.VM_PORT }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          source: "docker-compose.yml,docker-compose.prod.yml,nginx"
+          target: "/home/${{ secrets.VM_USERNAME }}/app"
+
+      - name: Generate SSL certificate if not exists
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM_HOST }}
+          port: ${{ secrets.VM_PORT }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            cd /home/${{ secrets.VM_USERNAME }}/app
+            if [ ! -f nginx/ssl/fullchain.pem ]; then
+              chmod +x nginx/generate-ssl.sh
+              ./nginx/generate-ssl.sh
+            fi
+
+      - name: Deploy all services
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM_HOST }}
+          port: ${{ secrets.VM_PORT }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            cd /home/${{ secrets.VM_USERNAME }}/app
+
             # Login to ACR
             docker login ${{ secrets.ACR_LOGIN_SERVER }} -u ${{ secrets.ACR_USERNAME }} -p ${{ secrets.ACR_PASSWORD }}
 
-            # Pull latest image
+            # Pull latest application image
             docker pull ${{ secrets.ACR_LOGIN_SERVER }}/home-library-server:latest
 
-            # Stop and remove old container
-            docker stop home-library-server || true
-            docker rm home-library-server || true
-
-            # Run new container
-            docker run -d \
-              --name home-library-server \
-              --restart unless-stopped \
-              -p 3000:3000 \
-              --env-file /home/${{ secrets.VM_USERNAME }}/app/.env \
-              ${{ secrets.ACR_LOGIN_SERVER }}/home-library-server:latest
+            # Stop and recreate all services
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env up -d
 
             # Cleanup old images
             docker image prune -f
