@@ -1,0 +1,10 @@
+.git
+.github
+.gitignore
+.env
+.env.dev
+*.md
+Dockerfile
+.dockerignore
+tmp/
+vendor/
