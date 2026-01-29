@@ -12,6 +12,8 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// AdminAPIKey is the client for interacting with the AdminAPIKey builders.
+	AdminAPIKey *AdminAPIKeyClient
 	// Book is the client for interacting with the Book builders.
 	Book *BookClient
 	// Bookmark is the client for interacting with the Bookmark builders.
@@ -153,6 +155,7 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.AdminAPIKey = NewAdminAPIKeyClient(tx.config)
 	tx.Book = NewBookClient(tx.config)
 	tx.Bookmark = NewBookmarkClient(tx.config)
 	tx.ReadingReminder = NewReadingReminderClient(tx.config)
@@ -167,7 +170,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: Book.QueryXXX(), the query will be executed
+// applies a query, for example: AdminAPIKey.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

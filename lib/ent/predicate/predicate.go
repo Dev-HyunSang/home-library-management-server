@@ -6,6 +6,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// AdminAPIKey is the predicate function for adminapikey builders.
+type AdminAPIKey func(*sql.Selector)
+
 // Book is the predicate function for book builders.
 type Book func(*sql.Selector)
 

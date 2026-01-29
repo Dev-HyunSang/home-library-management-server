@@ -17,6 +17,11 @@ type Config struct {
 	JWT   JWTConfig   `json:"jwt"`
 	Kafka KafkaConfig `json:"kafka"`
 	FCM   FCMConfig   `json:"fcm"`
+	Admin AdminConfig `json:"admin"`
+}
+
+type AdminConfig struct {
+	BootstrapKey string `json:"bootstrap_key"`
 }
 
 type AppConfig struct {
@@ -130,6 +135,9 @@ func LoadConfig(env string) (*Config, error) {
 		},
 		FCM: FCMConfig{
 			ServiceAccountPath: getEnvOrDefault("FCM_SERVICE_ACCOUNT_PATH", "serviceAccountKey.json"),
+		},
+		Admin: AdminConfig{
+			BootstrapKey: getEnvOrDefault("ADMIN_BOOTSTRAP_KEY", ""),
 		},
 	}
 

@@ -9,6 +9,18 @@ import (
 	"github.com/dev-hyunsang/home-library/lib/ent"
 )
 
+// The AdminAPIKeyFunc type is an adapter to allow the use of ordinary
+// function as AdminAPIKey mutator.
+type AdminAPIKeyFunc func(context.Context, *ent.AdminAPIKeyMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AdminAPIKeyFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AdminAPIKeyMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AdminAPIKeyMutation", m)
+}
+
 // The BookFunc type is an adapter to allow the use of ordinary
 // function as Book mutator.
 type BookFunc func(context.Context, *ent.BookMutation) (ent.Value, error)

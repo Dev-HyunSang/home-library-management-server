@@ -5,6 +5,7 @@ package ent
 import (
 	"time"
 
+	"github.com/dev-hyunsang/home-library/lib/ent/adminapikey"
 	"github.com/dev-hyunsang/home-library/lib/ent/book"
 	"github.com/dev-hyunsang/home-library/lib/ent/bookmark"
 	"github.com/dev-hyunsang/home-library/lib/ent/readingreminder"
@@ -18,6 +19,34 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	adminapikeyFields := schema.AdminAPIKey{}.Fields()
+	_ = adminapikeyFields
+	// adminapikeyDescName is the schema descriptor for name field.
+	adminapikeyDescName := adminapikeyFields[1].Descriptor()
+	// adminapikey.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	adminapikey.NameValidator = adminapikeyDescName.Validators[0].(func(string) error)
+	// adminapikeyDescKeyHash is the schema descriptor for key_hash field.
+	adminapikeyDescKeyHash := adminapikeyFields[2].Descriptor()
+	// adminapikey.KeyHashValidator is a validator for the "key_hash" field. It is called by the builders before save.
+	adminapikey.KeyHashValidator = adminapikeyDescKeyHash.Validators[0].(func(string) error)
+	// adminapikeyDescKeyPrefix is the schema descriptor for key_prefix field.
+	adminapikeyDescKeyPrefix := adminapikeyFields[3].Descriptor()
+	// adminapikey.KeyPrefixValidator is a validator for the "key_prefix" field. It is called by the builders before save.
+	adminapikey.KeyPrefixValidator = adminapikeyDescKeyPrefix.Validators[0].(func(string) error)
+	// adminapikeyDescIsActive is the schema descriptor for is_active field.
+	adminapikeyDescIsActive := adminapikeyFields[4].Descriptor()
+	// adminapikey.DefaultIsActive holds the default value on creation for the is_active field.
+	adminapikey.DefaultIsActive = adminapikeyDescIsActive.Default.(bool)
+	// adminapikeyDescCreatedAt is the schema descriptor for created_at field.
+	adminapikeyDescCreatedAt := adminapikeyFields[7].Descriptor()
+	// adminapikey.DefaultCreatedAt holds the default value on creation for the created_at field.
+	adminapikey.DefaultCreatedAt = adminapikeyDescCreatedAt.Default.(func() time.Time)
+	// adminapikeyDescUpdatedAt is the schema descriptor for updated_at field.
+	adminapikeyDescUpdatedAt := adminapikeyFields[8].Descriptor()
+	// adminapikey.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	adminapikey.DefaultUpdatedAt = adminapikeyDescUpdatedAt.Default.(func() time.Time)
+	// adminapikey.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	adminapikey.UpdateDefaultUpdatedAt = adminapikeyDescUpdatedAt.UpdateDefault.(func() time.Time)
 	bookFields := schema.Book{}.Fields()
 	_ = bookFields
 	// bookDescBookTitle is the schema descriptor for book_title field.

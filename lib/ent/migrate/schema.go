@@ -8,6 +8,24 @@ import (
 )
 
 var (
+	// AdminAPIKeysColumns holds the columns for the "admin_api_keys" table.
+	AdminAPIKeysColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "name", Type: field.TypeString},
+		{Name: "key_hash", Type: field.TypeString, Unique: true},
+		{Name: "key_prefix", Type: field.TypeString, Size: 8},
+		{Name: "is_active", Type: field.TypeBool, Default: true},
+		{Name: "last_used_at", Type: field.TypeTime, Nullable: true},
+		{Name: "expires_at", Type: field.TypeTime, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// AdminAPIKeysTable holds the schema information for the "admin_api_keys" table.
+	AdminAPIKeysTable = &schema.Table{
+		Name:       "admin_api_keys",
+		Columns:    AdminAPIKeysColumns,
+		PrimaryKey: []*schema.Column{AdminAPIKeysColumns[0]},
+	}
 	// BooksColumns holds the columns for the "books" table.
 	BooksColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -138,6 +156,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		AdminAPIKeysTable,
 		BooksTable,
 		BookmarksTable,
 		ReadingRemindersTable,

@@ -137,6 +137,13 @@ func main() {
 	reminderUseCase := usecase.NewReadingReminderUseCase(reminderRepo)
 	reminderHandler := handler.NewReadingReminderHandler(reminderUseCase, authUseCase)
 
+	// 관리자 API Key 관련 의존성 주입
+	apiKeyRepo := repository.NewAdminAPIKeyRepository(dbConn)
+	apiKeyUseCase := usecase.NewAdminAPIKeyUseCase(apiKeyRepo)
+
+	// 관리자 핸들러 초기화
+	adminHandler := handler.NewAdminHandler(userRepo, kafkaProducer, apiKeyUseCase)
+
 	// 리마인더 스케줄러 시작
 	reminderScheduler, err := scheduler.NewReminderScheduler(reminderRepo, kafkaProducer)
 	if err != nil {
@@ -191,6 +198,20 @@ func main() {
 	auth.Post("/refresh", authHandler.RefreshTokenHandler)
 	auth.Post("/revoke-all", middleware.JWTAuthMiddleware(authUseCase), authHandler.RevokeAllTokensHandler)
 	auth.Get("/rate-limit", middleware.JWTAuthMiddleware(authUseCase), authHandler.CheckRateLimitHandler)
+
+	// 관리자 API Key 부트스트랩 (최초 API Key 생성용)
+	adminBootstrap := api.Group("/admin/bootstrap")
+	adminBootstrap.Use(middleware.AdminBootstrapMiddleware(cfg.Admin.BootstrapKey))
+	adminBootstrap.Post("/api-keys", adminHandler.CreateAPIKeyHandler)
+
+	// 관리자 API (API Key 인증)
+	admin := api.Group("/admin")
+	admin.Use(middleware.AdminAPIKeyMiddleware(apiKeyUseCase))
+	admin.Post("/notifications/broadcast", adminHandler.BroadcastNotificationHandler)
+	admin.Get("/api-keys", adminHandler.GetAPIKeysHandler)
+	admin.Post("/api-keys", adminHandler.CreateAPIKeyHandler)
+	admin.Patch("/api-keys/:id/deactivate", adminHandler.DeactivateAPIKeyHandler)
+	admin.Delete("/api-keys/:id", adminHandler.DeleteAPIKeyHandler)
 
 	if err := app.Listen(":3000"); err != nil {
 		logger.Init().Sugar().Fatalf("서버를 시작하는 도중 오류가 발생했습니다: %v", err)

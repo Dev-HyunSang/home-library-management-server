@@ -16,6 +16,7 @@ import (
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/dev-hyunsang/home-library/lib/ent/adminapikey"
 	"github.com/dev-hyunsang/home-library/lib/ent/book"
 	"github.com/dev-hyunsang/home-library/lib/ent/bookmark"
 	"github.com/dev-hyunsang/home-library/lib/ent/readingreminder"
@@ -28,6 +29,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// AdminAPIKey is the client for interacting with the AdminAPIKey builders.
+	AdminAPIKey *AdminAPIKeyClient
 	// Book is the client for interacting with the Book builders.
 	Book *BookClient
 	// Bookmark is the client for interacting with the Bookmark builders.
@@ -49,6 +52,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.AdminAPIKey = NewAdminAPIKeyClient(c.config)
 	c.Book = NewBookClient(c.config)
 	c.Bookmark = NewBookmarkClient(c.config)
 	c.ReadingReminder = NewReadingReminderClient(c.config)
@@ -146,6 +150,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:             ctx,
 		config:          cfg,
+		AdminAPIKey:     NewAdminAPIKeyClient(cfg),
 		Book:            NewBookClient(cfg),
 		Bookmark:        NewBookmarkClient(cfg),
 		ReadingReminder: NewReadingReminderClient(cfg),
@@ -170,6 +175,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		ctx:             ctx,
 		config:          cfg,
+		AdminAPIKey:     NewAdminAPIKeyClient(cfg),
 		Book:            NewBookClient(cfg),
 		Bookmark:        NewBookmarkClient(cfg),
 		ReadingReminder: NewReadingReminderClient(cfg),
@@ -181,7 +187,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Book.
+//		AdminAPIKey.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -203,26 +209,28 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.Book.Use(hooks...)
-	c.Bookmark.Use(hooks...)
-	c.ReadingReminder.Use(hooks...)
-	c.Review.Use(hooks...)
-	c.User.Use(hooks...)
+	for _, n := range []interface{ Use(...Hook) }{
+		c.AdminAPIKey, c.Book, c.Bookmark, c.ReadingReminder, c.Review, c.User,
+	} {
+		n.Use(hooks...)
+	}
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
-	c.Book.Intercept(interceptors...)
-	c.Bookmark.Intercept(interceptors...)
-	c.ReadingReminder.Intercept(interceptors...)
-	c.Review.Intercept(interceptors...)
-	c.User.Intercept(interceptors...)
+	for _, n := range []interface{ Intercept(...Interceptor) }{
+		c.AdminAPIKey, c.Book, c.Bookmark, c.ReadingReminder, c.Review, c.User,
+	} {
+		n.Intercept(interceptors...)
+	}
 }
 
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
+	case *AdminAPIKeyMutation:
+		return c.AdminAPIKey.mutate(ctx, m)
 	case *BookMutation:
 		return c.Book.mutate(ctx, m)
 	case *BookmarkMutation:
@@ -235,6 +243,139 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.User.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
+	}
+}
+
+// AdminAPIKeyClient is a client for the AdminAPIKey schema.
+type AdminAPIKeyClient struct {
+	config
+}
+
+// NewAdminAPIKeyClient returns a client for the AdminAPIKey from the given config.
+func NewAdminAPIKeyClient(c config) *AdminAPIKeyClient {
+	return &AdminAPIKeyClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `adminapikey.Hooks(f(g(h())))`.
+func (c *AdminAPIKeyClient) Use(hooks ...Hook) {
+	c.hooks.AdminAPIKey = append(c.hooks.AdminAPIKey, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `adminapikey.Intercept(f(g(h())))`.
+func (c *AdminAPIKeyClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AdminAPIKey = append(c.inters.AdminAPIKey, interceptors...)
+}
+
+// Create returns a builder for creating a AdminAPIKey entity.
+func (c *AdminAPIKeyClient) Create() *AdminAPIKeyCreate {
+	mutation := newAdminAPIKeyMutation(c.config, OpCreate)
+	return &AdminAPIKeyCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AdminAPIKey entities.
+func (c *AdminAPIKeyClient) CreateBulk(builders ...*AdminAPIKeyCreate) *AdminAPIKeyCreateBulk {
+	return &AdminAPIKeyCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AdminAPIKeyClient) MapCreateBulk(slice any, setFunc func(*AdminAPIKeyCreate, int)) *AdminAPIKeyCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AdminAPIKeyCreateBulk{err: fmt.Errorf("calling to AdminAPIKeyClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AdminAPIKeyCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AdminAPIKeyCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AdminAPIKey.
+func (c *AdminAPIKeyClient) Update() *AdminAPIKeyUpdate {
+	mutation := newAdminAPIKeyMutation(c.config, OpUpdate)
+	return &AdminAPIKeyUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AdminAPIKeyClient) UpdateOne(aak *AdminAPIKey) *AdminAPIKeyUpdateOne {
+	mutation := newAdminAPIKeyMutation(c.config, OpUpdateOne, withAdminAPIKey(aak))
+	return &AdminAPIKeyUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AdminAPIKeyClient) UpdateOneID(id uuid.UUID) *AdminAPIKeyUpdateOne {
+	mutation := newAdminAPIKeyMutation(c.config, OpUpdateOne, withAdminAPIKeyID(id))
+	return &AdminAPIKeyUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AdminAPIKey.
+func (c *AdminAPIKeyClient) Delete() *AdminAPIKeyDelete {
+	mutation := newAdminAPIKeyMutation(c.config, OpDelete)
+	return &AdminAPIKeyDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AdminAPIKeyClient) DeleteOne(aak *AdminAPIKey) *AdminAPIKeyDeleteOne {
+	return c.DeleteOneID(aak.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AdminAPIKeyClient) DeleteOneID(id uuid.UUID) *AdminAPIKeyDeleteOne {
+	builder := c.Delete().Where(adminapikey.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AdminAPIKeyDeleteOne{builder}
+}
+
+// Query returns a query builder for AdminAPIKey.
+func (c *AdminAPIKeyClient) Query() *AdminAPIKeyQuery {
+	return &AdminAPIKeyQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAdminAPIKey},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AdminAPIKey entity by its id.
+func (c *AdminAPIKeyClient) Get(ctx context.Context, id uuid.UUID) (*AdminAPIKey, error) {
+	return c.Query().Where(adminapikey.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AdminAPIKeyClient) GetX(ctx context.Context, id uuid.UUID) *AdminAPIKey {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *AdminAPIKeyClient) Hooks() []Hook {
+	return c.hooks.AdminAPIKey
+}
+
+// Interceptors returns the client interceptors.
+func (c *AdminAPIKeyClient) Interceptors() []Interceptor {
+	return c.inters.AdminAPIKey
+}
+
+func (c *AdminAPIKeyClient) mutate(ctx context.Context, m *AdminAPIKeyMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AdminAPIKeyCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AdminAPIKeyUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AdminAPIKeyUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AdminAPIKeyDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AdminAPIKey mutation op: %q", m.Op())
 	}
 }
 
@@ -1098,9 +1239,9 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Book, Bookmark, ReadingReminder, Review, User []ent.Hook
+		AdminAPIKey, Book, Bookmark, ReadingReminder, Review, User []ent.Hook
 	}
 	inters struct {
-		Book, Bookmark, ReadingReminder, Review, User []ent.Interceptor
+		AdminAPIKey, Book, Bookmark, ReadingReminder, Review, User []ent.Interceptor
 	}
 )
