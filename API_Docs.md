@@ -63,6 +63,50 @@
 }
 ```
 
+### GET `/api/users/check/nickname`
+
+- 닉네임 사용 가능 여부 확인
+- 인증 불필요
+
+#### Request
+
+Query parameter: `nickname` (소문자 영문, `.`, `_` 만 허용)
+
+```
+GET /api/users/check/nickname?nickname=example_user
+```
+
+#### Response (사용 가능)
+
+```json
+{
+  "is_success": true,
+  "message": "사용 가능한 닉네임입니다."
+}
+```
+
+#### Response (사용 불가 - 이미 사용 중)
+
+HTTP 409 Conflict
+
+```json
+{
+  "is_success": false,
+  "message": "이미 사용 중인 닉네임입니다."
+}
+```
+
+#### Response (사용 불가 - 잘못된 형식)
+
+HTTP 400 Bad Request
+
+```json
+{
+  "error_code": "INVALID_NICKNAME",
+  "error_message": "닉네임 형식이 올바르지 않습니다."
+}
+```
+
 ### POST `/api/users/forgot-password`
 
 - 변경 시 변경된 비밀번호로 로그인 성공
@@ -454,3 +498,158 @@
 
 - Rate limit 상태 확인
 - Authorization: Bearer {token} 필요
+
+---
+
+## Admin
+
+관리자 전용 API.
+
+### 인증 방식
+
+1. **Bootstrap Key** (최초 API Key 생성용): `X-Admin-Bootstrap-Key` 헤더
+2. **API Key** (일반 관리자 API): `X-Admin-API-Key` 헤더 또는 `api_key` 쿼리 파라미터
+
+### POST `/api/admin/bootstrap/api-keys`
+
+- 최초 Admin API Key 생성 (Bootstrap Key 필요)
+- X-Admin-Bootstrap-Key: {ADMIN_BOOTSTRAP_KEY} 필요
+
+#### Request
+
+```json
+{
+  "name": "Main Admin Key",
+  "expires_at": "2026-01-01T00:00:00Z"
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| name | string | Yes | API Key 이름/설명 |
+| expires_at | string | No | 만료 시간 (ISO 8601, null이면 무제한) |
+
+#### Response
+
+```json
+{
+  "success": true,
+  "message": "API Key가 생성되었습니다. 이 키는 다시 표시되지 않으니 안전하게 보관하세요.",
+  "api_key": {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "name": "Main Admin Key",
+    "key_prefix": "Xk@9mZ#L",
+    "raw_key": "Xk@9mZ#L4pQ!wE2rT6yU",
+    "is_active": true,
+    "expires_at": "2026-01-01T00:00:00Z",
+    "created_at": "2025-01-24T10:00:00Z",
+    "updated_at": "2025-01-24T10:00:00Z"
+  }
+}
+```
+
+### POST `/api/admin/notifications/broadcast`
+
+- 전체 사용자에게 일괄 푸시 알림 발송
+- X-Admin-API-Key: {API_KEY} 필요
+
+#### Request
+
+```json
+{
+  "title": "공지사항",
+  "message": "새로운 기능이 추가되었습니다!"
+}
+```
+
+#### Response
+
+```json
+{
+  "success": true,
+  "message": "알림 발송이 완료되었습니다.",
+  "total_users": 150,
+  "sent_count": 148,
+  "failed_count": 2
+}
+```
+
+### GET `/api/admin/api-keys`
+
+- API Key 목록 조회
+- X-Admin-API-Key: {API_KEY} 필요
+
+#### Response
+
+```json
+{
+  "success": true,
+  "api_keys": [
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "name": "Main Admin Key",
+      "key_prefix": "Xk@9mZ#L",
+      "is_active": true,
+      "last_used_at": "2025-01-24T15:30:00Z",
+      "expires_at": null,
+      "created_at": "2025-01-24T10:00:00Z",
+      "updated_at": "2025-01-24T15:30:00Z"
+    }
+  ],
+  "count": 1
+}
+```
+
+### POST `/api/admin/api-keys`
+
+- 새 API Key 생성
+- X-Admin-API-Key: {API_KEY} 필요
+
+#### Request
+
+```json
+{
+  "name": "Secondary Admin Key",
+  "expires_at": null
+}
+```
+
+#### Response
+
+```json
+{
+  "success": true,
+  "message": "API Key가 생성되었습니다. 이 키는 다시 표시되지 않으니 안전하게 보관하세요.",
+  "api_key": {
+    "id": "b2c3d4e5-f6a7-8901-bcde-f23456789012",
+    "name": "Secondary Admin Key",
+    "key_prefix": "7Yh&nM2@",
+    "raw_key": "7Yh&nM2@kL!pWx5vC9zQ",
+    "is_active": true,
+    "created_at": "2025-01-24T12:00:00Z"
+  }
+}
+```
+
+### PATCH `/api/admin/api-keys/:id/deactivate`
+
+- API Key 비활성화
+- X-Admin-API-Key: {API_KEY} 필요
+
+#### Response
+
+```json
+{
+  "success": true,
+  "message": "API Key가 비활성화되었습니다."
+}
+```
+
+### DELETE `/api/admin/api-keys/:id`
+
+- API Key 삭제
+- X-Admin-API-Key: {API_KEY} 필요
+
+#### Response
+
+- 204 No Content
