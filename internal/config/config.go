@@ -177,7 +177,7 @@ type FCMConfig struct {
 }
 
 func GetEnv(key string) string {
-	err := godotenv.Load(".env.dev")
+	err := godotenv.Load(".env")
 	if err != nil {
 		logger.Init().Sugar().Warnf("Warning: failed to load .env file: %v", err)
 	}
