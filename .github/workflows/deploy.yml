@@ -90,13 +90,20 @@ jobs:
           username: ${{ secrets.VM_USERNAME }}
           key: ${{ secrets.VM_SSH_KEY }}
           script: |
-            # Remove nginx.conf if it exists as a directory (docker mount issue)
-            if [ -d /home/${{ secrets.VM_USERNAME }}/app/nginx/nginx.conf ]; then
-              rm -rf /home/${{ secrets.VM_USERNAME }}/app/nginx/nginx.conf
+            cd /home/${{ secrets.VM_USERNAME }}/app
+            # Backup SSL certs if they exist
+            if [ -d nginx/ssl ] && [ "$(ls -A nginx/ssl 2>/dev/null)" ]; then
+              mkdir -p /tmp/nginx-ssl-backup
+              cp -r nginx/ssl/* /tmp/nginx-ssl-backup/
             fi
-            # Remove the config file to ensure fresh copy
-            rm -f /home/${{ secrets.VM_USERNAME }}/app/nginx/nginx.conf
-            rm -f /home/${{ secrets.VM_USERNAME }}/app/nginx/generate-ssl.sh
+            # Remove entire nginx directory
+            rm -rf nginx
+            # Restore SSL certs
+            if [ -d /tmp/nginx-ssl-backup ] && [ "$(ls -A /tmp/nginx-ssl-backup 2>/dev/null)" ]; then
+              mkdir -p nginx/ssl
+              cp -r /tmp/nginx-ssl-backup/* nginx/ssl/
+              rm -rf /tmp/nginx-ssl-backup
+            fi
 
       - name: Copy docker-compose and nginx files to VM
         uses: appleboy/scp-action@v0.1.7
