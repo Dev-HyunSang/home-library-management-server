@@ -1,21 +1,34 @@
 services:
+  my-home-library:
+    image: myhomelibrary.azurecr.io/home-library-server
+    container_name: home-library-server
+    command: [ "./server", "prod" ]
+    env_file:
+      - .env.prod
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
   redis:
     image: redis
     container_name: redis
     env_file:
-      - .env.dev
+      - .env.prod
     command: "redis-server --requirepass '${REDIS_PASSWORD}' --port 6379"
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
     restart: unless-stopped
+    networks:
+      - app-network
 
   mysql:
     image: mysql:8.4.6
     container_name: mysql
     env_file:
-      - .env.dev
+      - .env.prod
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
@@ -24,17 +37,21 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.0
     container_name: zookeeper
     env_file:
-      - .env.dev
+      - .env.prod
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     ports:
       - 22181:2181
+    networks:
+      - app-network
 
   kafka:
     image: confluentinc/cp-kafka:7.6.0
@@ -42,7 +59,7 @@ services:
     depends_on:
       - zookeeper
     env_file:
-      - .env.dev
+      - .env.prod
     ports:
       - 29092:29092
     environment:
@@ -52,6 +69,8 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - app-network
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
@@ -64,7 +83,15 @@ services:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
       KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+    networks:
+      - app-network
 
 volumes:
   mysql_data:
   redis_data:
+
+
+networks:
+  app-network:
+    name: app-network
+    driver: bridge
