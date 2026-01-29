@@ -48,7 +48,7 @@ jobs:
           key: ${{ secrets.VM_SSH_KEY }}
           script: |
             mkdir -p /home/${{ secrets.VM_USERNAME }}/app
-            cat > /home/${{ secrets.VM_USERNAME }}/app/.env << 'EOF'
+            cat > /home/${{ secrets.VM_USERNAME }}/app/.env.prod << 'EOF'
             # MYSQL
             MYSQL_DRIVER=mysql
             MYSQL_HOST=${{ secrets.MYSQL_HOST }}
