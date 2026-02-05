@@ -16,13 +16,14 @@ services:
       - app-network
 
   my-home-library:
-    image: myhomelibrary.azurecr.io/home-library-server
+    image: myhomelibrary.azurecr.io/home-library-server:latest
     container_name: home-library-server
-    command: [ "./server", "prod" ]
+    command: [ "./server", "-env=prod" ]
     env_file:
       - .env.prod
+    restart: unless-stopped
     expose:
-      - "8080"
+      - "3000"
     networks:
       - app-network
 
