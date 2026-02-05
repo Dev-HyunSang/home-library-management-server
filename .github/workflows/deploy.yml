@@ -52,6 +52,7 @@ jobs:
             # MYSQL
             MYSQL_DRIVER=mysql
             MYSQL_HOST=${{ secrets.MYSQL_HOST }}
+            MYSQL_PORT=3306
             MYSQL_USER=${{ secrets.MYSQL_USER }}
             MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
             MYSQL_DBNAME=${{ secrets.MYSQL_DBNAME }}
@@ -59,8 +60,10 @@ jobs:
 
             # REDIS
             REDIS_HOST=${{ secrets.REDIS_HOST }}
+            REDIS_PORT=6379
             REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}
             REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+            REDIS_DB=0
 
             # COOKIE
             AUTH_COOKIE_KEY=${{ secrets.AUTH_COOKIE_KEY }}
@@ -68,6 +71,11 @@ jobs:
             # JWT
             JWT_SECRET=${{ secrets.JWT_SECRET }}
             JWT_TTL=${{ secrets.JWT_TTL }}
+
+            # KAFKA
+            KAFKA_BROKERS=kafka:9092
+            KAFKA_TOPIC=notifications
+            KAFKA_GROUP_ID=home-library-notification-group
 
             # NAVER BOOK API
             NAVER_API_CLIENT_ID=${{ secrets.NAVER_API_CLIENT_ID }}
@@ -80,6 +88,14 @@ jobs:
 
             # FCM
             FCM_SERVICE_ACCOUNT_PATH=${{ secrets.FCM_SERVICE_ACCOUNT_PATH }}
+
+            # ADMIN
+            ADMIN_BOOTSTRAP_KEY=${{ secrets.ADMIN_BOOTSTRAP_KEY }}
+
+            # APP
+            APP_PORT=3000
+            APP_DEBUG=false
+            APP_ENV=production
             EOF
 
       - name: Backup SSL certs and clean nginx on VM
@@ -155,8 +171,11 @@ jobs:
             # Pull latest application image
             docker pull ${{ secrets.ACR_LOGIN_SERVER }}/home-library-server:latest
 
-            # Stop and recreate all services
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env up -d
+            # Stop existing services
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml down
+
+            # Start all services with .env.prod file
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod up -d
 
             # Cleanup old images
             docker image prune -f
