@@ -63,10 +63,12 @@ type JWTConfig struct {
 }
 
 func LoadConfig(env string) (*Config, error) {
-	// ENV 파일 로드
+	// ENV 파일 로드 (컨테이너 환경에서는 env_file로 이미 주입되므로 파일이 없어도 됨)
 	envFile := fmt.Sprintf(".env.%s", env)
-	if err := godotenv.Load(envFile); err != nil {
-		logger.Init().Sugar().Warnf("Warning: failed to load env file %s: %v", envFile, err)
+	if _, err := os.Stat(envFile); err == nil {
+		if err := godotenv.Load(envFile); err != nil {
+			logger.Init().Sugar().Warnf("Warning: failed to load env file %s: %v", envFile, err)
+		}
 	}
 
 	// APP 설정
