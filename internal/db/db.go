@@ -16,12 +16,13 @@ import (
 
 // DB 연동
 func NewDBConnection(config *config.Config) (*ent.Client, error) {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true",
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true&tls=%s",
 		config.DB.MySQL.User,
 		config.DB.MySQL.Password,
 		config.DB.MySQL.Host,
 		config.DB.MySQL.Port,
 		config.DB.MySQL.DBName,
+		config.DB.MySQL.SSLMode,
 	)
 	log.Println(dsn)
 	db, err := sql.Open(config.DB.MySQL.Driver, dsn)
