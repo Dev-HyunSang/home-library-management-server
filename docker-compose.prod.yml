@@ -1,20 +1,21 @@
 services:
   my-home-library:
+    command: [ "./server", "-env=prod" ]
     env_file:
-      - .env
+      - .env.prod
 
   redis:
     env_file:
-      - .env
+      - .env.prod
 
   mysql:
     env_file:
-      - .env
+      - .env.prod
 
   zookeeper:
     env_file:
-      - .env
+      - .env.prod
 
   kafka:
     env_file:
-      - .env
+      - .env.prod
