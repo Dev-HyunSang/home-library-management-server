@@ -71,6 +71,8 @@ jobs:
             # JWT
             JWT_SECRET=${{ secrets.JWT_SECRET }}
             JWT_TTL=${{ secrets.JWT_TTL }}
+            JWT_ISSUER= ${{ secrets.JWT_ISSUER }}
+            JWT_AUDIENCE=${{ secrets.JWT_AUDIENCE }}
 
             # KAFKA
             KAFKA_BROKERS=kafka:9092
