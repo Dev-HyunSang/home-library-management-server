@@ -2,7 +2,6 @@ package handler
 
 import (
 	"fmt"
-	"log"
 	"math/rand"
 	"net/smtp"
 	"regexp"
@@ -99,14 +98,14 @@ func (h *UserHandler) UserSignUpHandler(ctx *fiber.Ctx) error {
 
 	// 닉네임 유효성 검사
 	if !IsValidNickname(user.NickName) {
-		logger.Init().Sugar().Errorf("사용자가 유효하지 않은 닉네임을 입력했습니다: %s", user.NickName)
+		logger.Init().Sugar().Warn("사용자가 유효하지 않은 닉네임을 입력했습니다")
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidNickname))
 	}
 
 	// 이메일 중복 확인
 	_, err := h.userUseCase.GetByEmail(user.Email)
 	if err == nil {
-		logger.Init().Sugar().Warnf("이미 존재하는 이메일로 가입 시도: %s", user.Email)
+		logger.Init().Sugar().Warn("이미 존재하는 이메일로 가입 시도")
 		return ctx.Status(fiber.StatusConflict).JSON(ErrorHandler(domain.ErrAlreadyExists))
 	}
 
@@ -120,8 +119,6 @@ func (h *UserHandler) UserSignUpHandler(ctx *fiber.Ctx) error {
 		logger.Init().Sugar().Errorf("사용자 비밀번호 해시화 중 오류가 발생했습니다: %v", err)
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(domain.ErrInternal))
 	}
-
-	log.Println(string(hashedPassword))
 
 	result, err := h.userUseCase.Save(&domain.User{
 		ID:            uuid.New(),
@@ -152,9 +149,6 @@ func (h *UserHandler) UserSignInHandler(ctx *fiber.Ctx) error {
 		logger.Init().Sugar().Errorf("사용자 이메일로 사용자를 조회하는 도중 오류가 발생했습니다: %v", err)
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
 	}
-
-	log.Println(result)
-	log.Println(user.Password)
 
 	err = bcrypt.CompareHashAndPassword([]byte(result.Password), []byte(user.Password))
 	if err != nil {
@@ -193,8 +187,6 @@ func (h *UserHandler) UserGetByIdHandler(ctx *fiber.Ctx) error {
 		logger.Init().Sugar().Errorf("JWT 토큰을 통한 사용자 인증에 실패했습니다: %v", err)
 		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
 	}
-
-	logger.Init().Sugar().Infof("JWT 토큰에서 사용자 ID를 성공적으로 추출했습니다: %s", userIDFromToken.String())
 
 	user, err := h.userUseCase.GetByID(uuid.MustParse(id))
 	if err != nil {
@@ -253,7 +245,7 @@ func (h *UserHandler) UserRestPasswordHandler(ctx *fiber.Ctx) error {
 	}
 
 	if ent.IsNotFound(err) {
-		logger.Init().Sugar().Warnf("이메일에 해당하는 사용자가 존재하지 않습니다: %s", user.Email)
+		logger.Init().Sugar().Warn("이메일에 해당하는 사용자가 존재하지 않습니다")
 		return ctx.Status(fiber.StatusNotFound).JSON(ErrorHandler(domain.ErrNotFound))
 	}
 
@@ -299,8 +291,6 @@ func (h *UserHandler) UserRestPasswordHandler(ctx *fiber.Ctx) error {
 		logger.Init().Sugar().Errorf("임시 비밀번호 이메일 발송 중 오류가 발생했습니다: %v", err)
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(domain.ErrInternal))
 	}
-
-	logger.Init().Sugar().Infof("임시 비밀번호가 이메일로 발송되었습니다. 이메일: %s", user.Email)
 
 	logger.Init().Sugar().Infof("비밀번호 재설정 요청이 처리되었습니다 / 사용자ID: %s", existingUser.ID.String())
 
@@ -380,7 +370,7 @@ func (h *UserHandler) UserEditHandler(ctx *fiber.Ctx) error {
 
 	// 요청한 ID와 토큰의 사용자 ID가 일치하는지 확인
 	if userIDFromToken.String() != id {
-		logger.Init().Sugar().Errorf("권한이 없는 사용자 정보 수정 시도: 토큰 사용자 ID %s, 요청 사용자 ID %s", userIDFromToken.String(), id)
+		logger.Init().Sugar().Warn("권한이 없는 사용자 정보 수정 시도")
 		return ctx.Status(fiber.StatusForbidden).JSON(ErrorHandler(domain.ErrPermissionDenied))
 	}
 
@@ -535,7 +525,7 @@ func (h *UserHandler) UpdateTimezoneHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(domain.ErrInternal))
 	}
 
-	logger.Init().Sugar().Infof("타임존이 업데이트되었습니다. 사용자ID: %s, 타임존: %s", userID.String(), req.Timezone)
+	logger.Init().Sugar().Infof("타임존이 업데이트되었습니다. 사용자ID: %s", userID.String())
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message":  "타임존이 성공적으로 업데이트되었습니다.",
 		"timezone": req.Timezone,
