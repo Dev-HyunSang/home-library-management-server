@@ -105,7 +105,7 @@ func main() {
 	defer kafkaConsumer.Close()
 
 	// 사용자 관련 의존성 주입
-	authRepo := redisRepository.NewAuthRepository(cfg.JWT.Secret, 1*time.Hour, 24*time.Hour, redisClient)
+	authRepo := redisRepository.NewAuthRepository(cfg.JWT.Secret, 1*time.Hour, 24*time.Hour, redisClient, cfg.JWT.Issuer, cfg.JWT.Audience)
 	userRepo := repository.NewUserRepository(dbConn, nil)
 	authUseCase := usecase.NewAuthUseCase(authRepo)
 	userUseCase := usecase.NewUserUseCase(userRepo, authUseCase)

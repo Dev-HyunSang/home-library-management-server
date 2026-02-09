@@ -16,10 +16,10 @@ type AuthRepository struct {
 	securityManager *auth.SecurityManager
 }
 
-func NewAuthRepository(secretKey string, accessTTL, refreshTTL time.Duration, redisClient *cache.RedisClient) *AuthRepository {
+func NewAuthRepository(secretKey string, accessTTL, refreshTTL time.Duration, redisClient *cache.RedisClient, issuer, audience string) *AuthRepository {
 	securityManager := auth.NewSecurityManager(redisClient)
 	return &AuthRepository{
-		jwtManager:      auth.NewJWTManager(secretKey, accessTTL, refreshTTL, securityManager),
+		jwtManager:      auth.NewJWTManager(secretKey, accessTTL, refreshTTL, securityManager, issuer, audience),
 		securityManager: securityManager,
 	}
 }

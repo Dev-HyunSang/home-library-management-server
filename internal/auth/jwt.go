@@ -17,18 +17,22 @@ type JWTClaims struct {
 }
 
 type JWTManager struct {
-	secretKey         string
-	accessTokenTTL    time.Duration
-	refreshTokenTTL   time.Duration
-	securityManager   *SecurityManager
+	secretKey       string
+	accessTokenTTL  time.Duration
+	refreshTokenTTL time.Duration
+	securityManager *SecurityManager
+	issuer          string
+	audience        string
 }
 
-func NewJWTManager(secretKey string, accessTTL, refreshTTL time.Duration, securityManager *SecurityManager) *JWTManager {
+func NewJWTManager(secretKey string, accessTTL, refreshTTL time.Duration, securityManager *SecurityManager, issuer, audience string) *JWTManager {
 	return &JWTManager{
 		secretKey:       secretKey,
 		accessTokenTTL:  accessTTL,
 		refreshTokenTTL: refreshTTL,
 		securityManager: securityManager,
+		issuer:          issuer,
+		audience:        audience,
 	}
 }
 
@@ -50,6 +54,8 @@ func (manager *JWTManager) GenerateTokenPair(userID uuid.UUID) (accessToken, ref
 		TokenVersion: tokenVersion,
 		TokenType:    "access",
 		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    manager.issuer,
+			Audience:  jwt.ClaimStrings{manager.audience},
 			ExpiresAt: jwt.NewNumericDate(now.Add(manager.accessTokenTTL)),
 			IssuedAt:  jwt.NewNumericDate(now),
 			NotBefore: jwt.NewNumericDate(now),
@@ -69,6 +75,8 @@ func (manager *JWTManager) GenerateTokenPair(userID uuid.UUID) (accessToken, ref
 		TokenVersion: tokenVersion,
 		TokenType:    "refresh",
 		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    manager.issuer,
+			Audience:  jwt.ClaimStrings{manager.audience},
 			ExpiresAt: jwt.NewNumericDate(now.Add(manager.refreshTokenTTL)),
 			IssuedAt:  jwt.NewNumericDate(now),
 			NotBefore: jwt.NewNumericDate(now),
@@ -95,11 +103,12 @@ func (manager *JWTManager) GenerateTokenPair(userID uuid.UUID) (accessToken, ref
 
 func (manager *JWTManager) ValidateToken(tokenString string) (*JWTClaims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		// 1. Algorithm Whitelist: HS256만 명시적으로 허용
+		if token.Method != jwt.SigningMethodHS256 {
+			return nil, fmt.Errorf("unexpected signing method: %v, only HS256 is allowed", token.Header["alg"])
 		}
 		return []byte(manager.secretKey), nil
-	})
+	}, jwt.WithIssuer(manager.issuer), jwt.WithAudience(manager.audience))
 
 	if err != nil {
 		return nil, err
@@ -109,6 +118,8 @@ func (manager *JWTManager) ValidateToken(tokenString string) (*JWTClaims, error)
 	if !ok || !token.Valid {
 		return nil, fmt.Errorf("invalid token")
 	}
+
+	// Note: iss, aud, exp 검증은 jwt.WithIssuer(), jwt.WithAudience() 옵션으로 파싱 시 자동 수행됨
 
 	// 블랙리스트 확인
 	isBlacklisted, err := manager.securityManager.IsTokenBlacklisted(claims.TokenID)

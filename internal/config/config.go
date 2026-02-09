@@ -58,8 +58,10 @@ type AuthConfig struct {
 }
 
 type JWTConfig struct {
-	Secret string `json:"secret"`
-	TTL    string `json:"ttl"`
+	Secret   string `json:"secret"`
+	TTL      string `json:"ttl"`
+	Issuer   string `json:"issuer"`
+	Audience string `json:"audience"`
 }
 
 func LoadConfig(env string) (*Config, error) {
@@ -127,8 +129,10 @@ func LoadConfig(env string) (*Config, error) {
 			CookieKey: getEnvOrDefault("AUTH_COOKIE_KEY", ""),
 		},
 		JWT: JWTConfig{
-			Secret: getEnvOrDefault("JWT_SECRET", ""),
-			TTL:    getEnvOrDefault("JWT_TTL", "24h"),
+			Secret:   getEnvOrDefault("JWT_SECRET", ""),
+			TTL:      getEnvOrDefault("JWT_TTL", "24h"),
+			Issuer:   getEnvOrDefault("JWT_ISSUER", "home-library"),
+			Audience: getEnvOrDefault("JWT_AUDIENCE", "home-library-api"),
 		},
 		Kafka: KafkaConfig{
 			Brokers: strings.Split(getEnvOrDefault("KAFKA_BROKERS", "localhost:29092"), ","),

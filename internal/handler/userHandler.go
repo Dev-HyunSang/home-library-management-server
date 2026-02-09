@@ -181,9 +181,8 @@ func (h *UserHandler) UserGetByIdHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
 	}
 
-	// JWT 토큰에서 사용자 ID 추출
-	userIDFromToken, err := h.AuthHandler.GetUserIDFromToken(ctx)
-	if err != nil {
+	// JWT 토큰에서 사용자 ID 추출 (인증 확인용)
+	if _, err := h.AuthHandler.GetUserIDFromToken(ctx); err != nil {
 		logger.Init().Sugar().Errorf("JWT 토큰을 통한 사용자 인증에 실패했습니다: %v", err)
 		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
 	}
