@@ -22,6 +22,7 @@ type ReviewBook struct {
 	ID         uuid.UUID `json:"id"`
 	BookID     uuid.UUID `json:"book_id"`
 	OwnerID    uuid.UUID `json:"owner_id"`
+	BookISBN   string    `json:"book_isbn"`
 	BookTitle  string    `json:"book_title"`
 	BookAuthor string    `json:"book_author"`
 	Content    string    `json:"content"`
@@ -41,6 +42,8 @@ type Bookmark struct {
 type BookRepository interface {
 	SaveByBookID(id uuid.UUID, book *Book) (*Book, error)
 	GetBookByID(userID, id uuid.UUID) (*Book, error)
+	GetBookByISBN(userID uuid.UUID, isbn string) (*Book, error)
+	GetAnyBookByISBN(isbn string) (*Book, error)
 	GetBooksByUserID(id uuid.UUID) ([]*Book, error)
 	Edit(id uuid.UUID, book *Book) error
 	DeleteByID(userID, id uuid.UUID) error
@@ -50,7 +53,9 @@ type BookRepository interface {
 	GetReviewsByUserID(userID uuid.UUID) ([]*ReviewBook, error)
 	GetReviewByID(id uuid.UUID) (*ReviewBook, error)
 	UpdateReviewByID(review *ReviewBook) (ReviewBook, error)
+	DeleteReviewByID(userID, reviewID uuid.UUID) error
 	GetPublicReviewsByBookID(bookID uuid.UUID) ([]*ReviewBook, error)
+	GetPublicReviewsByISBN(isbn string) ([]*ReviewBook, error)
 	// Book Bookmark
 	AddBookmarkByBookID(userID, bookID uuid.UUID) (*Bookmark, error)
 	GetBookmarksByUserID(userID uuid.UUID) ([]*Bookmark, error)
@@ -60,6 +65,8 @@ type BookRepository interface {
 type BookUseCase interface {
 	SaveByBookID(userID uuid.UUID, book *Book) (*Book, error)
 	GetBookByID(userID, id uuid.UUID) (*Book, error)
+	GetBookByISBN(userID uuid.UUID, isbn string) (*Book, error)
+	GetAnyBookByISBN(isbn string) (*Book, error)
 	GetBooksByUserID(userID uuid.UUID) ([]*Book, error)
 	Edit(id uuid.UUID, book *Book) error
 	DeleteByID(userID, id uuid.UUID) error
@@ -69,7 +76,9 @@ type BookUseCase interface {
 	GetReviewsByUserID(userID uuid.UUID) ([]*ReviewBook, error)
 	GetReviewByID(id uuid.UUID) (*ReviewBook, error)
 	UpdateReviewByID(review *ReviewBook) (ReviewBook, error)
+	DeleteReviewByID(userID, reviewID uuid.UUID) error
 	GetPublicReviewsByBookID(bookID uuid.UUID) ([]*ReviewBook, error)
+	GetPublicReviewsByISBN(isbn string) ([]*ReviewBook, error)
 	// Book Bookmark
 	AddBookmarkByBookID(userID, bookID uuid.UUID) (*Bookmark, error)
 	GetBookmarksByUserID(userID uuid.UUID) ([]*Bookmark, error)

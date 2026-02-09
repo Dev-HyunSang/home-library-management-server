@@ -35,6 +35,22 @@ func (bc *BookUseCase) GetBookByID(userID, id uuid.UUID) (*domain.Book, error) {
 	return bc.bookRepo.GetBookByID(userID, id)
 }
 
+func (bc *BookUseCase) GetBookByISBN(userID uuid.UUID, isbn string) (*domain.Book, error) {
+	if userID == uuid.Nil || isbn == "" {
+		return nil, domain.ErrInvalidInput
+	}
+
+	return bc.bookRepo.GetBookByISBN(userID, isbn)
+}
+
+func (bc *BookUseCase) GetAnyBookByISBN(isbn string) (*domain.Book, error) {
+	if isbn == "" {
+		return nil, domain.ErrInvalidInput
+	}
+
+	return bc.bookRepo.GetAnyBookByISBN(isbn)
+}
+
 func (bc *BookUseCase) GetBooksByUserID(userID uuid.UUID) ([]*domain.Book, error) {
 	if userID == uuid.Nil {
 		return nil, domain.ErrInvalidInput
@@ -124,6 +140,22 @@ func (bc *BookUseCase) GetPublicReviewsByBookID(bookID uuid.UUID) ([]*domain.Rev
 	}
 
 	return bc.bookRepo.GetPublicReviewsByBookID(bookID)
+}
+
+func (bc *BookUseCase) DeleteReviewByID(userID, reviewID uuid.UUID) error {
+	if userID == uuid.Nil || reviewID == uuid.Nil {
+		return domain.ErrInvalidInput
+	}
+
+	return bc.bookRepo.DeleteReviewByID(userID, reviewID)
+}
+
+func (bc *BookUseCase) GetPublicReviewsByISBN(isbn string) ([]*domain.ReviewBook, error) {
+	if isbn == "" {
+		return nil, domain.ErrInvalidInput
+	}
+
+	return bc.bookRepo.GetPublicReviewsByISBN(isbn)
 }
 
 func (bc *BookUseCase) AddBookmarkByBookID(userID, bookID uuid.UUID) (*domain.Bookmark, error) {

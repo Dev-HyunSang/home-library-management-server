@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"time"
 
@@ -55,7 +54,7 @@ type Book struct {
 }
 
 type BookReviewRequest struct {
-	BookID   string `json:"book_id"`
+	BookISBN string `json:"book_isbn"`
 	Content  string `json:"content"`
 	Rating   int    `json:"rating"`
 	IsPublic bool   `json:"is_public"`
@@ -247,13 +246,26 @@ func (h *BookHandler) SearchBookIsbnHandler(ctx *fiber.Ctx) error {
 
 // Book Review
 
-// 책 리뷰 작성할 수 있는 핸들러
-// 책 ID, 리뷰 내용, 별점(1~5) 필요
-// 책 ID를 통해 해당 책이 사용자의 책인지 확인하고 책이 있는지 확인
+// SaveBookReviewHandler ISBN을 기반으로 책 리뷰를 작성합니다.
+// 필수 필드: book_isbn (책 ISBN), content (리뷰 내용), rating (별점 1~5), is_public (공개 여부)
 func (h *BookHandler) SaveBookReviewHandler(ctx *fiber.Ctx) error {
 	req := new(BookReviewRequest)
 	if err := ctx.BodyParser(req); err != nil {
 		logger.Init().Sugar().Errorf("요청 본문을 파싱하는 도중 오류가 발생했습니다: %v", err)
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+
+	// 필수 필드 검증
+	if req.BookISBN == "" {
+		logger.Init().Sugar().Error("책 ISBN이 입력되지 않았습니다.")
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+	if req.Rating < 1 || req.Rating > 5 {
+		logger.Init().Sugar().Error("별점은 1~5 사이의 값이어야 합니다.")
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+	if req.Content == "" {
+		logger.Init().Sugar().Error("리뷰 내용이 입력되지 않았습니다.")
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
 	}
 
@@ -264,18 +276,23 @@ func (h *BookHandler) SaveBookReviewHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
 	}
 
-	books, err := h.bookUseCase.GetBookByID(userID, uuid.MustParse(req.BookID))
+	// ISBN으로 책 조회 (본인 책 우선, 없으면 다른 사용자의 책도 허용)
+	book, err := h.bookUseCase.GetBookByISBN(userID, req.BookISBN)
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
+		// 본인 책이 없으면 다른 사용자의 책 조회
+		book, err = h.bookUseCase.GetAnyBookByISBN(req.BookISBN)
+		if err != nil {
+			logger.Init().Sugar().Errorf("해당 ISBN으로 등록된 책을 찾을 수 없습니다: %v", err)
+			return ctx.Status(fiber.StatusNotFound).JSON(ErrorHandler(domain.ErrNotFound))
+		}
 	}
 
-	log.Println(userID.String())
-	log.Println(books)
-
+	reviewID := uuid.New()
 	if err = h.bookUseCase.CreateReview(&domain.ReviewBook{
-		ID:        uuid.New(),
-		BookID:    uuid.MustParse(req.BookID),
+		ID:        reviewID,
+		BookID:    book.ID,
 		OwnerID:   userID,
+		BookISBN:  req.BookISBN,
 		Content:   req.Content,
 		Rating:    req.Rating,
 		IsPublic:  req.IsPublic,
@@ -286,7 +303,18 @@ func (h *BookHandler) SaveBookReviewHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{})
+	logger.Init().Sugar().Infof("책 리뷰가 성공적으로 작성되었습니다 / 리뷰ID: %s, ISBN: %s", reviewID.String(), req.BookISBN)
+
+	return ctx.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"is_success": true,
+		"data": fiber.Map{
+			"review_id": reviewID,
+			"book_isbn": req.BookISBN,
+			"rating":    req.Rating,
+			"is_public": req.IsPublic,
+		},
+		"responsed_at": time.Now(),
+	})
 }
 
 func (h *BookHandler) GetBookReviewByUserIDHandler(ctx *fiber.Ctx) error {
@@ -328,6 +356,53 @@ func (h *BookHandler) GetPublicReviewsByBookIDHandler(ctx *fiber.Ctx) error {
 		"data":         results,
 		"responsed_at": time.Now(),
 	})
+}
+
+// GetPublicReviewsByISBNHandler ISBN을 통해 공개 리뷰 목록을 조회합니다.
+func (h *BookHandler) GetPublicReviewsByISBNHandler(ctx *fiber.Ctx) error {
+	isbn := ctx.Params("isbn")
+	if len(isbn) == 0 {
+		logger.Init().Sugar().Error("책 ISBN이 입력되지 않았습니다.")
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+
+	results, err := h.bookUseCase.GetPublicReviewsByISBN(isbn)
+	if err != nil {
+		logger.Init().Sugar().Errorf("공개 리뷰 목록을 가져오는 도중 오류가 발생했습니다: %v", err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"is_success":   true,
+		"data":         results,
+		"responsed_at": time.Now(),
+	})
+}
+
+// DeleteBookReviewHandler 리뷰를 삭제합니다. 본인의 리뷰만 삭제할 수 있습니다.
+func (h *BookHandler) DeleteBookReviewHandler(ctx *fiber.Ctx) error {
+	reviewID := ctx.Params("id")
+	if len(reviewID) == 0 {
+		logger.Init().Sugar().Error("리뷰 ID가 입력되지 않았습니다.")
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+
+	// JWT 토큰에서 사용자 ID 추출
+	userID, err := h.AuthHandler.GetUserIDFromToken(ctx)
+	if err != nil {
+		logger.Init().Sugar().Errorf("JWT 토큰을 통한 사용자 인증에 실패했습니다: %v", err)
+		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
+	}
+
+	err = h.bookUseCase.DeleteReviewByID(userID, uuid.MustParse(reviewID))
+	if err != nil {
+		logger.Init().Sugar().Errorf("리뷰 삭제 중 오류가 발생했습니다: %v", err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
+	}
+
+	logger.Init().Sugar().Infof("리뷰가 성공적으로 삭제되었습니다 / 리뷰ID: %s", reviewID)
+
+	return ctx.SendStatus(fiber.StatusNoContent)
 }
 
 func (h *BookHandler) AddBookmarkHandler(ctx *fiber.Ctx) error {

@@ -113,7 +113,76 @@ func (rc *BookRepository) GetBookByID(userID, id uuid.UUID) (*domain.Book, error
 		CreatedAt:    result.CreatedAt,
 		UpdatedAt:    result.UpdatedAt,
 	}, nil
+}
 
+// GetBookByISBN ISBN을 통해 사용자의 책을 조회합니다.
+func (rc *BookRepository) GetBookByISBN(userID uuid.UUID, isbn string) (*domain.Book, error) {
+	client := rc.client
+
+	result, err := client.Book.
+		Query().
+		Where(
+			book.BookIsbn(isbn),
+			book.HasOwnerWith(user.ID(userID)),
+		).
+		Only(context.Background())
+
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, fmt.Errorf("해당 ISBN으로 등록된 책을 찾을 수 없습니다: %w", err)
+		}
+		return nil, fmt.Errorf("책 정보를 가져오는 도중 오류가 발생했습니다: %w", err)
+	}
+
+	logger.UserInfoLog(userID.String(), fmt.Sprintf("ISBN을 통해 책 정보를 조회했습니다. ISBN: %s", isbn))
+
+	return &domain.Book{
+		ID:           result.ID,
+		OwnerID:      result.QueryOwner().OnlyIDX(context.Background()),
+		Title:        result.BookTitle,
+		Author:       result.Author,
+		BookISBN:     result.BookIsbn,
+		ThumbnailURL: result.ThumbnailURL,
+		Status:       result.Status,
+		CreatedAt:    result.CreatedAt,
+		UpdatedAt:    result.UpdatedAt,
+	}, nil
+}
+
+// GetAnyBookByISBN ISBN으로 등록된 책을 조회합니다 (소유자 무관).
+// 다른 사용자가 등록한 책에도 리뷰를 작성할 수 있도록 지원합니다.
+func (rc *BookRepository) GetAnyBookByISBN(isbn string) (*domain.Book, error) {
+	client := rc.client
+
+	result, err := client.Book.
+		Query().
+		Where(book.BookIsbn(isbn)).
+		WithOwner().
+		First(context.Background())
+
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, fmt.Errorf("해당 ISBN으로 등록된 책을 찾을 수 없습니다: %w", err)
+		}
+		return nil, fmt.Errorf("책 정보를 가져오는 도중 오류가 발생했습니다: %w", err)
+	}
+
+	ownerID := uuid.Nil
+	if result.Edges.Owner != nil {
+		ownerID = result.Edges.Owner.ID
+	}
+
+	return &domain.Book{
+		ID:           result.ID,
+		OwnerID:      ownerID,
+		Title:        result.BookTitle,
+		Author:       result.Author,
+		BookISBN:     result.BookIsbn,
+		ThumbnailURL: result.ThumbnailURL,
+		Status:       result.Status,
+		CreatedAt:    result.CreatedAt,
+		UpdatedAt:    result.UpdatedAt,
+	}, nil
 }
 
 // 유저가 소유한 책의 목록을 가져옵니다. / UserID와 일치하는 경우에만 책의 목록을 가져올 수 있습니다.
@@ -258,25 +327,30 @@ func (bc *BookRepository) GetReviewsByUserID(userID uuid.UUID) ([]*domain.Review
 
 	reviews, err := client.Review.Query().
 		Where(review.HasOwnerWith(user.ID(userID))).
+		WithBook().
 		All(context.Background())
 	if err != nil {
 		return nil, fmt.Errorf("책 리뷰 목록을 가져오는 도중 오류가 발생했습니다: %w", err)
 	}
 
 	for _, r := range reviews {
+		b := r.Edges.Book
+		if b == nil {
+			continue
+		}
 		result = append(result, &domain.ReviewBook{
 			ID:         r.ID,
-			BookID:     r.QueryBook().OnlyIDX(context.Background()),
-			OwnerID:    r.QueryOwner().OnlyIDX(context.Background()),
-			BookTitle:  r.QueryBook().OnlyX(context.Background()).BookTitle,
-			BookAuthor: r.QueryBook().OnlyX(context.Background()).Author,
+			BookID:     b.ID,
+			OwnerID:    userID,
+			BookISBN:   b.BookIsbn,
+			BookTitle:  b.BookTitle,
+			BookAuthor: b.Author,
 			Content:    r.Content,
 			Rating:     r.Rating,
 			IsPublic:   r.IsPublic,
 			CreatedAt:  r.CreatedAt,
 			UpdatedAt:  r.UpdatedAt,
 		})
-		log.Println(result)
 	}
 
 	return result, nil
@@ -285,17 +359,28 @@ func (bc *BookRepository) GetReviewsByUserID(userID uuid.UUID) ([]*domain.Review
 func (bc *BookRepository) GetReviewByID(reviewID uuid.UUID) (*domain.ReviewBook, error) {
 	client := bc.client
 
-	r, err := client.Review.Get(context.Background(), reviewID)
+	r, err := client.Review.Query().
+		Where(review.ID(reviewID)).
+		WithBook().
+		WithOwner().
+		Only(context.Background())
 	if err != nil {
 		return nil, fmt.Errorf("리뷰를 가져오는 도중 오류가 발생했습니다: %w", err)
 	}
 
+	b := r.Edges.Book
+	o := r.Edges.Owner
+	if b == nil || o == nil {
+		return nil, fmt.Errorf("리뷰의 책 또는 작성자 정보를 불러올 수 없습니다")
+	}
+
 	return &domain.ReviewBook{
 		ID:         r.ID,
-		BookID:     r.QueryBook().OnlyIDX(context.Background()),
-		OwnerID:    r.QueryOwner().OnlyIDX(context.Background()),
-		BookTitle:  r.QueryBook().OnlyX(context.Background()).BookTitle,
-		BookAuthor: r.QueryBook().OnlyX(context.Background()).Author,
+		BookID:     b.ID,
+		OwnerID:    o.ID,
+		BookISBN:   b.BookIsbn,
+		BookTitle:  b.BookTitle,
+		BookAuthor: b.Author,
 		Content:    r.Content,
 		Rating:     r.Rating,
 		IsPublic:   r.IsPublic,
@@ -337,18 +422,91 @@ func (bc *BookRepository) GetPublicReviewsByBookID(bookID uuid.UUID) ([]*domain.
 	reviews, err := client.Review.Query().
 		Where(review.HasBookWith(book.ID(bookID))).
 		Where(review.IsPublic(true)).
+		WithBook().
+		WithOwner().
 		All(context.Background())
 	if err != nil {
 		return nil, fmt.Errorf("공개 리뷰 목록을 가져오는 도중 오류가 발생했습니다: %w", err)
 	}
 
 	for _, r := range reviews {
+		b := r.Edges.Book
+		o := r.Edges.Owner
+		if b == nil || o == nil {
+			continue
+		}
 		result = append(result, &domain.ReviewBook{
 			ID:         r.ID,
-			BookID:     r.QueryBook().OnlyIDX(context.Background()),
-			OwnerID:    r.QueryOwner().OnlyIDX(context.Background()),
-			BookTitle:  r.QueryBook().OnlyX(context.Background()).BookTitle,
-			BookAuthor: r.QueryBook().OnlyX(context.Background()).Author,
+			BookID:     b.ID,
+			OwnerID:    o.ID,
+			BookISBN:   b.BookIsbn,
+			BookTitle:  b.BookTitle,
+			BookAuthor: b.Author,
+			Content:    r.Content,
+			Rating:     r.Rating,
+			IsPublic:   r.IsPublic,
+			CreatedAt:  r.CreatedAt,
+			UpdatedAt:  r.UpdatedAt,
+		})
+	}
+
+	return result, nil
+}
+
+// DeleteReviewByID 리뷰를 삭제합니다. 본인의 리뷰만 삭제할 수 있습니다.
+func (bc *BookRepository) DeleteReviewByID(userID, reviewID uuid.UUID) error {
+	client := bc.client
+
+	// 리뷰가 해당 사용자의 것인지 확인
+	r, err := client.Review.Query().
+		Where(review.ID(reviewID)).
+		Where(review.HasOwnerWith(user.ID(userID))).
+		Only(context.Background())
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return fmt.Errorf("삭제할 리뷰를 찾을 수 없거나 권한이 없습니다: %w", err)
+		}
+		return fmt.Errorf("리뷰 조회 중 오류가 발생했습니다: %w", err)
+	}
+
+	err = client.Review.DeleteOne(r).Exec(context.Background())
+	if err != nil {
+		return fmt.Errorf("리뷰를 삭제하는 도중 오류가 발생했습니다: %w", err)
+	}
+
+	logger.Init().Sugar().Infof("리뷰가 성공적으로 삭제되었습니다. 리뷰 ID: %s", reviewID.String())
+	return nil
+}
+
+// GetPublicReviewsByISBN ISBN을 통해 공개 리뷰 목록을 조회합니다.
+func (bc *BookRepository) GetPublicReviewsByISBN(isbn string) ([]*domain.ReviewBook, error) {
+	var result []*domain.ReviewBook
+
+	client := bc.client
+
+	reviews, err := client.Review.Query().
+		Where(review.HasBookWith(book.BookIsbn(isbn))).
+		Where(review.IsPublic(true)).
+		WithBook().
+		WithOwner().
+		All(context.Background())
+	if err != nil {
+		return nil, fmt.Errorf("공개 리뷰 목록을 가져오는 도중 오류가 발생했습니다: %w", err)
+	}
+
+	for _, r := range reviews {
+		b := r.Edges.Book
+		o := r.Edges.Owner
+		if b == nil || o == nil {
+			continue
+		}
+		result = append(result, &domain.ReviewBook{
+			ID:         r.ID,
+			BookID:     b.ID,
+			OwnerID:    o.ID,
+			BookISBN:   b.BookIsbn,
+			BookTitle:  b.BookTitle,
+			BookAuthor: b.Author,
 			Content:    r.Content,
 			Rating:     r.Rating,
 			IsPublic:   r.IsPublic,
