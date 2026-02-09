@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"crypto/tls"
 	"database/sql"
 	"fmt"
 	"log"
@@ -62,6 +63,11 @@ func NewRedisConnection(config *config.Config) (*redis.Client, error) {
 		Addr:     fmt.Sprintf("%s:%d", config.DB.Redis.Host, config.DB.Redis.Port),
 		Password: config.DB.Redis.Password,
 		DB:       config.DB.Redis.DB,
+		TLSConfig: &tls.Config{
+			MinVersion: tls.VersionTLS12,
+		},
+		WriteTimeout: 5 * time.Second,
+		ReadTimeout:  5 * time.Second,
 	})
 
 	if err := client.Ping().Err(); err != nil {

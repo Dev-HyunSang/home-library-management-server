@@ -4,7 +4,6 @@ import (
 	"context"
 	"flag"
 	"log"
-	"strings"
 	"time"
 
 	"github.com/dev-hyunsang/home-library/internal/cache"
@@ -21,7 +20,6 @@ import (
 	"github.com/dev-hyunsang/home-library/logger"
 	"github.com/gofiber/contrib/fiberzap/v2"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/encryptcookie"
 )
 
@@ -36,19 +34,6 @@ func main() {
 
 	app.Use(fiberzap.New(fiberzap.Config{
 		Logger: logger.Init(),
-	}))
-
-	app.Use(cors.New(cors.Config{
-		// TODO: production 에서 수정
-		AllowOrigins: "http://localhost:3000, http://localhost:5173/, http://192.168.219.100:5173",
-		AllowMethods: strings.Join([]string{
-			fiber.MethodGet,
-			fiber.MethodPost,
-			fiber.MethodDelete,
-			fiber.MethodPut,
-			fiber.MethodPatch,
-		}, ","),
-		AllowCredentials: true,
 	}))
 
 	env := flag.String("env", "dev", "Environment (dev, qa, stg, prod)")
