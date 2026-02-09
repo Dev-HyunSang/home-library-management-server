@@ -4,14 +4,6 @@ services:
     env_file:
       - .env.prod
 
-  redis:
-    env_file:
-      - .env.prod
-
-  mysql:
-    env_file:
-      - .env.prod
-
   zookeeper:
     env_file:
       - .env.prod
