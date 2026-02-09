@@ -39,7 +39,7 @@ jobs:
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
-      - name: Create .env file on VM
+      - name: Create .env.prod file on VM
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VM_HOST }}
@@ -60,7 +60,7 @@ jobs:
 
             # REDIS
             REDIS_HOST=${{ secrets.REDIS_HOST }}
-            REDIS_PORT=6379
+            REDIS_PORT=${{ secrets.REDIS_PORT }}
             REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}
             REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
             REDIS_DB=0
@@ -172,10 +172,10 @@ jobs:
             docker pull ${{ secrets.ACR_LOGIN_SERVER }}/home-library-server:latest
 
             # Stop existing services
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml down
+            docker-compose -f docker-compose.yml -f docker-compose.prod.yml down --remove-orphans
 
             # Start all services with .env.prod file
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod up -d
+            docker-compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod up -d
 
             # Cleanup old images
             docker image prune -f
