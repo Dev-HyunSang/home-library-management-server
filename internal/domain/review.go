@@ -47,6 +47,7 @@ type ReviewRepository interface {
 	GetByISBN(isbn string) ([]*Review, error)
 	GetPublicByISBN(isbn string) ([]*ReviewResponse, error)
 	GetByUserID(userID uuid.UUID) ([]*Review, error)
+	ExistsByUserAndISBN(userID uuid.UUID, isbn string) (bool, error)
 	Update(review *Review) (*Review, error)
 	Delete(userID, reviewID uuid.UUID) error
 }

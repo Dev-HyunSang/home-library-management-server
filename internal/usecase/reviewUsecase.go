@@ -30,6 +30,15 @@ func (uc *ReviewUseCase) CreateReview(userID uuid.UUID, isbn string, req *domain
 		return nil, fmt.Errorf("별점은 1~5 사이여야 합니다")
 	}
 
+	// 사용자당 ISBN별 리뷰는 1개만 작성 가능
+	exists, err := uc.reviewRepo.ExistsByUserAndISBN(userID, isbn)
+	if err != nil {
+		return nil, fmt.Errorf("리뷰 중복 확인 중 오류가 발생했습니다: %w", err)
+	}
+	if exists {
+		return nil, fmt.Errorf("이미 해당 책에 대한 리뷰를 작성했습니다")
+	}
+
 	review := &domain.Review{
 		ID:       uuid.New(),
 		OwnerID:  userID,

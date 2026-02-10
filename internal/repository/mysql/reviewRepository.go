@@ -144,6 +144,21 @@ func (r *ReviewRepository) GetPublicByISBN(isbn string) ([]*domain.ReviewRespons
 	return result, nil
 }
 
+func (r *ReviewRepository) ExistsByUserAndISBN(userID uuid.UUID, isbn string) (bool, error) {
+	exists, err := r.client.Review.Query().
+		Where(
+			review.HasOwnerWith(user.ID(userID)),
+			review.BookIsbn(isbn),
+		).
+		Exist(context.Background())
+
+	if err != nil {
+		return false, fmt.Errorf("리뷰 존재 여부 확인 중 오류가 발생했습니다: %w", err)
+	}
+
+	return exists, nil
+}
+
 func (r *ReviewRepository) GetByUserID(userID uuid.UUID) ([]*domain.Review, error) {
 	reviews, err := r.client.Review.Query().
 		Where(review.HasOwnerWith(user.ID(userID))).
