@@ -60,7 +60,7 @@ func NewUserHandler(userUseCase domain.UserUseCase, authUseCase domain.AuthUseCa
 	}
 }
 func IsValidNickname(nickname string) bool {
-	matched, _ := regexp.MatchString(`^[a-z0-9_]+$`, nickname)
+	matched, _ := regexp.MatchString(`^[a-z0-9_.]+$`, nickname)
 	return matched
 }
 
@@ -321,7 +321,7 @@ func (h *UserHandler) UserVerifyByEmailHandler(ctx *fiber.Ctx) error {
 	if err == nil {
 		return ctx.Status(fiber.StatusConflict).JSON(fiber.Map{
 			"is_success": false,
-			"message":    "이미 사용 중인 이메일입니다.",
+			"message":    "동일한 메일 주소가 이미 사용중입니다.",
 		})
 	}
 

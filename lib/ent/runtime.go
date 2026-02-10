@@ -141,12 +141,16 @@ func init() {
 	readingreminder.UpdateDefaultUpdatedAt = readingreminderDescUpdatedAt.UpdateDefault.(func() time.Time)
 	reviewFields := schema.Review{}.Fields()
 	_ = reviewFields
+	// reviewDescBookIsbn is the schema descriptor for book_isbn field.
+	reviewDescBookIsbn := reviewFields[1].Descriptor()
+	// review.BookIsbnValidator is a validator for the "book_isbn" field. It is called by the builders before save.
+	review.BookIsbnValidator = reviewDescBookIsbn.Validators[0].(func(string) error)
 	// reviewDescContent is the schema descriptor for content field.
-	reviewDescContent := reviewFields[1].Descriptor()
+	reviewDescContent := reviewFields[2].Descriptor()
 	// review.ContentValidator is a validator for the "content" field. It is called by the builders before save.
 	review.ContentValidator = reviewDescContent.Validators[0].(func(string) error)
 	// reviewDescRating is the schema descriptor for rating field.
-	reviewDescRating := reviewFields[2].Descriptor()
+	reviewDescRating := reviewFields[3].Descriptor()
 	// review.RatingValidator is a validator for the "rating" field. It is called by the builders before save.
 	review.RatingValidator = func() func(int) error {
 		validators := reviewDescRating.Validators
@@ -164,15 +168,15 @@ func init() {
 		}
 	}()
 	// reviewDescIsPublic is the schema descriptor for is_public field.
-	reviewDescIsPublic := reviewFields[3].Descriptor()
+	reviewDescIsPublic := reviewFields[4].Descriptor()
 	// review.DefaultIsPublic holds the default value on creation for the is_public field.
 	review.DefaultIsPublic = reviewDescIsPublic.Default.(bool)
 	// reviewDescCreatedAt is the schema descriptor for created_at field.
-	reviewDescCreatedAt := reviewFields[4].Descriptor()
+	reviewDescCreatedAt := reviewFields[5].Descriptor()
 	// review.DefaultCreatedAt holds the default value on creation for the created_at field.
 	review.DefaultCreatedAt = reviewDescCreatedAt.Default.(func() time.Time)
 	// reviewDescUpdatedAt is the schema descriptor for updated_at field.
-	reviewDescUpdatedAt := reviewFields[5].Descriptor()
+	reviewDescUpdatedAt := reviewFields[6].Descriptor()
 	// review.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	review.DefaultUpdatedAt = reviewDescUpdatedAt.Default.(func() time.Time)
 	// review.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

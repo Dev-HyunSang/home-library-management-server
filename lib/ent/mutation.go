@@ -3440,6 +3440,7 @@ type ReviewMutation struct {
 	op            Op
 	typ           string
 	id            *uuid.UUID
+	book_isbn     *string
 	content       *string
 	rating        *int
 	addrating     *int
@@ -3558,6 +3559,42 @@ func (m *ReviewMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetBookIsbn sets the "book_isbn" field.
+func (m *ReviewMutation) SetBookIsbn(s string) {
+	m.book_isbn = &s
+}
+
+// BookIsbn returns the value of the "book_isbn" field in the mutation.
+func (m *ReviewMutation) BookIsbn() (r string, exists bool) {
+	v := m.book_isbn
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBookIsbn returns the old "book_isbn" field's value of the Review entity.
+// If the Review object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReviewMutation) OldBookIsbn(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBookIsbn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBookIsbn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBookIsbn: %w", err)
+	}
+	return oldValue.BookIsbn, nil
+}
+
+// ResetBookIsbn resets all changes to the "book_isbn" field.
+func (m *ReviewMutation) ResetBookIsbn() {
+	m.book_isbn = nil
 }
 
 // SetContent sets the "content" field.
@@ -3872,7 +3909,10 @@ func (m *ReviewMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ReviewMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
+	if m.book_isbn != nil {
+		fields = append(fields, review.FieldBookIsbn)
+	}
 	if m.content != nil {
 		fields = append(fields, review.FieldContent)
 	}
@@ -3896,6 +3936,8 @@ func (m *ReviewMutation) Fields() []string {
 // schema.
 func (m *ReviewMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case review.FieldBookIsbn:
+		return m.BookIsbn()
 	case review.FieldContent:
 		return m.Content()
 	case review.FieldRating:
@@ -3915,6 +3957,8 @@ func (m *ReviewMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *ReviewMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case review.FieldBookIsbn:
+		return m.OldBookIsbn(ctx)
 	case review.FieldContent:
 		return m.OldContent(ctx)
 	case review.FieldRating:
@@ -3934,6 +3978,13 @@ func (m *ReviewMutation) OldField(ctx context.Context, name string) (ent.Value, 
 // type.
 func (m *ReviewMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case review.FieldBookIsbn:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBookIsbn(v)
+		return nil
 	case review.FieldContent:
 		v, ok := value.(string)
 		if !ok {
@@ -4033,6 +4084,9 @@ func (m *ReviewMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *ReviewMutation) ResetField(name string) error {
 	switch name {
+	case review.FieldBookIsbn:
+		m.ResetBookIsbn()
+		return nil
 	case review.FieldContent:
 		m.ResetContent()
 		return nil

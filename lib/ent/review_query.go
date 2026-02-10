@@ -336,12 +336,12 @@ func (rq *ReviewQuery) WithBook(opts ...func(*BookQuery)) *ReviewQuery {
 // Example:
 //
 //	var v []struct {
-//		Content string `json:"content,omitempty"`
+//		BookIsbn string `json:"book_isbn,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Review.Query().
-//		GroupBy(review.FieldContent).
+//		GroupBy(review.FieldBookIsbn).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (rq *ReviewQuery) GroupBy(field string, fields ...string) *ReviewGroupBy {
@@ -359,11 +359,11 @@ func (rq *ReviewQuery) GroupBy(field string, fields ...string) *ReviewGroupBy {
 // Example:
 //
 //	var v []struct {
-//		Content string `json:"content,omitempty"`
+//		BookIsbn string `json:"book_isbn,omitempty"`
 //	}
 //
 //	client.Review.Query().
-//		Select(review.FieldContent).
+//		Select(review.FieldBookIsbn).
 //		Scan(ctx, &v)
 func (rq *ReviewQuery) Select(fields ...string) *ReviewSelect {
 	rq.ctx.Fields = append(rq.ctx.Fields, fields...)

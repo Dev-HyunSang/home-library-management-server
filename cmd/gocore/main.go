@@ -118,6 +118,11 @@ func main() {
 	bookUseCase := usecase.NewBookUseCase(bookRepo, kafkaProducer)
 	bookHandler := handler.NewBookHandler(bookUseCase, authUseCase)
 
+	// 리뷰 관련 의존성 주입
+	reviewRepo := repository.NewReviewRepository(dbConn)
+	reviewUseCase := usecase.NewReviewUseCase(reviewRepo)
+	reviewHandler := handler.NewReviewHandler(reviewUseCase, authUseCase)
+
 	// 읽기 리마인더 관련 의존성 주입
 	reminderRepo := repository.NewReadingReminderRepository(dbConn)
 	reminderUseCase := usecase.NewReadingReminderUseCase(reminderRepo)
@@ -165,6 +170,16 @@ func main() {
 	books.Get("/:name", middleware.JWTAuthMiddleware(authUseCase), bookHandler.GetBooksByUserNameHandler)
 	books.Post("/search", middleware.JWTAuthMiddleware(authUseCase), bookHandler.SearchBookIsbnHandler)
 
+	// 새로운 ISBN 기반 리뷰 API
+	reviewsAPI := api.Group("/reviews")
+	reviewsAPI.Get("/me", middleware.JWTAuthMiddleware(authUseCase), reviewHandler.GetMyReviewsHandler)
+	reviewsAPI.Post("/:isbn", middleware.JWTAuthMiddleware(authUseCase), reviewHandler.CreateReviewHandler)
+	reviewsAPI.Get("/:isbn", reviewHandler.GetReviewsByISBNHandler)
+	reviewsAPI.Get("/:isbn/:id", reviewHandler.GetReviewByIDHandler)
+	reviewsAPI.Put("/:isbn/:id", middleware.JWTAuthMiddleware(authUseCase), reviewHandler.UpdateReviewHandler)
+	reviewsAPI.Delete("/:isbn/:id", middleware.JWTAuthMiddleware(authUseCase), reviewHandler.DeleteReviewHandler)
+
+	// 기존 리뷰 API (하위 호환성)
 	reviews := books.Group("/reviews")
 	reviews.Post("/", middleware.JWTAuthMiddleware(authUseCase), bookHandler.SaveBookReviewHandler)
 	reviews.Get("/get", middleware.JWTAuthMiddleware(authUseCase), bookHandler.GetBookReviewByUserIDHandler)

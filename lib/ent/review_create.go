@@ -23,6 +23,12 @@ type ReviewCreate struct {
 	hooks    []Hook
 }
 
+// SetBookIsbn sets the "book_isbn" field.
+func (rc *ReviewCreate) SetBookIsbn(s string) *ReviewCreate {
+	rc.mutation.SetBookIsbn(s)
+	return rc
+}
+
 // SetContent sets the "content" field.
 func (rc *ReviewCreate) SetContent(s string) *ReviewCreate {
 	rc.mutation.SetContent(s)
@@ -108,6 +114,14 @@ func (rc *ReviewCreate) SetBookID(id uuid.UUID) *ReviewCreate {
 	return rc
 }
 
+// SetNillableBookID sets the "book" edge to the Book entity by ID if the given value is not nil.
+func (rc *ReviewCreate) SetNillableBookID(id *uuid.UUID) *ReviewCreate {
+	if id != nil {
+		rc = rc.SetBookID(*id)
+	}
+	return rc
+}
+
 // SetBook sets the "book" edge to the Book entity.
 func (rc *ReviewCreate) SetBook(b *Book) *ReviewCreate {
 	return rc.SetBookID(b.ID)
@@ -168,6 +182,14 @@ func (rc *ReviewCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (rc *ReviewCreate) check() error {
+	if _, ok := rc.mutation.BookIsbn(); !ok {
+		return &ValidationError{Name: "book_isbn", err: errors.New(`ent: missing required field "Review.book_isbn"`)}
+	}
+	if v, ok := rc.mutation.BookIsbn(); ok {
+		if err := review.BookIsbnValidator(v); err != nil {
+			return &ValidationError{Name: "book_isbn", err: fmt.Errorf(`ent: validator failed for field "Review.book_isbn": %w`, err)}
+		}
+	}
 	if _, ok := rc.mutation.Content(); !ok {
 		return &ValidationError{Name: "content", err: errors.New(`ent: missing required field "Review.content"`)}
 	}
@@ -195,9 +217,6 @@ func (rc *ReviewCreate) check() error {
 	}
 	if len(rc.mutation.OwnerIDs()) == 0 {
 		return &ValidationError{Name: "owner", err: errors.New(`ent: missing required edge "Review.owner"`)}
-	}
-	if len(rc.mutation.BookIDs()) == 0 {
-		return &ValidationError{Name: "book", err: errors.New(`ent: missing required edge "Review.book"`)}
 	}
 	return nil
 }
@@ -233,6 +252,10 @@ func (rc *ReviewCreate) createSpec() (*Review, *sqlgraph.CreateSpec) {
 	if id, ok := rc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
+	}
+	if value, ok := rc.mutation.BookIsbn(); ok {
+		_spec.SetField(review.FieldBookIsbn, field.TypeString, value)
+		_node.BookIsbn = value
 	}
 	if value, ok := rc.mutation.Content(); ok {
 		_spec.SetField(review.FieldContent, field.TypeString, value)

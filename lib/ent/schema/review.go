@@ -21,13 +21,19 @@ func (Review) Fields() []ent.Field {
 		field.UUID("id", uuid.UUID{}).
 			Default(uuid.New).
 			StorageKey("id"),
+		field.String("book_isbn").
+			NotEmpty().
+			Comment("ISBN of the reviewed book"),
 		field.Text("content").
-			NotEmpty(),
+			NotEmpty().
+			Comment("Review content"),
 		field.Int("rating").
 			Min(1).
-			Max(5),
+			Max(5).
+			Comment("Rating 1-5"),
 		field.Bool("is_public").
-			Default(false),
+			Default(false).
+			Comment("Whether the review is public"),
 		field.Time("created_at").
 			Default(time.Now).
 			Immutable(),
@@ -48,7 +54,6 @@ func (Review) Edges() []ent.Edge {
 		edge.From("book", Book.Type).
 			Ref("reviews").
 			Unique().
-			Required().
 			Annotations(entsql.OnDelete(entsql.Cascade)),
 	}
 }

@@ -15,6 +15,8 @@ const (
 	Label = "review"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldBookIsbn holds the string denoting the book_isbn field in the database.
+	FieldBookIsbn = "book_isbn"
 	// FieldContent holds the string denoting the content field in the database.
 	FieldContent = "content"
 	// FieldRating holds the string denoting the rating field in the database.
@@ -50,6 +52,7 @@ const (
 // Columns holds all SQL columns for review fields.
 var Columns = []string{
 	FieldID,
+	FieldBookIsbn,
 	FieldContent,
 	FieldRating,
 	FieldIsPublic,
@@ -80,6 +83,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// BookIsbnValidator is a validator for the "book_isbn" field. It is called by the builders before save.
+	BookIsbnValidator func(string) error
 	// ContentValidator is a validator for the "content" field. It is called by the builders before save.
 	ContentValidator func(string) error
 	// RatingValidator is a validator for the "rating" field. It is called by the builders before save.
@@ -102,6 +107,11 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByBookIsbn orders the results by the book_isbn field.
+func ByBookIsbn(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBookIsbn, opts...).ToFunc()
 }
 
 // ByContent orders the results by the content field.

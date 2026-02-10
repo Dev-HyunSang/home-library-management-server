@@ -56,6 +56,11 @@ func IDLTE(id uuid.UUID) predicate.Review {
 	return predicate.Review(sql.FieldLTE(FieldID, id))
 }
 
+// BookIsbn applies equality check predicate on the "book_isbn" field. It's identical to BookIsbnEQ.
+func BookIsbn(v string) predicate.Review {
+	return predicate.Review(sql.FieldEQ(FieldBookIsbn, v))
+}
+
 // Content applies equality check predicate on the "content" field. It's identical to ContentEQ.
 func Content(v string) predicate.Review {
 	return predicate.Review(sql.FieldEQ(FieldContent, v))
@@ -79,6 +84,71 @@ func CreatedAt(v time.Time) predicate.Review {
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.Review {
 	return predicate.Review(sql.FieldEQ(FieldUpdatedAt, v))
+}
+
+// BookIsbnEQ applies the EQ predicate on the "book_isbn" field.
+func BookIsbnEQ(v string) predicate.Review {
+	return predicate.Review(sql.FieldEQ(FieldBookIsbn, v))
+}
+
+// BookIsbnNEQ applies the NEQ predicate on the "book_isbn" field.
+func BookIsbnNEQ(v string) predicate.Review {
+	return predicate.Review(sql.FieldNEQ(FieldBookIsbn, v))
+}
+
+// BookIsbnIn applies the In predicate on the "book_isbn" field.
+func BookIsbnIn(vs ...string) predicate.Review {
+	return predicate.Review(sql.FieldIn(FieldBookIsbn, vs...))
+}
+
+// BookIsbnNotIn applies the NotIn predicate on the "book_isbn" field.
+func BookIsbnNotIn(vs ...string) predicate.Review {
+	return predicate.Review(sql.FieldNotIn(FieldBookIsbn, vs...))
+}
+
+// BookIsbnGT applies the GT predicate on the "book_isbn" field.
+func BookIsbnGT(v string) predicate.Review {
+	return predicate.Review(sql.FieldGT(FieldBookIsbn, v))
+}
+
+// BookIsbnGTE applies the GTE predicate on the "book_isbn" field.
+func BookIsbnGTE(v string) predicate.Review {
+	return predicate.Review(sql.FieldGTE(FieldBookIsbn, v))
+}
+
+// BookIsbnLT applies the LT predicate on the "book_isbn" field.
+func BookIsbnLT(v string) predicate.Review {
+	return predicate.Review(sql.FieldLT(FieldBookIsbn, v))
+}
+
+// BookIsbnLTE applies the LTE predicate on the "book_isbn" field.
+func BookIsbnLTE(v string) predicate.Review {
+	return predicate.Review(sql.FieldLTE(FieldBookIsbn, v))
+}
+
+// BookIsbnContains applies the Contains predicate on the "book_isbn" field.
+func BookIsbnContains(v string) predicate.Review {
+	return predicate.Review(sql.FieldContains(FieldBookIsbn, v))
+}
+
+// BookIsbnHasPrefix applies the HasPrefix predicate on the "book_isbn" field.
+func BookIsbnHasPrefix(v string) predicate.Review {
+	return predicate.Review(sql.FieldHasPrefix(FieldBookIsbn, v))
+}
+
+// BookIsbnHasSuffix applies the HasSuffix predicate on the "book_isbn" field.
+func BookIsbnHasSuffix(v string) predicate.Review {
+	return predicate.Review(sql.FieldHasSuffix(FieldBookIsbn, v))
+}
+
+// BookIsbnEqualFold applies the EqualFold predicate on the "book_isbn" field.
+func BookIsbnEqualFold(v string) predicate.Review {
+	return predicate.Review(sql.FieldEqualFold(FieldBookIsbn, v))
+}
+
+// BookIsbnContainsFold applies the ContainsFold predicate on the "book_isbn" field.
+func BookIsbnContainsFold(v string) predicate.Review {
+	return predicate.Review(sql.FieldContainsFold(FieldBookIsbn, v))
 }
 
 // ContentEQ applies the EQ predicate on the "content" field.

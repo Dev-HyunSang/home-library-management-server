@@ -122,12 +122,13 @@ var (
 	// ReviewsColumns holds the columns for the "reviews" table.
 	ReviewsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
+		{Name: "book_isbn", Type: field.TypeString},
 		{Name: "content", Type: field.TypeString, Size: 2147483647},
 		{Name: "rating", Type: field.TypeInt},
 		{Name: "is_public", Type: field.TypeBool, Default: false},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "book_reviews", Type: field.TypeUUID},
+		{Name: "book_reviews", Type: field.TypeUUID, Nullable: true},
 		{Name: "user_reviews", Type: field.TypeUUID},
 	}
 	// ReviewsTable holds the schema information for the "reviews" table.
@@ -138,13 +139,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "reviews_books_reviews",
-				Columns:    []*schema.Column{ReviewsColumns[6]},
+				Columns:    []*schema.Column{ReviewsColumns[7]},
 				RefColumns: []*schema.Column{BooksColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "reviews_users_reviews",
-				Columns:    []*schema.Column{ReviewsColumns[7]},
+				Columns:    []*schema.Column{ReviewsColumns[8]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.Cascade,
 			},

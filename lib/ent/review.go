@@ -20,11 +20,13 @@ type Review struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID uuid.UUID `json:"id,omitempty"`
-	// Content holds the value of the "content" field.
+	// ISBN of the reviewed book
+	BookIsbn string `json:"book_isbn,omitempty"`
+	// Review content
 	Content string `json:"content,omitempty"`
-	// Rating holds the value of the "rating" field.
+	// Rating 1-5
 	Rating int `json:"rating,omitempty"`
-	// IsPublic holds the value of the "is_public" field.
+	// Whether the review is public
 	IsPublic bool `json:"is_public,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
@@ -80,7 +82,7 @@ func (*Review) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case review.FieldRating:
 			values[i] = new(sql.NullInt64)
-		case review.FieldContent:
+		case review.FieldBookIsbn, review.FieldContent:
 			values[i] = new(sql.NullString)
 		case review.FieldCreatedAt, review.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -110,6 +112,12 @@ func (r *Review) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
 				r.ID = *value
+			}
+		case review.FieldBookIsbn:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field book_isbn", values[i])
+			} else if value.Valid {
+				r.BookIsbn = value.String
 			}
 		case review.FieldContent:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -201,6 +209,9 @@ func (r *Review) String() string {
 	var builder strings.Builder
 	builder.WriteString("Review(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", r.ID))
+	builder.WriteString("book_isbn=")
+	builder.WriteString(r.BookIsbn)
+	builder.WriteString(", ")
 	builder.WriteString("content=")
 	builder.WriteString(r.Content)
 	builder.WriteString(", ")

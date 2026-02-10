@@ -31,6 +31,20 @@ func (ru *ReviewUpdate) Where(ps ...predicate.Review) *ReviewUpdate {
 	return ru
 }
 
+// SetBookIsbn sets the "book_isbn" field.
+func (ru *ReviewUpdate) SetBookIsbn(s string) *ReviewUpdate {
+	ru.mutation.SetBookIsbn(s)
+	return ru
+}
+
+// SetNillableBookIsbn sets the "book_isbn" field if the given value is not nil.
+func (ru *ReviewUpdate) SetNillableBookIsbn(s *string) *ReviewUpdate {
+	if s != nil {
+		ru.SetBookIsbn(*s)
+	}
+	return ru
+}
+
 // SetContent sets the "content" field.
 func (ru *ReviewUpdate) SetContent(s string) *ReviewUpdate {
 	ru.mutation.SetContent(s)
@@ -103,6 +117,14 @@ func (ru *ReviewUpdate) SetBookID(id uuid.UUID) *ReviewUpdate {
 	return ru
 }
 
+// SetNillableBookID sets the "book" edge to the Book entity by ID if the given value is not nil.
+func (ru *ReviewUpdate) SetNillableBookID(id *uuid.UUID) *ReviewUpdate {
+	if id != nil {
+		ru = ru.SetBookID(*id)
+	}
+	return ru
+}
+
 // SetBook sets the "book" edge to the Book entity.
 func (ru *ReviewUpdate) SetBook(b *Book) *ReviewUpdate {
 	return ru.SetBookID(b.ID)
@@ -163,6 +185,11 @@ func (ru *ReviewUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (ru *ReviewUpdate) check() error {
+	if v, ok := ru.mutation.BookIsbn(); ok {
+		if err := review.BookIsbnValidator(v); err != nil {
+			return &ValidationError{Name: "book_isbn", err: fmt.Errorf(`ent: validator failed for field "Review.book_isbn": %w`, err)}
+		}
+	}
 	if v, ok := ru.mutation.Content(); ok {
 		if err := review.ContentValidator(v); err != nil {
 			return &ValidationError{Name: "content", err: fmt.Errorf(`ent: validator failed for field "Review.content": %w`, err)}
@@ -175,9 +202,6 @@ func (ru *ReviewUpdate) check() error {
 	}
 	if ru.mutation.OwnerCleared() && len(ru.mutation.OwnerIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Review.owner"`)
-	}
-	if ru.mutation.BookCleared() && len(ru.mutation.BookIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "Review.book"`)
 	}
 	return nil
 }
@@ -193,6 +217,9 @@ func (ru *ReviewUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := ru.mutation.BookIsbn(); ok {
+		_spec.SetField(review.FieldBookIsbn, field.TypeString, value)
 	}
 	if value, ok := ru.mutation.Content(); ok {
 		_spec.SetField(review.FieldContent, field.TypeString, value)
@@ -287,6 +314,20 @@ type ReviewUpdateOne struct {
 	mutation *ReviewMutation
 }
 
+// SetBookIsbn sets the "book_isbn" field.
+func (ruo *ReviewUpdateOne) SetBookIsbn(s string) *ReviewUpdateOne {
+	ruo.mutation.SetBookIsbn(s)
+	return ruo
+}
+
+// SetNillableBookIsbn sets the "book_isbn" field if the given value is not nil.
+func (ruo *ReviewUpdateOne) SetNillableBookIsbn(s *string) *ReviewUpdateOne {
+	if s != nil {
+		ruo.SetBookIsbn(*s)
+	}
+	return ruo
+}
+
 // SetContent sets the "content" field.
 func (ruo *ReviewUpdateOne) SetContent(s string) *ReviewUpdateOne {
 	ruo.mutation.SetContent(s)
@@ -356,6 +397,14 @@ func (ruo *ReviewUpdateOne) SetOwner(u *User) *ReviewUpdateOne {
 // SetBookID sets the "book" edge to the Book entity by ID.
 func (ruo *ReviewUpdateOne) SetBookID(id uuid.UUID) *ReviewUpdateOne {
 	ruo.mutation.SetBookID(id)
+	return ruo
+}
+
+// SetNillableBookID sets the "book" edge to the Book entity by ID if the given value is not nil.
+func (ruo *ReviewUpdateOne) SetNillableBookID(id *uuid.UUID) *ReviewUpdateOne {
+	if id != nil {
+		ruo = ruo.SetBookID(*id)
+	}
 	return ruo
 }
 
@@ -432,6 +481,11 @@ func (ruo *ReviewUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (ruo *ReviewUpdateOne) check() error {
+	if v, ok := ruo.mutation.BookIsbn(); ok {
+		if err := review.BookIsbnValidator(v); err != nil {
+			return &ValidationError{Name: "book_isbn", err: fmt.Errorf(`ent: validator failed for field "Review.book_isbn": %w`, err)}
+		}
+	}
 	if v, ok := ruo.mutation.Content(); ok {
 		if err := review.ContentValidator(v); err != nil {
 			return &ValidationError{Name: "content", err: fmt.Errorf(`ent: validator failed for field "Review.content": %w`, err)}
@@ -444,9 +498,6 @@ func (ruo *ReviewUpdateOne) check() error {
 	}
 	if ruo.mutation.OwnerCleared() && len(ruo.mutation.OwnerIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Review.owner"`)
-	}
-	if ruo.mutation.BookCleared() && len(ruo.mutation.BookIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "Review.book"`)
 	}
 	return nil
 }
@@ -479,6 +530,9 @@ func (ruo *ReviewUpdateOne) sqlSave(ctx context.Context) (_node *Review, err err
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := ruo.mutation.BookIsbn(); ok {
+		_spec.SetField(review.FieldBookIsbn, field.TypeString, value)
 	}
 	if value, ok := ruo.mutation.Content(); ok {
 		_spec.SetField(review.FieldContent, field.TypeString, value)
