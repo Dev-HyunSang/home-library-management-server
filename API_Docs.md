@@ -70,10 +70,10 @@
 
 #### Request
 
-Query parameter: `nickname` (소문자 영문, `.`, `_` 만 허용)
+Query parameter: `nickname` (소문자 영문 `a-z`, 숫자 `0-9`, `_`, `.` 허용)
 
 ```
-GET /api/users/check/nickname?nickname=example_user
+GET /api/users/check/nickname?nickname=dev_hyunsang_0625
 ```
 
 #### Response (사용 가능)
@@ -104,6 +104,72 @@ HTTP 400 Bad Request
 {
   "error_code": "INVALID_NICKNAME",
   "error_message": "닉네임 형식이 올바르지 않습니다."
+}
+```
+
+### GET `/api/users/verify/email/:email`
+
+- 이메일 인증번호 발송
+- 인증 불필요
+- 인증번호 유효시간: 5분
+
+#### Request
+
+```
+GET /api/users/verify/email/example@example.com
+```
+
+#### Response (성공)
+
+```json
+{
+  "is_success": true,
+  "message": "해당 이메일로 인증번호를 발송했습니다."
+}
+```
+
+#### Response (이미 가입된 이메일)
+
+HTTP 409 Conflict
+
+```json
+{
+  "is_success": false,
+  "message": "동일한 메일 주소가 이미 사용중입니다."
+}
+```
+
+### POST `/api/users/verify/code`
+
+- 이메일 인증번호 확인
+- 인증 불필요
+
+#### Request
+
+```json
+{
+  "email": "example@example.com",
+  "code": "123456"
+}
+```
+
+#### Response (성공)
+
+```json
+{
+  "is_success": true,
+  "message": "이메일 인증이 완료되었습니다."
+}
+```
+
+#### Response (실패)
+
+HTTP 400 Bad Request
+
+```json
+{
+  "is_success": false,
+  "message": "인증번호가 유효하지 않거나 만료되었습니다."
 }
 ```
 
@@ -426,14 +492,192 @@ HTTP 400 Bad Request
 
 ---
 
-## Reviews
+## Reviews (ISBN 기반)
 
-### POST `/api/books/reviews/`
+ISBN을 기반으로 책 리뷰를 작성하고 조회하는 API. 사용자당 ISBN별로 1개의 리뷰만 작성 가능.
 
-- 책 리뷰 작성
+### POST `/api/reviews/:isbn`
+
+- 리뷰 작성
 - Authorization: Bearer {token} 필요
+- 사용자당 ISBN별 1개 리뷰만 작성 가능
 
-### GET `/api/books/reviews/get`
+#### Request
+
+```
+POST /api/reviews/9788960777330
+```
+
+```json
+{
+  "content": "정말 좋은 책입니다. 추천합니다!",
+  "rating": 5,
+  "is_public": true
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| content | string | Yes | 리뷰 내용 |
+| rating | int | Yes | 별점 (1-5) |
+| is_public | bool | No | 공개 여부 (기본값: false) |
+
+#### Response (성공)
+
+HTTP 201 Created
+
+```json
+{
+  "is_success": true,
+  "message": "리뷰가 생성되었습니다.",
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "owner_id": "123e4567-e89b-12d3-a456-426614174000",
+    "book_isbn": "9788960777330",
+    "content": "정말 좋은 책입니다. 추천합니다!",
+    "rating": 5,
+    "is_public": true,
+    "created_at": "2026-02-10T15:30:00Z",
+    "updated_at": "2026-02-10T15:30:00Z"
+  }
+}
+```
+
+#### Response (중복 리뷰)
+
+HTTP 400 Bad Request
+
+```json
+{
+  "is_success": false,
+  "message": "이미 해당 책에 대한 리뷰를 작성했습니다",
+  "time": "2026-02-10 15:30:00"
+}
+```
+
+### GET `/api/reviews/:isbn`
+
+- 해당 ISBN의 공개 리뷰 목록 조회
+- 인증 불필요
+
+#### Request
+
+```
+GET /api/reviews/9788960777330
+```
+
+#### Response
+
+```json
+{
+  "is_success": true,
+  "data": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "owner_id": "123e4567-e89b-12d3-a456-426614174000",
+      "owner_nickname": "dev_hyunsang",
+      "book_isbn": "9788960777330",
+      "content": "정말 좋은 책입니다!",
+      "rating": 5,
+      "is_public": true,
+      "created_at": "2026-02-10T15:30:00Z",
+      "updated_at": "2026-02-10T15:30:00Z"
+    }
+  ],
+  "count": 1
+}
+```
+
+### GET `/api/reviews/:isbn/:id`
+
+- 특정 리뷰 조회
+- 인증 불필요
+
+#### Request
+
+```
+GET /api/reviews/9788960777330/550e8400-e29b-41d4-a716-446655440000
+```
+
+#### Response
+
+```json
+{
+  "is_success": true,
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "owner_id": "123e4567-e89b-12d3-a456-426614174000",
+    "book_isbn": "9788960777330",
+    "content": "정말 좋은 책입니다!",
+    "rating": 5,
+    "is_public": true,
+    "created_at": "2026-02-10T15:30:00Z",
+    "updated_at": "2026-02-10T15:30:00Z"
+  }
+}
+```
+
+### PUT `/api/reviews/:isbn/:id`
+
+- 리뷰 수정
+- Authorization: Bearer {token} 필요
+- 본인 리뷰만 수정 가능
+
+#### Request
+
+```
+PUT /api/reviews/9788960777330/550e8400-e29b-41d4-a716-446655440000
+```
+
+```json
+{
+  "content": "수정된 리뷰 내용입니다.",
+  "rating": 4,
+  "is_public": false
+}
+```
+
+#### Response
+
+```json
+{
+  "is_success": true,
+  "message": "리뷰가 수정되었습니다.",
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "owner_id": "123e4567-e89b-12d3-a456-426614174000",
+    "book_isbn": "9788960777330",
+    "content": "수정된 리뷰 내용입니다.",
+    "rating": 4,
+    "is_public": false,
+    "created_at": "2026-02-10T15:30:00Z",
+    "updated_at": "2026-02-10T16:00:00Z"
+  }
+}
+```
+
+### DELETE `/api/reviews/:isbn/:id`
+
+- 리뷰 삭제
+- Authorization: Bearer {token} 필요
+- 본인 리뷰만 삭제 가능
+
+#### Request
+
+```
+DELETE /api/reviews/9788960777330/550e8400-e29b-41d4-a716-446655440000
+```
+
+#### Response
+
+```json
+{
+  "is_success": true,
+  "message": "리뷰가 삭제되었습니다."
+}
+```
+
+### GET `/api/reviews/me`
 
 - 내 리뷰 목록 조회
 - Authorization: Bearer {token} 필요
@@ -442,25 +686,22 @@ HTTP 400 Bad Request
 
 ```json
 {
+  "is_success": true,
   "data": [
     {
-      "id": "ea6fe0a1-1f6f-40cd-a568-b0895e76d139",
-      "book_id": "db00f4e8-95f5-11f0-aa2d-420b6f780d98",
-      "owner_id": "9681c23c-95de-11f0-8288-420b6f780d98",
-      "content": "제목도, 저자도, 첫 문장도, 이미 유명한 '알베르 카뮈'의 <이방인>을 이제야 읽었다...",
-      "rating": 4,
-      "created_at": "2025-09-20T10:49:28Z",
-      "updated_at": "2025-09-20T10:49:28Z"
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "owner_id": "123e4567-e89b-12d3-a456-426614174000",
+      "book_isbn": "9788960777330",
+      "content": "정말 좋은 책입니다!",
+      "rating": 5,
+      "is_public": true,
+      "created_at": "2026-02-10T15:30:00Z",
+      "updated_at": "2026-02-10T15:30:00Z"
     }
   ],
-  "is_success": true,
-  "responsed_at": "2025-09-20T20:39:25.965901+09:00"
+  "count": 1
 }
 ```
-
-### GET `/api/books/reviews/:book_id`
-
-- 특정 책의 공개 리뷰 조회 (인증 불필요)
 
 ---
 
