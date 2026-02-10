@@ -109,11 +109,10 @@ func (h *BookHandler) SaveBookHandler(ctx *fiber.Ctx) error {
 }
 
 type UpdateBookRequest struct {
-	Title        string `json:"title"`
-	Author       string `json:"author"`
-	BookISBN     string `json:"book_isbn"`
-	ThumbnailURL string `json:"thumbnail_url"`
-	Status       int    `json:"status"`
+	Title    string `json:"title"`
+	Author   string `json:"author"`
+	BookISBN string `json:"book_isbn"`
+	Status   int    `json:"status"`
 }
 
 func (h *BookHandler) UpdateBookHandler(ctx *fiber.Ctx) error {
@@ -162,7 +161,7 @@ func (h *BookHandler) UpdateBookHandler(ctx *fiber.Ctx) error {
 		Title:        req.Title,
 		Author:       req.Author,
 		BookISBN:     req.BookISBN,
-		ThumbnailURL: req.ThumbnailURL,
+		ThumbnailURL: existingBook.ThumbnailURL,
 		Status:       req.Status,
 		UpdatedAt:    time.Now(),
 	}
