@@ -108,6 +108,79 @@ func (h *BookHandler) SaveBookHandler(ctx *fiber.Ctx) error {
 	})
 }
 
+type UpdateBookRequest struct {
+	Title        string `json:"title"`
+	Author       string `json:"author"`
+	BookISBN     string `json:"book_isbn"`
+	ThumbnailURL string `json:"thumbnail_url"`
+	Status       int    `json:"status"`
+}
+
+func (h *BookHandler) UpdateBookHandler(ctx *fiber.Ctx) error {
+	userID, err := h.AuthHandler.GetUserIDFromToken(ctx)
+	if err != nil {
+		logger.Init().Sugar().Errorf("JWT 토큰을 통한 사용자 인증에 실패했습니다: %v", err)
+		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
+	}
+
+	bookID := ctx.Params("id")
+	if len(bookID) == 0 {
+		logger.Init().Sugar().Error("책 ID가 입력되지 않았습니다.")
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+
+	parsedBookID, err := uuid.Parse(bookID)
+	if err != nil {
+		logger.Init().Sugar().Errorf("잘못된 책 ID 형식입니다: %v", err)
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+
+	existingBook, err := h.bookUseCase.GetBookByID(userID, parsedBookID)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			logger.Init().Sugar().Errorf("해당 책을 찾을 수 없습니다: %v", err)
+			return ctx.Status(fiber.StatusNotFound).JSON(ErrorHandler(domain.ErrNotFound))
+		}
+		logger.Init().Sugar().Errorf("책 조회 중 오류가 발생했습니다: %v", err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
+	}
+
+	if existingBook.OwnerID != userID {
+		logger.Init().Sugar().Error("해당 책의 소유자가 아닙니다.")
+		return ctx.Status(fiber.StatusForbidden).JSON(ErrorHandler(domain.ErrPermissionDenied))
+	}
+
+	req := new(UpdateBookRequest)
+	if err := ctx.BodyParser(req); err != nil {
+		logger.Init().Sugar().Errorf("요청 본문을 파싱하는 도중 오류가 발생했습니다: %v", err)
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+
+	updatedBook := &domain.Book{
+		ID:           parsedBookID,
+		OwnerID:      userID,
+		Title:        req.Title,
+		Author:       req.Author,
+		BookISBN:     req.BookISBN,
+		ThumbnailURL: req.ThumbnailURL,
+		Status:       req.Status,
+		UpdatedAt:    time.Now(),
+	}
+
+	if err := h.bookUseCase.Edit(parsedBookID, updatedBook); err != nil {
+		logger.Init().Sugar().Errorf("책을 수정하는 도중 오류가 발생했습니다: %v", err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
+	}
+
+	logger.Init().Sugar().Infof("책이 성공적으로 수정되었습니다 / 책ID: %s, 사용자ID: %s", bookID, userID.String())
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"is_success":   true,
+		"data":         updatedBook,
+		"responsed_at": time.Now(),
+	})
+}
+
 func (h *BookHandler) GetBooksHandler(ctx *fiber.Ctx) error {
 	// JWT 토큰에서 사용자 ID 추출
 	userID, err := h.AuthHandler.GetUserIDFromToken(ctx)
