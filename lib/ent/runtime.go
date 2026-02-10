@@ -8,6 +8,7 @@ import (
 	"github.com/dev-hyunsang/home-library/lib/ent/adminapikey"
 	"github.com/dev-hyunsang/home-library/lib/ent/book"
 	"github.com/dev-hyunsang/home-library/lib/ent/bookmark"
+	"github.com/dev-hyunsang/home-library/lib/ent/emailverification"
 	"github.com/dev-hyunsang/home-library/lib/ent/readingreminder"
 	"github.com/dev-hyunsang/home-library/lib/ent/review"
 	"github.com/dev-hyunsang/home-library/lib/ent/schema"
@@ -81,6 +82,39 @@ func init() {
 	bookmarkDescID := bookmarkFields[0].Descriptor()
 	// bookmark.DefaultID holds the default value on creation for the id field.
 	bookmark.DefaultID = bookmarkDescID.Default.(func() uuid.UUID)
+	emailverificationFields := schema.EmailVerification{}.Fields()
+	_ = emailverificationFields
+	// emailverificationDescEmail is the schema descriptor for email field.
+	emailverificationDescEmail := emailverificationFields[1].Descriptor()
+	// emailverification.EmailValidator is a validator for the "email" field. It is called by the builders before save.
+	emailverification.EmailValidator = emailverificationDescEmail.Validators[0].(func(string) error)
+	// emailverificationDescCode is the schema descriptor for code field.
+	emailverificationDescCode := emailverificationFields[2].Descriptor()
+	// emailverification.CodeValidator is a validator for the "code" field. It is called by the builders before save.
+	emailverification.CodeValidator = func() func(string) error {
+		validators := emailverificationDescCode.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+			validators[2].(func(string) error),
+		}
+		return func(code string) error {
+			for _, fn := range fns {
+				if err := fn(code); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// emailverificationDescIsVerified is the schema descriptor for is_verified field.
+	emailverificationDescIsVerified := emailverificationFields[4].Descriptor()
+	// emailverification.DefaultIsVerified holds the default value on creation for the is_verified field.
+	emailverification.DefaultIsVerified = emailverificationDescIsVerified.Default.(bool)
+	// emailverificationDescCreatedAt is the schema descriptor for created_at field.
+	emailverificationDescCreatedAt := emailverificationFields[5].Descriptor()
+	// emailverification.DefaultCreatedAt holds the default value on creation for the created_at field.
+	emailverification.DefaultCreatedAt = emailverificationDescCreatedAt.Default.(func() time.Time)
 	readingreminderFields := schema.ReadingReminder{}.Fields()
 	_ = readingreminderFields
 	// readingreminderDescReminderTime is the schema descriptor for reminder_time field.

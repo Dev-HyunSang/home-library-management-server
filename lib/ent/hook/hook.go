@@ -45,6 +45,18 @@ func (f BookmarkFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, er
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BookmarkMutation", m)
 }
 
+// The EmailVerificationFunc type is an adapter to allow the use of ordinary
+// function as EmailVerification mutator.
+type EmailVerificationFunc func(context.Context, *ent.EmailVerificationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EmailVerificationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.EmailVerificationMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EmailVerificationMutation", m)
+}
+
 // The ReadingReminderFunc type is an adapter to allow the use of ordinary
 // function as ReadingReminder mutator.
 type ReadingReminderFunc func(context.Context, *ent.ReadingReminderMutation) (ent.Value, error)

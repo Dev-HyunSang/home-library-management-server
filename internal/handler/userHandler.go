@@ -17,8 +17,9 @@ import (
 )
 
 type UserHandler struct {
-	userUseCase domain.UserUseCase
-	AuthHandler domain.AuthUseCase
+	userUseCase           domain.UserUseCase
+	AuthHandler           domain.AuthUseCase
+	emailVerificationRepo domain.EmailVerificationRepository
 }
 
 type RegisterationRequest struct {
@@ -51,10 +52,11 @@ type ForgotPasswordRequest struct {
 	Email string `json:"email"`
 }
 
-func NewUserHandler(userUseCase domain.UserUseCase, authUseCase domain.AuthUseCase) *UserHandler {
+func NewUserHandler(userUseCase domain.UserUseCase, authUseCase domain.AuthUseCase, emailVerificationRepo domain.EmailVerificationRepository) *UserHandler {
 	return &UserHandler{
-		userUseCase: userUseCase,
-		AuthHandler: authUseCase,
+		userUseCase:           userUseCase,
+		AuthHandler:           authUseCase,
+		emailVerificationRepo: emailVerificationRepo,
 	}
 }
 func IsValidNickname(nickname string) bool {
@@ -73,6 +75,11 @@ func stringWithCharset(length int) string {
 	}
 
 	return string(b)
+}
+
+func generateVerificationCode() string {
+	code := seededRand.Intn(900000) + 100000
+	return fmt.Sprintf("%06d", code)
 }
 
 func ErrorHandler(err error) ErrResponse {
@@ -299,6 +306,9 @@ func (h *UserHandler) UserRestPasswordHandler(ctx *fiber.Ctx) error {
 	})
 }
 
+// 1. 이미 가입된 이메일인지 확인
+// 2. 기존 생성된 인증 정보 삭제 후 새로 생성
+// 3. 인증번호를 포함한 이메일 발송 - 인증번호는 5분 후 만료
 func (h *UserHandler) UserVerifyByEmailHandler(ctx *fiber.Ctx) error {
 	email := ctx.Params("email")
 	if len(email) == 0 {
@@ -306,22 +316,96 @@ func (h *UserHandler) UserVerifyByEmailHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
 	}
 
-	result, err := h.userUseCase.GetByEmail(email)
-	if err != nil {
-		logger.Init().Sugar().Errorf("사용자 정보를 이메일로 조회하는 도중 오류가 발생했습니다: %v", err)
-		return ctx.Status(fiber.StatusNotFound).JSON(ErrorHandler(domain.ErrNotFound))
-	}
-
-	if result.Email == email {
+	// 이미 가입된 이메일인지 확인
+	_, err := h.userUseCase.GetByEmail(email)
+	if err == nil {
 		return ctx.Status(fiber.StatusConflict).JSON(fiber.Map{
 			"is_success": false,
 			"message":    "이미 사용 중인 이메일입니다.",
 		})
 	}
 
+	// 6자리 인증번호 생성
+	verificationCode := generateVerificationCode()
+
+	// 기존 인증 정보 삭제 후 새로 저장
+	_ = h.emailVerificationRepo.DeleteByEmail(email)
+
+	_, err = h.emailVerificationRepo.Save(&domain.EmailVerification{
+		ID:        uuid.New(),
+		Email:     email,
+		Code:      verificationCode,
+		ExpiresAt: time.Now().Add(5 * time.Minute),
+	})
+	if err != nil {
+		logger.Init().Sugar().Errorf("인증 정보 저장 중 오류가 발생했습니다: %v", err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(domain.ErrInternal))
+	}
+
+	// 이메일 발송
+	mailAuth := smtp.PlainAuth("", config.GetEnv("GOOGLE_MAIL_ADDRESS"), config.GetEnv("GOOGLE_MAIL_PASSWORD"), config.GetEnv("GOOGLE_MAIL_SMTP"))
+
+	from := config.GetEnv("GOOGLE_MAIL_ADDRESS")
+	to := []string{email}
+
+	headerSubject := "Subject: 나만의 서재 메일 인증번호입니다.\r\n"
+	headerBlank := "\r\n"
+	body := fmt.Sprintf("인증번호는 %s입니다.\r\n", verificationCode)
+	msg := []byte(headerSubject + headerBlank + body)
+
+	err = smtp.SendMail("smtp.gmail.com:587", mailAuth, from, to, msg)
+	if err != nil {
+		logger.Init().Sugar().Errorf("인증번호 이메일 발송 중 오류가 발생했습니다: %v", err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(domain.ErrInternal))
+	}
+
+	logger.Init().Sugar().Infof("인증번호가 발송되었습니다. 이메일: %s", email)
+
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"is_success": true,
-		"message":    "사용 가능한 이메일이며, 해당 이메일로 인증번호를 발송했습니다.",
+		"message":    "해당 이메일로 인증번호를 발송했습니다.",
+	})
+}
+
+type VerifyCodeRequest struct {
+	Email string `json:"email"`
+	Code  string `json:"code"`
+}
+
+// 이메일과 인증번호를 받아 유효성을 확인
+func (h *UserHandler) UserVerifyCodeHandler(ctx *fiber.Ctx) error {
+	req := new(VerifyCodeRequest)
+	if err := ctx.BodyParser(req); err != nil {
+		logger.Init().Sugar().Errorf("올바르지 않은 요청입니다: %v", err)
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+
+	if len(req.Email) == 0 || len(req.Code) == 0 {
+		logger.Init().Sugar().Warn("이메일 또는 인증번호가 입력되지 않았습니다.")
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+
+	// 인증번호 확인
+	verification, err := h.emailVerificationRepo.GetByEmailAndCode(req.Email, req.Code)
+	if err != nil {
+		logger.Init().Sugar().Warnf("유효하지 않은 인증번호입니다. 이메일: %s", req.Email)
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"is_success": false,
+			"message":    "인증번호가 유효하지 않거나 만료되었습니다.",
+		})
+	}
+
+	// 인증 완료 처리
+	if err := h.emailVerificationRepo.MarkAsVerified(verification.ID); err != nil {
+		logger.Init().Sugar().Errorf("인증 완료 처리 중 오류가 발생했습니다: %v", err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(domain.ErrInternal))
+	}
+
+	logger.Init().Sugar().Infof("이메일 인증이 완료되었습니다. 이메일: %s", req.Email)
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"is_success": true,
+		"message":    "이메일 인증이 완료되었습니다.",
 	})
 }
 

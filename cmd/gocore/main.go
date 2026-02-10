@@ -107,9 +107,10 @@ func main() {
 	// 사용자 관련 의존성 주입
 	authRepo := redisRepository.NewAuthRepository(cfg.JWT.Secret, 1*time.Hour, 24*time.Hour, redisClient, cfg.JWT.Issuer, cfg.JWT.Audience)
 	userRepo := repository.NewUserRepository(dbConn, nil)
+	emailVerificationRepo := repository.NewEmailVerificationRepository(dbConn)
 	authUseCase := usecase.NewAuthUseCase(authRepo)
 	userUseCase := usecase.NewUserUseCase(userRepo, authUseCase)
-	userHandler := handler.NewUserHandler(userUseCase, authUseCase)
+	userHandler := handler.NewUserHandler(userUseCase, authUseCase, emailVerificationRepo)
 	authHandler := handler.NewAuthHandler(authUseCase)
 
 	// 책 관련 의존성 주입
@@ -145,6 +146,8 @@ func main() {
 	user := api.Group("/users")
 	user.Post("/signup", userHandler.UserSignUpHandler)
 	user.Get("/check/nickname", userHandler.UserVerifyByNicknameHandler)
+	user.Get("/verify/email/:email", userHandler.UserVerifyByEmailHandler)
+	user.Post("/verify/code", userHandler.UserVerifyCodeHandler)
 	user.Post("/signin", userHandler.UserSignInHandler)
 	user.Post("/signout", middleware.JWTAuthMiddleware(authUseCase), userHandler.UserSignOutHandler)
 	user.Post("/forgot-password", userHandler.UserRestPasswordHandler)

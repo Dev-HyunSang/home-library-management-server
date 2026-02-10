@@ -79,6 +79,21 @@ var (
 			},
 		},
 	}
+	// EmailVerificationsColumns holds the columns for the "email_verifications" table.
+	EmailVerificationsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "email", Type: field.TypeString},
+		{Name: "code", Type: field.TypeString, Size: 6},
+		{Name: "expires_at", Type: field.TypeTime},
+		{Name: "is_verified", Type: field.TypeBool, Default: false},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// EmailVerificationsTable holds the schema information for the "email_verifications" table.
+	EmailVerificationsTable = &schema.Table{
+		Name:       "email_verifications",
+		Columns:    EmailVerificationsColumns,
+		PrimaryKey: []*schema.Column{EmailVerificationsColumns[0]},
+	}
 	// ReadingRemindersColumns holds the columns for the "reading_reminders" table.
 	ReadingRemindersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -159,6 +174,7 @@ var (
 		AdminAPIKeysTable,
 		BooksTable,
 		BookmarksTable,
+		EmailVerificationsTable,
 		ReadingRemindersTable,
 		ReviewsTable,
 		UsersTable,

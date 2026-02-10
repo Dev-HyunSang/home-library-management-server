@@ -19,6 +19,7 @@ import (
 	"github.com/dev-hyunsang/home-library/lib/ent/adminapikey"
 	"github.com/dev-hyunsang/home-library/lib/ent/book"
 	"github.com/dev-hyunsang/home-library/lib/ent/bookmark"
+	"github.com/dev-hyunsang/home-library/lib/ent/emailverification"
 	"github.com/dev-hyunsang/home-library/lib/ent/readingreminder"
 	"github.com/dev-hyunsang/home-library/lib/ent/review"
 	"github.com/dev-hyunsang/home-library/lib/ent/user"
@@ -35,6 +36,8 @@ type Client struct {
 	Book *BookClient
 	// Bookmark is the client for interacting with the Bookmark builders.
 	Bookmark *BookmarkClient
+	// EmailVerification is the client for interacting with the EmailVerification builders.
+	EmailVerification *EmailVerificationClient
 	// ReadingReminder is the client for interacting with the ReadingReminder builders.
 	ReadingReminder *ReadingReminderClient
 	// Review is the client for interacting with the Review builders.
@@ -55,6 +58,7 @@ func (c *Client) init() {
 	c.AdminAPIKey = NewAdminAPIKeyClient(c.config)
 	c.Book = NewBookClient(c.config)
 	c.Bookmark = NewBookmarkClient(c.config)
+	c.EmailVerification = NewEmailVerificationClient(c.config)
 	c.ReadingReminder = NewReadingReminderClient(c.config)
 	c.Review = NewReviewClient(c.config)
 	c.User = NewUserClient(c.config)
@@ -148,14 +152,15 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:             ctx,
-		config:          cfg,
-		AdminAPIKey:     NewAdminAPIKeyClient(cfg),
-		Book:            NewBookClient(cfg),
-		Bookmark:        NewBookmarkClient(cfg),
-		ReadingReminder: NewReadingReminderClient(cfg),
-		Review:          NewReviewClient(cfg),
-		User:            NewUserClient(cfg),
+		ctx:               ctx,
+		config:            cfg,
+		AdminAPIKey:       NewAdminAPIKeyClient(cfg),
+		Book:              NewBookClient(cfg),
+		Bookmark:          NewBookmarkClient(cfg),
+		EmailVerification: NewEmailVerificationClient(cfg),
+		ReadingReminder:   NewReadingReminderClient(cfg),
+		Review:            NewReviewClient(cfg),
+		User:              NewUserClient(cfg),
 	}, nil
 }
 
@@ -173,14 +178,15 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:             ctx,
-		config:          cfg,
-		AdminAPIKey:     NewAdminAPIKeyClient(cfg),
-		Book:            NewBookClient(cfg),
-		Bookmark:        NewBookmarkClient(cfg),
-		ReadingReminder: NewReadingReminderClient(cfg),
-		Review:          NewReviewClient(cfg),
-		User:            NewUserClient(cfg),
+		ctx:               ctx,
+		config:            cfg,
+		AdminAPIKey:       NewAdminAPIKeyClient(cfg),
+		Book:              NewBookClient(cfg),
+		Bookmark:          NewBookmarkClient(cfg),
+		EmailVerification: NewEmailVerificationClient(cfg),
+		ReadingReminder:   NewReadingReminderClient(cfg),
+		Review:            NewReviewClient(cfg),
+		User:              NewUserClient(cfg),
 	}, nil
 }
 
@@ -210,7 +216,8 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.AdminAPIKey, c.Book, c.Bookmark, c.ReadingReminder, c.Review, c.User,
+		c.AdminAPIKey, c.Book, c.Bookmark, c.EmailVerification, c.ReadingReminder,
+		c.Review, c.User,
 	} {
 		n.Use(hooks...)
 	}
@@ -220,7 +227,8 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.AdminAPIKey, c.Book, c.Bookmark, c.ReadingReminder, c.Review, c.User,
+		c.AdminAPIKey, c.Book, c.Bookmark, c.EmailVerification, c.ReadingReminder,
+		c.Review, c.User,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -235,6 +243,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Book.mutate(ctx, m)
 	case *BookmarkMutation:
 		return c.Bookmark.mutate(ctx, m)
+	case *EmailVerificationMutation:
+		return c.EmailVerification.mutate(ctx, m)
 	case *ReadingReminderMutation:
 		return c.ReadingReminder.mutate(ctx, m)
 	case *ReviewMutation:
@@ -722,6 +732,139 @@ func (c *BookmarkClient) mutate(ctx context.Context, m *BookmarkMutation) (Value
 		return (&BookmarkDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Bookmark mutation op: %q", m.Op())
+	}
+}
+
+// EmailVerificationClient is a client for the EmailVerification schema.
+type EmailVerificationClient struct {
+	config
+}
+
+// NewEmailVerificationClient returns a client for the EmailVerification from the given config.
+func NewEmailVerificationClient(c config) *EmailVerificationClient {
+	return &EmailVerificationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `emailverification.Hooks(f(g(h())))`.
+func (c *EmailVerificationClient) Use(hooks ...Hook) {
+	c.hooks.EmailVerification = append(c.hooks.EmailVerification, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `emailverification.Intercept(f(g(h())))`.
+func (c *EmailVerificationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.EmailVerification = append(c.inters.EmailVerification, interceptors...)
+}
+
+// Create returns a builder for creating a EmailVerification entity.
+func (c *EmailVerificationClient) Create() *EmailVerificationCreate {
+	mutation := newEmailVerificationMutation(c.config, OpCreate)
+	return &EmailVerificationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EmailVerification entities.
+func (c *EmailVerificationClient) CreateBulk(builders ...*EmailVerificationCreate) *EmailVerificationCreateBulk {
+	return &EmailVerificationCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *EmailVerificationClient) MapCreateBulk(slice any, setFunc func(*EmailVerificationCreate, int)) *EmailVerificationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &EmailVerificationCreateBulk{err: fmt.Errorf("calling to EmailVerificationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*EmailVerificationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &EmailVerificationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EmailVerification.
+func (c *EmailVerificationClient) Update() *EmailVerificationUpdate {
+	mutation := newEmailVerificationMutation(c.config, OpUpdate)
+	return &EmailVerificationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EmailVerificationClient) UpdateOne(ev *EmailVerification) *EmailVerificationUpdateOne {
+	mutation := newEmailVerificationMutation(c.config, OpUpdateOne, withEmailVerification(ev))
+	return &EmailVerificationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EmailVerificationClient) UpdateOneID(id uuid.UUID) *EmailVerificationUpdateOne {
+	mutation := newEmailVerificationMutation(c.config, OpUpdateOne, withEmailVerificationID(id))
+	return &EmailVerificationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EmailVerification.
+func (c *EmailVerificationClient) Delete() *EmailVerificationDelete {
+	mutation := newEmailVerificationMutation(c.config, OpDelete)
+	return &EmailVerificationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *EmailVerificationClient) DeleteOne(ev *EmailVerification) *EmailVerificationDeleteOne {
+	return c.DeleteOneID(ev.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *EmailVerificationClient) DeleteOneID(id uuid.UUID) *EmailVerificationDeleteOne {
+	builder := c.Delete().Where(emailverification.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EmailVerificationDeleteOne{builder}
+}
+
+// Query returns a query builder for EmailVerification.
+func (c *EmailVerificationClient) Query() *EmailVerificationQuery {
+	return &EmailVerificationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeEmailVerification},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a EmailVerification entity by its id.
+func (c *EmailVerificationClient) Get(ctx context.Context, id uuid.UUID) (*EmailVerification, error) {
+	return c.Query().Where(emailverification.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EmailVerificationClient) GetX(ctx context.Context, id uuid.UUID) *EmailVerification {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *EmailVerificationClient) Hooks() []Hook {
+	return c.hooks.EmailVerification
+}
+
+// Interceptors returns the client interceptors.
+func (c *EmailVerificationClient) Interceptors() []Interceptor {
+	return c.inters.EmailVerification
+}
+
+func (c *EmailVerificationClient) mutate(ctx context.Context, m *EmailVerificationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EmailVerificationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EmailVerificationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EmailVerificationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EmailVerificationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown EmailVerification mutation op: %q", m.Op())
 	}
 }
 
@@ -1239,9 +1382,11 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		AdminAPIKey, Book, Bookmark, ReadingReminder, Review, User []ent.Hook
+		AdminAPIKey, Book, Bookmark, EmailVerification, ReadingReminder, Review,
+		User []ent.Hook
 	}
 	inters struct {
-		AdminAPIKey, Book, Bookmark, ReadingReminder, Review, User []ent.Interceptor
+		AdminAPIKey, Book, Bookmark, EmailVerification, ReadingReminder, Review,
+		User []ent.Interceptor
 	}
 )

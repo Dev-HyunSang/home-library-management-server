@@ -15,6 +15,9 @@ type Book func(*sql.Selector)
 // Bookmark is the predicate function for bookmark builders.
 type Bookmark func(*sql.Selector)
 
+// EmailVerification is the predicate function for emailverification builders.
+type EmailVerification func(*sql.Selector)
+
 // ReadingReminder is the predicate function for readingreminder builders.
 type ReadingReminder func(*sql.Selector)
 

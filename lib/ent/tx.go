@@ -18,6 +18,8 @@ type Tx struct {
 	Book *BookClient
 	// Bookmark is the client for interacting with the Bookmark builders.
 	Bookmark *BookmarkClient
+	// EmailVerification is the client for interacting with the EmailVerification builders.
+	EmailVerification *EmailVerificationClient
 	// ReadingReminder is the client for interacting with the ReadingReminder builders.
 	ReadingReminder *ReadingReminderClient
 	// Review is the client for interacting with the Review builders.
@@ -158,6 +160,7 @@ func (tx *Tx) init() {
 	tx.AdminAPIKey = NewAdminAPIKeyClient(tx.config)
 	tx.Book = NewBookClient(tx.config)
 	tx.Bookmark = NewBookmarkClient(tx.config)
+	tx.EmailVerification = NewEmailVerificationClient(tx.config)
 	tx.ReadingReminder = NewReadingReminderClient(tx.config)
 	tx.Review = NewReviewClient(tx.config)
 	tx.User = NewUserClient(tx.config)

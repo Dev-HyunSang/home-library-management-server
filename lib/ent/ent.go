@@ -15,6 +15,7 @@ import (
 	"github.com/dev-hyunsang/home-library/lib/ent/adminapikey"
 	"github.com/dev-hyunsang/home-library/lib/ent/book"
 	"github.com/dev-hyunsang/home-library/lib/ent/bookmark"
+	"github.com/dev-hyunsang/home-library/lib/ent/emailverification"
 	"github.com/dev-hyunsang/home-library/lib/ent/readingreminder"
 	"github.com/dev-hyunsang/home-library/lib/ent/review"
 	"github.com/dev-hyunsang/home-library/lib/ent/user"
@@ -78,12 +79,13 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			adminapikey.Table:     adminapikey.ValidColumn,
-			book.Table:            book.ValidColumn,
-			bookmark.Table:        bookmark.ValidColumn,
-			readingreminder.Table: readingreminder.ValidColumn,
-			review.Table:          review.ValidColumn,
-			user.Table:            user.ValidColumn,
+			adminapikey.Table:       adminapikey.ValidColumn,
+			book.Table:              book.ValidColumn,
+			bookmark.Table:          bookmark.ValidColumn,
+			emailverification.Table: emailverification.ValidColumn,
+			readingreminder.Table:   readingreminder.ValidColumn,
+			review.Table:            review.ValidColumn,
+			user.Table:              user.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)
