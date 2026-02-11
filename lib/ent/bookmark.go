@@ -9,9 +9,9 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/dev-hyunsang/home-library/lib/ent/book"
-	"github.com/dev-hyunsang/home-library/lib/ent/bookmark"
-	"github.com/dev-hyunsang/home-library/lib/ent/user"
+	"github.com/dev-hyunsang/home-library-backend/lib/ent/book"
+	"github.com/dev-hyunsang/home-library-backend/lib/ent/bookmark"
+	"github.com/dev-hyunsang/home-library-backend/lib/ent/user"
 	"github.com/google/uuid"
 )
 

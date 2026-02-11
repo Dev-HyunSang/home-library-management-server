@@ -6,8 +6,8 @@ import (
 	"encoding/hex"
 	"time"
 
-	"github.com/dev-hyunsang/home-library/internal/domain"
-	repository "github.com/dev-hyunsang/home-library/internal/repository/mysql"
+	"github.com/dev-hyunsang/home-library-backend/internal/domain"
+	repository "github.com/dev-hyunsang/home-library-backend/internal/repository/mysql"
 	"github.com/google/uuid"
 )
 

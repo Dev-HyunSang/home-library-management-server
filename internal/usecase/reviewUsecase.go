@@ -3,7 +3,7 @@ package usecase
 import (
 	"fmt"
 
-	"github.com/dev-hyunsang/home-library/internal/domain"
+	"github.com/dev-hyunsang/home-library-backend/internal/domain"
 	"github.com/google/uuid"
 )
 

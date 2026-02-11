@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/dev-hyunsang/home-library/logger"
+	"github.com/dev-hyunsang/home-library-backend/logger"
 	"github.com/segmentio/kafka-go"
 )
 

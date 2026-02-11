@@ -3,8 +3,8 @@ package handler
 import (
 	"time"
 
-	"github.com/dev-hyunsang/home-library/internal/domain"
-	"github.com/dev-hyunsang/home-library/logger"
+	"github.com/dev-hyunsang/home-library-backend/internal/domain"
+	"github.com/dev-hyunsang/home-library-backend/logger"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )

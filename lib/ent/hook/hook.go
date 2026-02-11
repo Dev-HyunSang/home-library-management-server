@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dev-hyunsang/home-library/lib/ent"
+	"github.com/dev-hyunsang/home-library-backend/lib/ent"
 )
 
 // The AdminAPIKeyFunc type is an adapter to allow the use of ordinary

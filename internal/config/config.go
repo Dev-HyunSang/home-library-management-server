@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/dev-hyunsang/home-library/logger"
+	"github.com/dev-hyunsang/home-library-backend/logger"
 	"github.com/joho/godotenv"
 )
 

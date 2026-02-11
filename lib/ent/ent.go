@@ -12,13 +12,13 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/dev-hyunsang/home-library/lib/ent/adminapikey"
-	"github.com/dev-hyunsang/home-library/lib/ent/book"
-	"github.com/dev-hyunsang/home-library/lib/ent/bookmark"
-	"github.com/dev-hyunsang/home-library/lib/ent/emailverification"
-	"github.com/dev-hyunsang/home-library/lib/ent/readingreminder"
-	"github.com/dev-hyunsang/home-library/lib/ent/review"
-	"github.com/dev-hyunsang/home-library/lib/ent/user"
+	"github.com/dev-hyunsang/home-library-backend/lib/ent/adminapikey"
+	"github.com/dev-hyunsang/home-library-backend/lib/ent/book"
+	"github.com/dev-hyunsang/home-library-backend/lib/ent/bookmark"
+	"github.com/dev-hyunsang/home-library-backend/lib/ent/emailverification"
+	"github.com/dev-hyunsang/home-library-backend/lib/ent/readingreminder"
+	"github.com/dev-hyunsang/home-library-backend/lib/ent/review"
+	"github.com/dev-hyunsang/home-library-backend/lib/ent/user"
 )
 
 // ent aliases to avoid import conflicts in user's code.

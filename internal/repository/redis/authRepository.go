@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dev-hyunsang/home-library/internal/auth"
-	"github.com/dev-hyunsang/home-library/internal/cache"
+	"github.com/dev-hyunsang/home-library-backend/internal/auth"
+	"github.com/dev-hyunsang/home-library-backend/internal/cache"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )

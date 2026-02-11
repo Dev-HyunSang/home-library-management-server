@@ -3,8 +3,8 @@ package usecase
 import (
 	"time"
 
-	"github.com/dev-hyunsang/home-library/internal/auth"
-	repository "github.com/dev-hyunsang/home-library/internal/repository/redis"
+	"github.com/dev-hyunsang/home-library-backend/internal/auth"
+	repository "github.com/dev-hyunsang/home-library-backend/internal/repository/redis"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )

@@ -6,13 +6,13 @@ import (
 	"log"
 	"time"
 
-	"github.com/dev-hyunsang/home-library/internal/domain"
-	"github.com/dev-hyunsang/home-library/lib/ent"
-	"github.com/dev-hyunsang/home-library/lib/ent/book"
-	"github.com/dev-hyunsang/home-library/lib/ent/bookmark"
-	"github.com/dev-hyunsang/home-library/lib/ent/review"
-	"github.com/dev-hyunsang/home-library/lib/ent/user"
-	"github.com/dev-hyunsang/home-library/logger"
+	"github.com/dev-hyunsang/home-library-backend/internal/domain"
+	"github.com/dev-hyunsang/home-library-backend/lib/ent"
+	"github.com/dev-hyunsang/home-library-backend/lib/ent/book"
+	"github.com/dev-hyunsang/home-library-backend/lib/ent/bookmark"
+	"github.com/dev-hyunsang/home-library-backend/lib/ent/review"
+	"github.com/dev-hyunsang/home-library-backend/lib/ent/user"
+	"github.com/dev-hyunsang/home-library-backend/logger"
 	"github.com/google/uuid"
 )
 

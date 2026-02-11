@@ -9,8 +9,8 @@ import (
 	"time"
 
 	entsql "entgo.io/ent/dialect/sql"
-	"github.com/dev-hyunsang/home-library/internal/config"
-	"github.com/dev-hyunsang/home-library/lib/ent"
+	"github.com/dev-hyunsang/home-library-backend/internal/config"
+	"github.com/dev-hyunsang/home-library-backend/lib/ent"
 	"github.com/go-redis/redis"
 	_ "github.com/go-sql-driver/mysql"
 )

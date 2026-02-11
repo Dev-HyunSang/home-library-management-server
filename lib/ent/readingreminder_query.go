@@ -11,9 +11,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/dev-hyunsang/home-library/lib/ent/predicate"
-	"github.com/dev-hyunsang/home-library/lib/ent/readingreminder"
-	"github.com/dev-hyunsang/home-library/lib/ent/user"
+	"github.com/dev-hyunsang/home-library-backend/lib/ent/predicate"
+	"github.com/dev-hyunsang/home-library-backend/lib/ent/readingreminder"
+	"github.com/dev-hyunsang/home-library-backend/lib/ent/user"
 	"github.com/google/uuid"
 )
 

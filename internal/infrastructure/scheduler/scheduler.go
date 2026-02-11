@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/dev-hyunsang/home-library/internal/domain"
-	"github.com/dev-hyunsang/home-library/internal/infrastructure/kafka"
-	"github.com/dev-hyunsang/home-library/logger"
+	"github.com/dev-hyunsang/home-library-backend/internal/domain"
+	"github.com/dev-hyunsang/home-library-backend/internal/infrastructure/kafka"
+	"github.com/dev-hyunsang/home-library-backend/logger"
 	"github.com/go-co-op/gocron/v2"
 )
 
