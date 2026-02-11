@@ -8,7 +8,7 @@ import (
 
 type Book struct {
 	ID           uuid.UUID `json:"id"`
-	OwnerID      uuid.UUID `json:"owner_id"`
+	OwnerID      uuid.UUID `json:"user_id"`
 	Title        string    `json:"title"`
 	Author       string    `json:"author"`
 	BookISBN     string    `json:"book_isbn"`
