@@ -180,6 +180,61 @@ func (h *BookHandler) UpdateBookHandler(ctx *fiber.Ctx) error {
 	})
 }
 
+func (h *BookHandler) GetBookHandler(ctx *fiber.Ctx) error {
+	tokenUserID, err := h.AuthHandler.GetUserIDFromToken(ctx)
+	if err != nil {
+		logger.Init().Sugar().Errorf("JWT 토큰을 통한 사용자 인증에 실패했습니다: %v", err)
+		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
+	}
+
+	userID := ctx.Params("user_id")
+	if len(userID) == 0 {
+		logger.Init().Sugar().Error("사용자 ID가 입력되지 않았습니다.")
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+
+	parsedUserID, err := uuid.Parse(userID)
+	if err != nil {
+		logger.Init().Sugar().Errorf("잘못된 사용자 ID 형식입니다: %v", err)
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+
+	if tokenUserID != parsedUserID {
+		logger.Init().Sugar().Error("본인의 책만 조회할 수 있습니다.")
+		return ctx.Status(fiber.StatusForbidden).JSON(ErrorHandler(domain.ErrPermissionDenied))
+	}
+
+	bookID := ctx.Params("book_id")
+	if len(bookID) == 0 {
+		logger.Init().Sugar().Error("책 ID가 입력되지 않았습니다.")
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+
+	parsedBookID, err := uuid.Parse(bookID)
+	if err != nil {
+		logger.Init().Sugar().Errorf("잘못된 책 ID 형식입니다: %v", err)
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+
+	book, err := h.bookUseCase.GetBookByID(parsedUserID, parsedBookID)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			logger.Init().Sugar().Errorf("해당 책을 찾을 수 없습니다: %v", err)
+			return ctx.Status(fiber.StatusNotFound).JSON(ErrorHandler(domain.ErrNotFound))
+		}
+		logger.Init().Sugar().Errorf("책 조회 중 오류가 발생했습니다: %v", err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
+	}
+
+	logger.Init().Sugar().Infof("책을 성공적으로 조회했습니다 / 책ID: %s, 사용자ID: %s", bookID, userID)
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"is_success":   true,
+		"data":         book,
+		"responsed_at": time.Now(),
+	})
+}
+
 func (h *BookHandler) GetBooksHandler(ctx *fiber.Ctx) error {
 	// JWT 토큰에서 사용자 ID 추출
 	userID, err := h.AuthHandler.GetUserIDFromToken(ctx)

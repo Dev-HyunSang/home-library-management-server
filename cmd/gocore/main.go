@@ -166,6 +166,7 @@ func main() {
 	books := api.Group("/books")
 	books.Post("/add", middleware.JWTAuthMiddleware(authUseCase), bookHandler.SaveBookHandler)
 	books.Get("/get", middleware.JWTAuthMiddleware(authUseCase), bookHandler.GetBooksHandler)
+	books.Get("/get/:user_id/:book_id", middleware.JWTAuthMiddleware(authUseCase), bookHandler.GetBookHandler)
 	books.Put("/update/:id", middleware.JWTAuthMiddleware(authUseCase), bookHandler.UpdateBookHandler)
 	books.Delete("/delete/:id", middleware.JWTAuthMiddleware(authUseCase), bookHandler.BookDeleteHandler)
 	books.Get("/:name", middleware.JWTAuthMiddleware(authUseCase), bookHandler.GetBooksByUserNameHandler)
