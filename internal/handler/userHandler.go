@@ -277,9 +277,9 @@ func (h *UserHandler) UserRestPasswordHandler(ctx *fiber.Ctx) error {
 	from := config.GetEnv("GOOGLE_MAIL_ADDRESS")
 	to := []string{user.Email}
 
-	headerSubject := "Subject: 비밀번호 초기화\r\n"
+	headerSubject := "Subject: [나만의 서재] 임시 비밀번호 발급\r\n"
 	headerBlank := "\r\n"
-	body := fmt.Sprintf("비밀번호 초기화 메일 테스트입니다. %s\r\n", tempPassword)
+	body := fmt.Sprintf("임시 비밀번호가 발급되었습니다.\r\n임시 비밀번호: %s\r\n본인이 요청하지 않은 경우, 이 이메일을 무시해주세요.\r\n로그인 후 비밀번호를 변경해주세요.", tempPassword)
 	msg := []byte(headerSubject + headerBlank + body)
 
 	err = smtp.SendMail("smtp.gmail.com:587", mailAuth, from, to, msg)
