@@ -105,7 +105,7 @@ func main() {
 	// 리뷰 관련 의존성 주입
 	reviewRepo := repository.NewReviewRepository(dbConn)
 	reviewUseCase := usecase.NewReviewUseCase(reviewRepo)
-	reviewHandler := handler.NewReviewHandler(reviewUseCase, authUseCase)
+	reviewHandler := handler.NewReviewHandler(reviewUseCase, authUseCase, bookUseCase)
 
 	// 읽기 리마인더 관련 의존성 주입
 	reminderRepo := repository.NewReadingReminderRepository(dbConn)
@@ -120,7 +120,7 @@ func main() {
 	adminHandler := handler.NewAdminHandler(userRepo, apiKeyUseCase)
 
 	// 리마인더 스케줄러 시작
-	reminderScheduler, err := scheduler.NewReminderScheduler(reminderRepo, fcmService)
+	reminderScheduler, err := scheduler.NewReminderScheduler(reminderRepo, userRepo, fcmService)
 	if err != nil {
 		logger.Sugar().Warnf("리마인더 스케줄러 초기화 실패: %v", err)
 	} else {

@@ -54,7 +54,7 @@ func NewUserHandler(userUseCase domain.UserUseCase, authUseCase domain.AuthUseCa
 	}
 }
 func IsValidNickname(nickname string) bool {
-	matched, _ := regexp.MatchString(`^[a-z0-9_.]+$`, nickname)
+	matched, _ := regexp.MatchString(`^[a-z0-9_]+$`, nickname)
 	return matched
 }
 
@@ -464,6 +464,12 @@ func (h *UserHandler) UserEditHandler(ctx *fiber.Ctx) error {
 	updateReq := new(UpdateUserRequest)
 	if err := ctx.BodyParser(updateReq); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+
+	// 닉네임 유효성 검사
+	if !IsValidNickname(updateReq.NickName) {
+		logger.Sugar().Warn("사용자가 유효하지 않은 닉네임으로 수정 시도")
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidNickname))
 	}
 
 	// 업데이트할 사용자 정보 구성

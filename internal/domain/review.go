@@ -29,6 +29,24 @@ type ReviewResponse struct {
 	UpdatedAt     time.Time `json:"updated_at"`
 }
 
+type ReviewWithBook struct {
+	ID        uuid.UUID `json:"id"`
+	OwnerID   uuid.UUID `json:"owner_id"`
+	BookISBN  string    `json:"book_isbn"`
+	Content   string    `json:"content"`
+	Rating    int       `json:"rating"`
+	IsPublic  bool      `json:"is_public"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	Book      *BookInfo `json:"book,omitempty"`
+}
+
+type BookInfo struct {
+	Title        string `json:"title"`
+	Author       string `json:"author"`
+	ThumbnailURL string `json:"thumbnail_url"`
+}
+
 type CreateReviewRequest struct {
 	Content  string `json:"content"`
 	Rating   int    `json:"rating"`

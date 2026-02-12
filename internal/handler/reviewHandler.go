@@ -12,12 +12,14 @@ import (
 type ReviewHandler struct {
 	reviewUseCase domain.ReviewUseCase
 	authUseCase   domain.AuthUseCase
+	bookUseCase   domain.BookUseCase
 }
 
-func NewReviewHandler(reviewUseCase domain.ReviewUseCase, authUseCase domain.AuthUseCase) *ReviewHandler {
+func NewReviewHandler(reviewUseCase domain.ReviewUseCase, authUseCase domain.AuthUseCase, bookUseCase domain.BookUseCase) *ReviewHandler {
 	return &ReviewHandler{
 		reviewUseCase: reviewUseCase,
 		authUseCase:   authUseCase,
+		bookUseCase:   bookUseCase,
 	}
 }
 
@@ -238,9 +240,34 @@ func (h *ReviewHandler) GetMyReviewsHandler(ctx *fiber.Ctx) error {
 		})
 	}
 
+	reviewsWithBook := make([]*domain.ReviewWithBook, 0, len(reviews))
+	for _, review := range reviews {
+		rwb := &domain.ReviewWithBook{
+			ID:        review.ID,
+			OwnerID:   review.OwnerID,
+			BookISBN:  review.BookISBN,
+			Content:   review.Content,
+			Rating:    review.Rating,
+			IsPublic:  review.IsPublic,
+			CreatedAt: review.CreatedAt,
+			UpdatedAt: review.UpdatedAt,
+		}
+
+		book, err := h.bookUseCase.GetAnyBookByISBN(review.BookISBN)
+		if err == nil && book != nil {
+			rwb.Book = &domain.BookInfo{
+				Title:        book.Title,
+				Author:       book.Author,
+				ThumbnailURL: book.ThumbnailURL,
+			}
+		}
+
+		reviewsWithBook = append(reviewsWithBook, rwb)
+	}
+
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"is_success": true,
-		"data":       reviews,
-		"count":      len(reviews),
+		"data":       reviewsWithBook,
+		"count":      len(reviewsWithBook),
 	})
 }

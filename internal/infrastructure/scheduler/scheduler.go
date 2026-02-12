@@ -13,10 +13,11 @@ import (
 type ReminderScheduler struct {
 	scheduler    gocron.Scheduler
 	reminderRepo domain.ReadingReminderRepository
+	userRepo     domain.UserRepository
 	fcmService   *fcm.FCMService
 }
 
-func NewReminderScheduler(reminderRepo domain.ReadingReminderRepository, fcmService *fcm.FCMService) (*ReminderScheduler, error) {
+func NewReminderScheduler(reminderRepo domain.ReadingReminderRepository, userRepo domain.UserRepository, fcmService *fcm.FCMService) (*ReminderScheduler, error) {
 	s, err := gocron.NewScheduler()
 	if err != nil {
 		return nil, err
@@ -25,11 +26,13 @@ func NewReminderScheduler(reminderRepo domain.ReadingReminderRepository, fcmServ
 	return &ReminderScheduler{
 		scheduler:    s,
 		reminderRepo: reminderRepo,
+		userRepo:     userRepo,
 		fcmService:   fcmService,
 	}, nil
 }
 
 func (rs *ReminderScheduler) Start() error {
+	// 개인 리마인더 체크 (매분)
 	_, err := rs.scheduler.NewJob(
 		gocron.CronJob("* * * * *", false),
 		gocron.NewTask(rs.checkReminders),
@@ -38,8 +41,26 @@ func (rs *ReminderScheduler) Start() error {
 		return err
 	}
 
+	// 매일 10시 고정 알림 (KST 기준)
+	_, err = rs.scheduler.NewJob(
+		gocron.CronJob("0 10 * * *", false),
+		gocron.NewTask(rs.sendDailyReadingReminder),
+	)
+	if err != nil {
+		return err
+	}
+
+	// 매일 20시 고정 알림 (KST 기준)
+	_, err = rs.scheduler.NewJob(
+		gocron.CronJob("0 20 * * *", false),
+		gocron.NewTask(rs.sendDailyReadingReminder),
+	)
+	if err != nil {
+		return err
+	}
+
 	rs.scheduler.Start()
-	logger.Sugar().Info("Reading reminder scheduler started")
+	logger.Sugar().Info("Reading reminder scheduler started (with daily 10:00, 20:00 notifications)")
 	return nil
 }
 
@@ -102,4 +123,43 @@ func (rs *ReminderScheduler) processRemindersForTimezone(ctx context.Context, lo
 
 		logger.Sugar().Infof("Sent reading reminder to user %s: %s", rw.UserID.String(), rw.Reminder.Message)
 	}
+}
+
+func (rs *ReminderScheduler) sendDailyReadingReminder() {
+	ctx := context.Background()
+
+	if rs.fcmService == nil {
+		logger.Sugar().Warn("FCM service is not initialized, skipping daily reading reminder")
+		return
+	}
+
+	if rs.userRepo == nil {
+		logger.Sugar().Warn("User repository is not initialized, skipping daily reading reminder")
+		return
+	}
+
+	users, err := rs.userRepo.GetAllUsersWithFCM()
+	if err != nil {
+		logger.Sugar().Errorf("Failed to get users with FCM token: %v", err)
+		return
+	}
+
+	title := "나만의 서재"
+	body := "오늘의 독서는 하셨나요? 저희랑 함께 독서 해요!"
+
+	successCount := 0
+	for _, user := range users {
+		if user.FCMToken == "" {
+			continue
+		}
+
+		err := rs.fcmService.SendPush(ctx, user.FCMToken, title, body)
+		if err != nil {
+			logger.Sugar().Errorf("Failed to send daily reminder to user %s: %v", user.ID.String(), err)
+			continue
+		}
+		successCount++
+	}
+
+	logger.Sugar().Infof("Daily reading reminder sent to %d/%d users", successCount, len(users))
 }
