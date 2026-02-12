@@ -39,7 +39,7 @@ func (rs *ReminderScheduler) Start() error {
 	}
 
 	rs.scheduler.Start()
-	logger.Init().Sugar().Info("Reading reminder scheduler started")
+	logger.Sugar().Info("Reading reminder scheduler started")
 	return nil
 }
 
@@ -63,7 +63,7 @@ func (rs *ReminderScheduler) checkReminders() {
 	for _, tz := range timezones {
 		loc, err := time.LoadLocation(tz)
 		if err != nil {
-			logger.Init().Sugar().Warnf("Failed to load timezone %s: %v", tz, err)
+			logger.Sugar().Warnf("Failed to load timezone %s: %v", tz, err)
 			continue
 		}
 
@@ -75,7 +75,7 @@ func (rs *ReminderScheduler) checkReminders() {
 func (rs *ReminderScheduler) processRemindersForTimezone(ctx context.Context, localTime time.Time, timezone string) {
 	reminders, err := rs.reminderRepo.GetDueReminders(localTime)
 	if err != nil {
-		logger.Init().Sugar().Errorf("Failed to get due reminders: %v", err)
+		logger.Sugar().Errorf("Failed to get due reminders: %v", err)
 		return
 	}
 
@@ -85,7 +85,7 @@ func (rs *ReminderScheduler) processRemindersForTimezone(ctx context.Context, lo
 		}
 
 		if rw.FCMToken == "" {
-			logger.Init().Sugar().Warnf("User %s has no FCM token, skipping reminder", rw.UserID.String())
+			logger.Sugar().Warnf("User %s has no FCM token, skipping reminder", rw.UserID.String())
 			continue
 		}
 
@@ -97,10 +97,10 @@ func (rs *ReminderScheduler) processRemindersForTimezone(ctx context.Context, lo
 			"reading_reminder",
 		)
 		if err != nil {
-			logger.Init().Sugar().Errorf("Failed to produce notification for user %s: %v", rw.UserID.String(), err)
+			logger.Sugar().Errorf("Failed to produce notification for user %s: %v", rw.UserID.String(), err)
 			continue
 		}
 
-		logger.Init().Sugar().Infof("Sent reading reminder to user %s: %s", rw.UserID.String(), rw.Reminder.Message)
+		logger.Sugar().Infof("Sent reading reminder to user %s: %s", rw.UserID.String(), rw.Reminder.Message)
 	}
 }

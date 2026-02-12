@@ -1,4 +1,4 @@
-package memory
+package mysql
 
 import (
 	"context"
@@ -32,17 +32,17 @@ func (rc *BookRepository) SaveByBookID(userID uuid.UUID, book *domain.Book) (*do
 	// Check if user exists before creating book
 	exists, err := client.User.Query().Where(user.ID(userID)).Exist(context.Background())
 	if err != nil {
-		logger.Init().Sugar().Errorf("사용자 존재 확인 중 오류가 발생했습니다: %w", err)
+		logger.Sugar().Errorf("사용자 존재 확인 중 오류가 발생했습니다: %w", err)
 		return nil, fmt.Errorf("사용자 존재 확인 중 오류가 발생했습니다: %w", err)
 	}
 	if !exists {
-		logger.Init().Sugar().Errorf("존재하지 않는 사용자입니다: %s", userID.String())
+		logger.Sugar().Errorf("존재하지 않는 사용자입니다: %s", userID.String())
 		return nil, fmt.Errorf("존재하지 않는 사용자입니다: %s", userID.String())
 	}
 
 	BookID, err := uuid.NewUUID()
 	if err != nil {
-		logger.Init().Sugar().Errorf("새로운 UUID를 생성하던 도중 오류가 발생했습니다. %w", err)
+		logger.Sugar().Errorf("새로운 UUID를 생성하던 도중 오류가 발생했습니다. %w", err)
 		return nil, fmt.Errorf("새로운 UUID를 생성하던 도중 오류가 발생했습니다. %w", err)
 	}
 
@@ -74,7 +74,7 @@ func (rc *BookRepository) SaveByBookID(userID uuid.UUID, book *domain.Book) (*do
 
 	switch {
 	case ent.IsConstraintError(err):
-		logger.Init().Sugar().Errorf("책을 저장하는 도중 제약 조건 오류가 발생했습니다: %w", err)
+		logger.Sugar().Errorf("책을 저장하는 도중 제약 조건 오류가 발생했습니다: %w", err)
 		return nil, fmt.Errorf("책을 저장하는 도중 제약 조건 오류가 발생했습니다: %w", err)
 	default:
 		return nil, fmt.Errorf("새로운 책을 저장하던 도중 오류가 발생했습니다: %w", err)
@@ -92,15 +92,14 @@ func (rc *BookRepository) GetBookByID(userID, id uuid.UUID) (*domain.Book, error
 			book.HasOwnerWith(user.ID(userID))). // UserID와 일치하는 조건을 찾습니다.
 		Only(context.Background())
 
-	logger.UserInfoLog(userID.String(), "해당 유저의 책 정보를 가지고 왔습니다.")
-
 	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, domain.ErrNotFound
+		}
 		return nil, fmt.Errorf("책 정보를 가져오는 도중 오류가 발생했습니다: %w", err)
-	} else if ent.IsNotFound(err) {
-		return nil, fmt.Errorf("해당 정보로 등록된 책을 찾을 수 없습니다: %w", err)
 	}
 
-	log.Println(result)
+	logger.UserInfoLog(userID.String(), "해당 유저의 책 정보를 가지고 왔습니다.")
 
 	return &domain.Book{
 		ID:           result.ID,
@@ -248,12 +247,12 @@ func (bc *BookRepository) GetBooksByUserName(name string) ([]*domain.Book, error
 		}
 	}
 
-	logger.Init().Sugar().Infof("유저 닉네임을 통해 유저의 저장된 책 목록들을 가져왔습니다: %s", name)
+	logger.Sugar().Infof("유저 닉네임을 통해 유저의 저장된 책 목록들을 가져왔습니다: %s", name)
 	result := make([]*domain.Book, 0, len(books))
 	for _, b := range books {
 		// Owner가 로드되었는지 확인
 		if b.Edges.Owner == nil {
-			logger.Init().Sugar().Errorf("책 ID %s의 Owner가 로드되지 않았습니다", b.ID.String())
+			logger.Sugar().Errorf("책 ID %s의 Owner가 로드되지 않았습니다", b.ID.String())
 			continue
 		}
 
@@ -315,7 +314,7 @@ func (bc *BookRepository) CreateReview(review *domain.ReviewBook) error {
 		return fmt.Errorf("리뷰를 저장하는 도중 오류가 발생했습니다: %w", err)
 	}
 
-	logger.Init().Sugar().Infof("리뷰를 성공적으로 저장했습니다. 리뷰 ID: %s", review.ID.String())
+	logger.Sugar().Infof("리뷰를 성공적으로 저장했습니다. 리뷰 ID: %s", review.ID.String())
 
 	return nil
 }
@@ -474,7 +473,7 @@ func (bc *BookRepository) DeleteReviewByID(userID, reviewID uuid.UUID) error {
 		return fmt.Errorf("리뷰를 삭제하는 도중 오류가 발생했습니다: %w", err)
 	}
 
-	logger.Init().Sugar().Infof("리뷰가 성공적으로 삭제되었습니다. 리뷰 ID: %s", reviewID.String())
+	logger.Sugar().Infof("리뷰가 성공적으로 삭제되었습니다. 리뷰 ID: %s", reviewID.String())
 	return nil
 }
 

@@ -54,7 +54,7 @@ func main() {
 		log.Fatalf("Database connection error: %v", err)
 	}
 
-	logger.Init().Sugar().Info("성공적으로 데이터베이스(MySQL)에 연결되었습니다.")
+	logger.Sugar().Info("성공적으로 데이터베이스(MySQL)에 연결되었습니다.")
 
 	// Redis 클라이언트 초기화
 	redisClient := cache.NewRedisClient(
@@ -64,7 +64,7 @@ func main() {
 		cfg.DB.Redis.DB,
 	)
 
-	logger.Init().Sugar().Info("성공적으로 Redis 클라이언트가 초기화되었습니다.")
+	logger.Sugar().Info("성공적으로 Redis 클라이언트가 초기화되었습니다.")
 
 	// csrfConfig := csrf.Config{
 	// 	Session:        store,
@@ -86,20 +86,20 @@ func main() {
 	// 1. FCM Service
 	fcmService, err := fcm.NewFCMService(cfg.FCM.ServiceAccountPath)
 	if err != nil {
-		logger.Init().Sugar().Warnf("FCM 서비스를 초기화하는데 실패했습니다(알림 기능 비활성화): %v", err)
+		logger.Sugar().Warnf("FCM 서비스를 초기화하는데 실패했습니다(알림 기능 비활성화): %v", err)
 	} else {
-		logger.Init().Sugar().Info("FCM 서비스가 성공적으로 초기화되었습니다.")
+		logger.Sugar().Info("FCM 서비스가 성공적으로 초기화되었습니다.")
 	}
 
 	// 2. Kafka Producer
 	kafkaProducer := kafka.NewProducer(cfg.Kafka.Brokers, cfg.Kafka.Topic)
 	defer kafkaProducer.Close()
-	logger.Init().Sugar().Info("Kafka Producer가 초기화되었습니다.")
+	logger.Sugar().Info("Kafka Producer가 초기화되었습니다.")
 
 	// 3. Kafka Consumer (백그라운드 실행)
 	kafkaConsumer := kafka.NewConsumer(cfg.Kafka.Brokers, cfg.Kafka.Topic, cfg.Kafka.GroupID, fcmService)
 	go func() {
-		logger.Init().Sugar().Info("Kafka Consumer가 시작되었습니다.")
+		logger.Sugar().Info("Kafka Consumer가 시작되었습니다.")
 		kafkaConsumer.Start(context.Background())
 	}()
 	defer kafkaConsumer.Close()
@@ -138,10 +138,10 @@ func main() {
 	// 리마인더 스케줄러 시작
 	reminderScheduler, err := scheduler.NewReminderScheduler(reminderRepo, kafkaProducer)
 	if err != nil {
-		logger.Init().Sugar().Warnf("리마인더 스케줄러 초기화 실패: %v", err)
+		logger.Sugar().Warnf("리마인더 스케줄러 초기화 실패: %v", err)
 	} else {
 		if err := reminderScheduler.Start(); err != nil {
-			logger.Init().Sugar().Warnf("리마인더 스케줄러 시작 실패: %v", err)
+			logger.Sugar().Warnf("리마인더 스케줄러 시작 실패: %v", err)
 		} else {
 			defer reminderScheduler.Stop()
 		}
@@ -221,6 +221,6 @@ func main() {
 	admin.Delete("/api-keys/:id", adminHandler.DeleteAPIKeyHandler)
 
 	if err := app.Listen(":3000"); err != nil {
-		logger.Init().Sugar().Fatalf("서버를 시작하는 도중 오류가 발생했습니다: %v", err)
+		logger.Sugar().Fatalf("서버를 시작하는 도중 오류가 발생했습니다: %v", err)
 	}
 }

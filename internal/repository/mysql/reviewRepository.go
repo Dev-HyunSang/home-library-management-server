@@ -1,4 +1,4 @@
-package memory
+package mysql
 
 import (
 	"context"
@@ -40,7 +40,7 @@ func (r *ReviewRepository) Create(rev *domain.Review) (*domain.Review, error) {
 		return nil, fmt.Errorf("리뷰를 저장하는 도중 오류가 발생했습니다: %w", err)
 	}
 
-	logger.Init().Sugar().Infof("리뷰가 생성되었습니다. ID: %s, ISBN: %s", created.ID.String(), created.BookIsbn)
+	logger.Sugar().Infof("리뷰가 생성되었습니다. ID: %s, ISBN: %s", created.ID.String(), created.BookIsbn)
 
 	return &domain.Review{
 		ID:        created.ID,
@@ -201,7 +201,7 @@ func (r *ReviewRepository) Update(rev *domain.Review) (*domain.Review, error) {
 		return nil, fmt.Errorf("리뷰 수정 중 오류가 발생했습니다: %w", err)
 	}
 
-	logger.Init().Sugar().Infof("리뷰가 수정되었습니다. ID: %s", updated.ID.String())
+	logger.Sugar().Infof("리뷰가 수정되었습니다. ID: %s", updated.ID.String())
 
 	return &domain.Review{
 		ID:        updated.ID,
@@ -237,6 +237,6 @@ func (r *ReviewRepository) Delete(userID, reviewID uuid.UUID) error {
 		return fmt.Errorf("리뷰 삭제 중 오류가 발생했습니다: %w", err)
 	}
 
-	logger.Init().Sugar().Infof("리뷰가 삭제되었습니다. ID: %s", reviewID.String())
+	logger.Sugar().Infof("리뷰가 삭제되었습니다. ID: %s", reviewID.String())
 	return nil
 }

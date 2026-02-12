@@ -41,10 +41,10 @@ func (s *FCMService) SendPush(ctx context.Context, token, title, body string) er
 
 	response, err := s.client.Send(ctx, message)
 	if err != nil {
-		logger.Init().Sugar().Errorf("Failed to send FCM message: %v", err)
+		logger.Sugar().Errorf("Failed to send FCM message: %v", err)
 		return err
 	}
 
-	logger.Init().Sugar().Infof("Successfully sent message: %s", response)
+	logger.Sugar().Infof("Successfully sent message: %s", response)
 	return nil
 }

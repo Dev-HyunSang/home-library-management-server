@@ -1,4 +1,4 @@
-package memory
+package mysql
 
 import (
 	"context"
@@ -36,11 +36,11 @@ func (r *AdminAPIKeyRepository) Create(apiKey *domain.AdminAPIKey) (*domain.Admi
 
 	key, err := builder.Save(context.Background())
 	if err != nil {
-		logger.Init().Sugar().Errorf("Admin API Key 생성 중 오류: %v", err)
+		logger.Sugar().Errorf("Admin API Key 생성 중 오류: %v", err)
 		return nil, fmt.Errorf("API Key 생성 중 오류가 발생했습니다: %w", err)
 	}
 
-	logger.Init().Sugar().Infof("Admin API Key가 생성되었습니다. ID: %s, Name: %s", key.ID.String(), key.Name)
+	logger.Sugar().Infof("Admin API Key가 생성되었습니다. ID: %s, Name: %s", key.ID.String(), key.Name)
 
 	return r.entToDomain(key), nil
 }
@@ -122,7 +122,7 @@ func (r *AdminAPIKeyRepository) Deactivate(id uuid.UUID) error {
 		return fmt.Errorf("API Key 비활성화 중 오류가 발생했습니다: %w", err)
 	}
 
-	logger.Init().Sugar().Infof("Admin API Key가 비활성화되었습니다. ID: %s", id.String())
+	logger.Sugar().Infof("Admin API Key가 비활성화되었습니다. ID: %s", id.String())
 	return nil
 }
 
@@ -135,7 +135,7 @@ func (r *AdminAPIKeyRepository) Delete(id uuid.UUID) error {
 		return fmt.Errorf("API Key 삭제 중 오류가 발생했습니다: %w", err)
 	}
 
-	logger.Init().Sugar().Infof("Admin API Key가 삭제되었습니다. ID: %s", id.String())
+	logger.Sugar().Infof("Admin API Key가 삭제되었습니다. ID: %s", id.String())
 	return nil
 }
 

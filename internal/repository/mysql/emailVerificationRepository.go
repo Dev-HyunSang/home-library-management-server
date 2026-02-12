@@ -1,4 +1,4 @@
-package memory
+package mysql
 
 import (
 	"context"
@@ -39,7 +39,7 @@ func (r *EmailVerificationRepository) Save(verification *domain.EmailVerificatio
 		return nil, fmt.Errorf("이메일 인증 정보를 저장하는 도중 오류가 발생했습니다: %w", err)
 	}
 
-	logger.Init().Sugar().Infof("이메일 인증 정보를 생성했습니다. 이메일: %s", v.Email)
+	logger.Sugar().Infof("이메일 인증 정보를 생성했습니다. 이메일: %s", v.Email)
 	return &domain.EmailVerification{
 		ID:         v.ID,
 		Email:      v.Email,
@@ -112,7 +112,7 @@ func (r *EmailVerificationRepository) MarkAsVerified(id uuid.UUID) error {
 		return fmt.Errorf("인증 완료 처리 중 오류가 발생했습니다: %w", err)
 	}
 
-	logger.Init().Sugar().Infof("이메일 인증이 완료되었습니다. ID: %s", id.String())
+	logger.Sugar().Infof("이메일 인증이 완료되었습니다. ID: %s", id.String())
 	return nil
 }
 
@@ -125,7 +125,7 @@ func (r *EmailVerificationRepository) DeleteByEmail(email string) error {
 		return fmt.Errorf("이메일 인증 정보 삭제 중 오류가 발생했습니다: %w", err)
 	}
 
-	logger.Init().Sugar().Infof("이메일 인증 정보를 삭제했습니다. 이메일: %s", email)
+	logger.Sugar().Infof("이메일 인증 정보를 삭제했습니다. 이메일: %s", email)
 	return nil
 }
 
@@ -139,7 +139,7 @@ func (r *EmailVerificationRepository) DeleteExpired() error {
 	}
 
 	if deleted > 0 {
-		logger.Init().Sugar().Infof("만료된 이메일 인증 정보 %d건을 삭제했습니다", deleted)
+		logger.Sugar().Infof("만료된 이메일 인증 정보 %d건을 삭제했습니다", deleted)
 	}
 	return nil
 }

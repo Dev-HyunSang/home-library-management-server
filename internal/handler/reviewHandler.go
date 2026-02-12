@@ -25,7 +25,7 @@ func NewReviewHandler(reviewUseCase domain.ReviewUseCase, authUseCase domain.Aut
 func (h *ReviewHandler) CreateReviewHandler(ctx *fiber.Ctx) error {
 	isbn := ctx.Params("isbn")
 	if isbn == "" {
-		logger.Init().Sugar().Error("ISBN이 입력되지 않았습니다.")
+		logger.Sugar().Error("ISBN이 입력되지 않았습니다.")
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"is_success": false,
 			"message":    "ISBN은 필수입니다.",
@@ -35,7 +35,7 @@ func (h *ReviewHandler) CreateReviewHandler(ctx *fiber.Ctx) error {
 
 	userID, err := h.authUseCase.GetUserIDFromToken(ctx)
 	if err != nil {
-		logger.Init().Sugar().Errorf("JWT 토큰 인증 실패: %v", err)
+		logger.Sugar().Errorf("JWT 토큰 인증 실패: %v", err)
 		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"is_success": false,
 			"message":    "인증이 필요합니다.",
@@ -45,7 +45,7 @@ func (h *ReviewHandler) CreateReviewHandler(ctx *fiber.Ctx) error {
 
 	req := new(domain.CreateReviewRequest)
 	if err := ctx.BodyParser(req); err != nil {
-		logger.Init().Sugar().Errorf("요청 파싱 실패: %v", err)
+		logger.Sugar().Errorf("요청 파싱 실패: %v", err)
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"is_success": false,
 			"message":    "올바르지 않은 요청입니다.",
@@ -55,7 +55,7 @@ func (h *ReviewHandler) CreateReviewHandler(ctx *fiber.Ctx) error {
 
 	review, err := h.reviewUseCase.CreateReview(userID, isbn, req)
 	if err != nil {
-		logger.Init().Sugar().Errorf("리뷰 생성 실패: %v", err)
+		logger.Sugar().Errorf("리뷰 생성 실패: %v", err)
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"is_success": false,
 			"message":    err.Error(),
@@ -63,7 +63,7 @@ func (h *ReviewHandler) CreateReviewHandler(ctx *fiber.Ctx) error {
 		})
 	}
 
-	logger.Init().Sugar().Infof("리뷰가 생성되었습니다. ID: %s, ISBN: %s", review.ID.String(), isbn)
+	logger.Sugar().Infof("리뷰가 생성되었습니다. ID: %s, ISBN: %s", review.ID.String(), isbn)
 
 	return ctx.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"is_success": true,
@@ -85,7 +85,7 @@ func (h *ReviewHandler) GetReviewsByISBNHandler(ctx *fiber.Ctx) error {
 
 	reviews, err := h.reviewUseCase.GetReviewsByISBN(isbn)
 	if err != nil {
-		logger.Init().Sugar().Errorf("리뷰 조회 실패: %v", err)
+		logger.Sugar().Errorf("리뷰 조회 실패: %v", err)
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"is_success": false,
 			"message":    "리뷰 조회 중 오류가 발생했습니다.",
@@ -113,7 +113,7 @@ func (h *ReviewHandler) GetReviewByIDHandler(ctx *fiber.Ctx) error {
 
 	review, err := h.reviewUseCase.GetReviewByID(reviewID)
 	if err != nil {
-		logger.Init().Sugar().Errorf("리뷰 조회 실패: %v", err)
+		logger.Sugar().Errorf("리뷰 조회 실패: %v", err)
 		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"is_success": false,
 			"message":    "리뷰를 찾을 수 없습니다.",
@@ -140,7 +140,7 @@ func (h *ReviewHandler) UpdateReviewHandler(ctx *fiber.Ctx) error {
 
 	userID, err := h.authUseCase.GetUserIDFromToken(ctx)
 	if err != nil {
-		logger.Init().Sugar().Errorf("JWT 토큰 인증 실패: %v", err)
+		logger.Sugar().Errorf("JWT 토큰 인증 실패: %v", err)
 		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"is_success": false,
 			"message":    "인증이 필요합니다.",
@@ -150,7 +150,7 @@ func (h *ReviewHandler) UpdateReviewHandler(ctx *fiber.Ctx) error {
 
 	req := new(domain.UpdateReviewRequest)
 	if err := ctx.BodyParser(req); err != nil {
-		logger.Init().Sugar().Errorf("요청 파싱 실패: %v", err)
+		logger.Sugar().Errorf("요청 파싱 실패: %v", err)
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"is_success": false,
 			"message":    "올바르지 않은 요청입니다.",
@@ -160,7 +160,7 @@ func (h *ReviewHandler) UpdateReviewHandler(ctx *fiber.Ctx) error {
 
 	review, err := h.reviewUseCase.UpdateReview(userID, reviewID, req)
 	if err != nil {
-		logger.Init().Sugar().Errorf("리뷰 수정 실패: %v", err)
+		logger.Sugar().Errorf("리뷰 수정 실패: %v", err)
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"is_success": false,
 			"message":    err.Error(),
@@ -168,7 +168,7 @@ func (h *ReviewHandler) UpdateReviewHandler(ctx *fiber.Ctx) error {
 		})
 	}
 
-	logger.Init().Sugar().Infof("리뷰가 수정되었습니다. ID: %s", review.ID.String())
+	logger.Sugar().Infof("리뷰가 수정되었습니다. ID: %s", review.ID.String())
 
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"is_success": true,
@@ -190,7 +190,7 @@ func (h *ReviewHandler) DeleteReviewHandler(ctx *fiber.Ctx) error {
 
 	userID, err := h.authUseCase.GetUserIDFromToken(ctx)
 	if err != nil {
-		logger.Init().Sugar().Errorf("JWT 토큰 인증 실패: %v", err)
+		logger.Sugar().Errorf("JWT 토큰 인증 실패: %v", err)
 		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"is_success": false,
 			"message":    "인증이 필요합니다.",
@@ -200,7 +200,7 @@ func (h *ReviewHandler) DeleteReviewHandler(ctx *fiber.Ctx) error {
 
 	err = h.reviewUseCase.DeleteReview(userID, reviewID)
 	if err != nil {
-		logger.Init().Sugar().Errorf("리뷰 삭제 실패: %v", err)
+		logger.Sugar().Errorf("리뷰 삭제 실패: %v", err)
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"is_success": false,
 			"message":    err.Error(),
@@ -208,7 +208,7 @@ func (h *ReviewHandler) DeleteReviewHandler(ctx *fiber.Ctx) error {
 		})
 	}
 
-	logger.Init().Sugar().Infof("리뷰가 삭제되었습니다. ID: %s", reviewID.String())
+	logger.Sugar().Infof("리뷰가 삭제되었습니다. ID: %s", reviewID.String())
 
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"is_success": true,
@@ -220,7 +220,7 @@ func (h *ReviewHandler) DeleteReviewHandler(ctx *fiber.Ctx) error {
 func (h *ReviewHandler) GetMyReviewsHandler(ctx *fiber.Ctx) error {
 	userID, err := h.authUseCase.GetUserIDFromToken(ctx)
 	if err != nil {
-		logger.Init().Sugar().Errorf("JWT 토큰 인증 실패: %v", err)
+		logger.Sugar().Errorf("JWT 토큰 인증 실패: %v", err)
 		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"is_success": false,
 			"message":    "인증이 필요합니다.",
@@ -230,7 +230,7 @@ func (h *ReviewHandler) GetMyReviewsHandler(ctx *fiber.Ctx) error {
 
 	reviews, err := h.reviewUseCase.GetUserReviews(userID)
 	if err != nil {
-		logger.Init().Sugar().Errorf("리뷰 조회 실패: %v", err)
+		logger.Sugar().Errorf("리뷰 조회 실패: %v", err)
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"is_success": false,
 			"message":    "리뷰 조회 중 오류가 발생했습니다.",

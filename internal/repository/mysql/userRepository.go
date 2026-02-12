@@ -1,4 +1,4 @@
-package memory
+package mysql
 
 import (
 	"context"
@@ -46,7 +46,7 @@ func (r *UserRepository) Save(user *domain.User) (*domain.User, error) {
 	u, err := builder.Save(context.Background())
 
 	if err == nil {
-		logger.Init().Sugar().Infof("새로운 유저를 생성하였습니다. 새로운 유저: %s", u.ID.String())
+		logger.Sugar().Infof("새로운 유저를 생성하였습니다. 새로운 유저: %s", u.ID.String())
 		return &domain.User{
 			ID:            u.ID,
 			NickName:      u.NickName,
@@ -76,7 +76,7 @@ func (r *UserRepository) GetByID(id uuid.UUID) (*domain.User, error) {
 		Where(user.ID(id)).
 		Only(context.Background())
 	if err == nil {
-		logger.Init().Sugar().Infof("사용자 정보를 ID로 조회했습니다. 사용자ID: %s", u.ID.String())
+		logger.Sugar().Infof("사용자 정보를 ID로 조회했습니다. 사용자ID: %s", u.ID.String())
 		return &domain.User{
 			ID:            u.ID,
 			NickName:      u.NickName,
@@ -106,7 +106,7 @@ func (r *UserRepository) GetByEmail(email string) (*domain.User, error) {
 		Where(user.Email(email)).
 		Only(context.Background())
 	if err == nil {
-		logger.Init().Sugar().Infof("사용자 정보를 이메일로 조회했습니다. 사용자 이메일: %s", u.Email)
+		logger.Sugar().Infof("사용자 정보를 이메일로 조회했습니다. 사용자 이메일: %s", u.Email)
 		return &domain.User{
 			ID:            u.ID,
 			NickName:      u.NickName,
@@ -136,7 +136,7 @@ func (r *UserRepository) GetByNickname(nickname string) (*domain.User, error) {
 		Where(user.NickName(nickname)).
 		Only(context.Background())
 	if err == nil {
-		logger.Init().Sugar().Infof("사용자 정보를 닉네임으로 조회했습니다. 사용자 닉네임: %s", u.NickName)
+		logger.Sugar().Infof("사용자 정보를 닉네임으로 조회했습니다. 사용자 닉네임: %s", u.NickName)
 		return &domain.User{
 			ID:            u.ID,
 			NickName:      u.NickName,
@@ -171,9 +171,10 @@ func (r *UserRepository) Update(user *domain.User) error {
 		Exec(context.Background())
 
 	if err != nil {
+		if ent.IsNotFound(err) {
+			return domain.ErrNotFound
+		}
 		return fmt.Errorf("사용자 정보를 업데이트하는 도중 오류가 발생했습니다: %w", err)
-	} else if ent.IsNotFound(err) {
-		return fmt.Errorf("해당하는 ID로 사용자를 찾을 수 없습니다: %w", err)
 	}
 
 	return nil
@@ -194,7 +195,7 @@ func (r *UserRepository) Delete(id uuid.UUID) error {
 		return fmt.Errorf("사용자를 삭제하는 도중 오류가 발생했습니다: %w", err)
 	}
 
-	logger.Init().Sugar().Infof("해당하는 사용자를 삭제하였습니다: %s", id.String())
+	logger.Sugar().Infof("해당하는 사용자를 삭제하였습니다: %s", id.String())
 
 	return nil
 }
@@ -212,7 +213,7 @@ func (r *UserRepository) UpdateFCMToken(userID uuid.UUID, fcmToken string) error
 		return fmt.Errorf("FCM 토큰 업데이트 중 오류가 발생했습니다: %w", err)
 	}
 
-	logger.Init().Sugar().Infof("사용자 FCM 토큰이 업데이트되었습니다. 사용자ID: %s", userID.String())
+	logger.Sugar().Infof("사용자 FCM 토큰이 업데이트되었습니다. 사용자ID: %s", userID.String())
 	return nil
 }
 
@@ -229,7 +230,7 @@ func (r *UserRepository) UpdateTimezone(userID uuid.UUID, timezone string) error
 		return fmt.Errorf("타임존 업데이트 중 오류가 발생했습니다: %w", err)
 	}
 
-	logger.Init().Sugar().Infof("사용자 타임존이 업데이트되었습니다. 사용자ID: %s, 타임존: %s", userID.String(), timezone)
+	logger.Sugar().Infof("사용자 타임존이 업데이트되었습니다. 사용자ID: %s, 타임존: %s", userID.String(), timezone)
 	return nil
 }
 
@@ -283,6 +284,6 @@ func (r *UserRepository) GetAllUsersWithFCM() ([]*domain.User, error) {
 		}
 	}
 
-	logger.Init().Sugar().Infof("FCM 토큰이 있는 사용자 %d명 조회 완료", len(result))
+	logger.Sugar().Infof("FCM 토큰이 있는 사용자 %d명 조회 완료", len(result))
 	return result, nil
 }

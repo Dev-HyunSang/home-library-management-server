@@ -40,7 +40,7 @@ type BroadcastNotificationResponse struct {
 func (h *AdminHandler) BroadcastNotificationHandler(ctx *fiber.Ctx) error {
 	req := new(BroadcastNotificationRequest)
 	if err := ctx.BodyParser(req); err != nil {
-		logger.Init().Sugar().Errorf("요청 바디 파싱 실패: %v", err)
+		logger.Sugar().Errorf("요청 바디 파싱 실패: %v", err)
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
 	}
 
@@ -50,7 +50,7 @@ func (h *AdminHandler) BroadcastNotificationHandler(ctx *fiber.Ctx) error {
 
 	users, err := h.userRepo.GetAllUsersWithFCM()
 	if err != nil {
-		logger.Init().Sugar().Errorf("사용자 목록 조회 실패: %v", err)
+		logger.Sugar().Errorf("사용자 목록 조회 실패: %v", err)
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(domain.ErrInternal))
 	}
 
@@ -76,14 +76,14 @@ func (h *AdminHandler) BroadcastNotificationHandler(ctx *fiber.Ctx) error {
 			"admin_broadcast",
 		)
 		if err != nil {
-			logger.Init().Sugar().Errorf("사용자 %s에게 알림 발송 실패: %v", user.ID.String(), err)
+			logger.Sugar().Errorf("사용자 %s에게 알림 발송 실패: %v", user.ID.String(), err)
 			failedCount++
 			continue
 		}
 		sentCount++
 	}
 
-	logger.Init().Sugar().Infof("관리자 일괄 알림 발송 완료 - 전체: %d, 성공: %d, 실패: %d",
+	logger.Sugar().Infof("관리자 일괄 알림 발송 완료 - 전체: %d, 성공: %d, 실패: %d",
 		len(users), sentCount, failedCount)
 
 	return ctx.Status(fiber.StatusOK).JSON(BroadcastNotificationResponse{
@@ -98,7 +98,7 @@ func (h *AdminHandler) BroadcastNotificationHandler(ctx *fiber.Ctx) error {
 func (h *AdminHandler) CreateAPIKeyHandler(ctx *fiber.Ctx) error {
 	req := new(domain.CreateAPIKeyRequest)
 	if err := ctx.BodyParser(req); err != nil {
-		logger.Init().Sugar().Errorf("요청 바디 파싱 실패: %v", err)
+		logger.Sugar().Errorf("요청 바디 파싱 실패: %v", err)
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
 	}
 
@@ -108,11 +108,11 @@ func (h *AdminHandler) CreateAPIKeyHandler(ctx *fiber.Ctx) error {
 
 	result, err := h.apiKeyUseCase.CreateAPIKey(req)
 	if err != nil {
-		logger.Init().Sugar().Errorf("API Key 생성 실패: %v", err)
+		logger.Sugar().Errorf("API Key 생성 실패: %v", err)
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(domain.ErrInternal))
 	}
 
-	logger.Init().Sugar().Infof("새 Admin API Key가 생성되었습니다. Name: %s, Prefix: %s", result.Name, result.KeyPrefix)
+	logger.Sugar().Infof("새 Admin API Key가 생성되었습니다. Name: %s, Prefix: %s", result.Name, result.KeyPrefix)
 
 	return ctx.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"success": true,
@@ -124,7 +124,7 @@ func (h *AdminHandler) CreateAPIKeyHandler(ctx *fiber.Ctx) error {
 func (h *AdminHandler) GetAPIKeysHandler(ctx *fiber.Ctx) error {
 	keys, err := h.apiKeyUseCase.GetAllAPIKeys()
 	if err != nil {
-		logger.Init().Sugar().Errorf("API Key 목록 조회 실패: %v", err)
+		logger.Sugar().Errorf("API Key 목록 조회 실패: %v", err)
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(domain.ErrInternal))
 	}
 
@@ -151,7 +151,7 @@ func (h *AdminHandler) DeactivateAPIKeyHandler(ctx *fiber.Ctx) error {
 		if err == domain.ErrNotFound {
 			return ctx.Status(fiber.StatusNotFound).JSON(ErrorHandler(domain.ErrNotFound))
 		}
-		logger.Init().Sugar().Errorf("API Key 비활성화 실패: %v", err)
+		logger.Sugar().Errorf("API Key 비활성화 실패: %v", err)
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(domain.ErrInternal))
 	}
 
@@ -177,7 +177,7 @@ func (h *AdminHandler) DeleteAPIKeyHandler(ctx *fiber.Ctx) error {
 		if err == domain.ErrNotFound {
 			return ctx.Status(fiber.StatusNotFound).JSON(ErrorHandler(domain.ErrNotFound))
 		}
-		logger.Init().Sugar().Errorf("API Key 삭제 실패: %v", err)
+		logger.Sugar().Errorf("API Key 삭제 실패: %v", err)
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(domain.ErrInternal))
 	}
 

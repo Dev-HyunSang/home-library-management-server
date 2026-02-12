@@ -33,15 +33,15 @@ func (c *Consumer) Start(ctx context.Context) {
 	for {
 		m, err := c.reader.ReadMessage(ctx)
 		if err != nil {
-			logger.Init().Sugar().Errorf("Failed to read message from kafka: %v", err)
+			logger.Sugar().Errorf("Failed to read message from kafka: %v", err)
 			break
 		}
 
-		logger.Init().Sugar().Infof("Message received from kafka: %s", string(m.Value))
+		logger.Sugar().Infof("Message received from kafka: %s", string(m.Value))
 
 		var event NotificationEvent
 		if err := json.Unmarshal(m.Value, &event); err != nil {
-			logger.Init().Sugar().Errorf("Failed to unmarshal message: %v", err)
+			logger.Sugar().Errorf("Failed to unmarshal message: %v", err)
 			continue
 		}
 
@@ -56,7 +56,7 @@ func (c *Consumer) Start(ctx context.Context) {
 		if c.fcmService != nil {
 			// token := "DEVICE_TOKEN_HERE"
 			// err := c.fcmService.SendPush(ctx, token, event.Title, event.Body)
-			logger.Init().Sugar().Infof("Processing notification for user %s: %s - %s", event.UserID, event.Title, event.Body)
+			logger.Sugar().Infof("Processing notification for user %s: %s - %s", event.UserID, event.Title, event.Body)
 		}
 	}
 }

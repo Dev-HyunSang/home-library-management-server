@@ -55,11 +55,11 @@ func (p *Producer) ProduceNotification(ctx context.Context, userID, title, body,
 
 	err = p.writer.WriteMessages(ctx, msg)
 	if err != nil {
-		logger.Init().Sugar().Errorf("Failed to write message to kafka: %v", err)
+		logger.Sugar().Errorf("Failed to write message to kafka: %v", err)
 		return err
 	}
 
-	logger.Init().Sugar().Infof("Message produced to kafka: %s", string(payload))
+	logger.Sugar().Infof("Message produced to kafka: %s", string(payload))
 	return nil
 }
 

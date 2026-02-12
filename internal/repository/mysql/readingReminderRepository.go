@@ -1,4 +1,4 @@
-package memory
+package mysql
 
 import (
 	"context"
@@ -35,11 +35,11 @@ func (r *ReadingReminderRepository) Create(userID uuid.UUID, reminder *domain.Re
 		Save(context.Background())
 
 	if err != nil {
-		logger.Init().Sugar().Errorf("알림 생성 중 오류 발생: %v", err)
+		logger.Sugar().Errorf("알림 생성 중 오류 발생: %v", err)
 		return nil, fmt.Errorf("알림 생성 중 오류가 발생했습니다: %w", err)
 	}
 
-	logger.Init().Sugar().Infof("새로운 알림을 생성했습니다. 알림ID: %s, 사용자ID: %s", rr.ID.String(), userID.String())
+	logger.Sugar().Infof("새로운 알림을 생성했습니다. 알림ID: %s, 사용자ID: %s", rr.ID.String(), userID.String())
 
 	return &domain.ReadingReminder{
 		ID:           rr.ID,
@@ -125,7 +125,7 @@ func (r *ReadingReminderRepository) Update(reminder *domain.ReadingReminder) err
 		return fmt.Errorf("알림 수정 중 오류가 발생했습니다: %w", err)
 	}
 
-	logger.Init().Sugar().Infof("알림을 수정했습니다. 알림ID: %s", reminder.ID.String())
+	logger.Sugar().Infof("알림을 수정했습니다. 알림ID: %s", reminder.ID.String())
 	return nil
 }
 
@@ -138,7 +138,7 @@ func (r *ReadingReminderRepository) Delete(id uuid.UUID) error {
 		return fmt.Errorf("알림 삭제 중 오류가 발생했습니다: %w", err)
 	}
 
-	logger.Init().Sugar().Infof("알림을 삭제했습니다. 알림ID: %s", id.String())
+	logger.Sugar().Infof("알림을 삭제했습니다. 알림ID: %s", id.String())
 	return nil
 }
 

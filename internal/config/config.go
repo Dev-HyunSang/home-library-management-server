@@ -69,7 +69,7 @@ func LoadConfig(env string) (*Config, error) {
 	envFile := fmt.Sprintf(".env.%s", env)
 	if _, err := os.Stat(envFile); err == nil {
 		if err := godotenv.Load(envFile); err != nil {
-			logger.Init().Sugar().Warnf("Warning: failed to load env file %s: %v", envFile, err)
+			logger.Sugar().Warnf("Warning: failed to load env file %s: %v", envFile, err)
 		}
 	}
 
@@ -185,7 +185,7 @@ type FCMConfig struct {
 func GetEnv(key string) string {
 	err := godotenv.Load(".env")
 	if err != nil {
-		logger.Init().Sugar().Warnf("Warning: failed to load .env file: %v", err)
+		logger.Sugar().Warnf("Warning: failed to load .env file: %v", err)
 	}
 
 	return os.Getenv(key)
