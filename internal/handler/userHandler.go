@@ -94,8 +94,15 @@ func (h *UserHandler) UserSignUpHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidNickname))
 	}
 
+	// 닉네임 중복 확인
+	_, err := h.userUseCase.GetByNickname(user.NickName)
+	if err == nil {
+		logger.Sugar().Warn("이미 존재하는 닉네임으로 가입 시도")
+		return ctx.Status(fiber.StatusConflict).JSON(ErrorHandler(domain.ErrAlreadyExists))
+	}
+
 	// 이메일 중복 확인
-	_, err := h.userUseCase.GetByEmail(user.Email)
+	_, err = h.userUseCase.GetByEmail(user.Email)
 	if err == nil {
 		logger.Sugar().Warn("이미 존재하는 이메일로 가입 시도")
 		return ctx.Status(fiber.StatusConflict).JSON(ErrorHandler(domain.ErrAlreadyExists))
