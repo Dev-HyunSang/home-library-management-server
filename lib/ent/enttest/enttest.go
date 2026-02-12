@@ -5,12 +5,12 @@ package enttest
 import (
 	"context"
 
-	"github.com/dev-hyunsang/home-library-backend/lib/ent"
+	"github.com/dev-hyunsang/my-own-library-backend/lib/ent"
 	// required by schema hooks.
-	_ "github.com/dev-hyunsang/home-library-backend/lib/ent/runtime"
+	_ "github.com/dev-hyunsang/my-own-library-backend/lib/ent/runtime"
 
 	"entgo.io/ent/dialect/sql/schema"
-	"github.com/dev-hyunsang/home-library-backend/lib/ent/migrate"
+	"github.com/dev-hyunsang/my-own-library-backend/lib/ent/migrate"
 )
 
 type (

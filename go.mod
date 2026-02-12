@@ -1,4 +1,4 @@
-module github.com/dev-hyunsang/home-library-backend
+module github.com/dev-hyunsang/my-own-library-backend
 
 go 1.24.2
 

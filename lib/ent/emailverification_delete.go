@@ -8,8 +8,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/dev-hyunsang/home-library-backend/lib/ent/emailverification"
-	"github.com/dev-hyunsang/home-library-backend/lib/ent/predicate"
+	"github.com/dev-hyunsang/my-own-library-backend/lib/ent/emailverification"
+	"github.com/dev-hyunsang/my-own-library-backend/lib/ent/predicate"
 )
 
 // EmailVerificationDelete is the builder for deleting a EmailVerification entity.

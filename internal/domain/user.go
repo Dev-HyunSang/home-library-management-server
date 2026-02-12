@@ -3,7 +3,7 @@ package domain
 import (
 	"time"
 
-	"github.com/dev-hyunsang/home-library-backend/internal/auth"
+	"github.com/dev-hyunsang/my-own-library-backend/internal/auth"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )

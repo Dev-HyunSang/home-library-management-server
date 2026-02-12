@@ -1,6 +1,6 @@
 package request
 
-import "github.com/dev-hyunsang/home-library-backend/internal/domain"
+import "github.com/dev-hyunsang/my-own-library-backend/internal/domain"
 
 // CreateReminderRequest is the request body for creating a reading reminder
 type CreateReminderRequest struct {

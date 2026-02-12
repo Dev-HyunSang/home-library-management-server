@@ -9,20 +9,20 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/dev-hyunsang/home-library-backend/lib/ent/migrate"
+	"github.com/dev-hyunsang/my-own-library-backend/lib/ent/migrate"
 	"github.com/google/uuid"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/dev-hyunsang/home-library-backend/lib/ent/adminapikey"
-	"github.com/dev-hyunsang/home-library-backend/lib/ent/book"
-	"github.com/dev-hyunsang/home-library-backend/lib/ent/bookmark"
-	"github.com/dev-hyunsang/home-library-backend/lib/ent/emailverification"
-	"github.com/dev-hyunsang/home-library-backend/lib/ent/readingreminder"
-	"github.com/dev-hyunsang/home-library-backend/lib/ent/review"
-	"github.com/dev-hyunsang/home-library-backend/lib/ent/user"
+	"github.com/dev-hyunsang/my-own-library-backend/lib/ent/adminapikey"
+	"github.com/dev-hyunsang/my-own-library-backend/lib/ent/book"
+	"github.com/dev-hyunsang/my-own-library-backend/lib/ent/bookmark"
+	"github.com/dev-hyunsang/my-own-library-backend/lib/ent/emailverification"
+	"github.com/dev-hyunsang/my-own-library-backend/lib/ent/readingreminder"
+	"github.com/dev-hyunsang/my-own-library-backend/lib/ent/review"
+	"github.com/dev-hyunsang/my-own-library-backend/lib/ent/user"
 )
 
 // Client is the client that holds all ent builders.

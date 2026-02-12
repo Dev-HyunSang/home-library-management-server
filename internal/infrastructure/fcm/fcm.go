@@ -5,7 +5,7 @@ import (
 
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/messaging"
-	"github.com/dev-hyunsang/home-library-backend/logger"
+	"github.com/dev-hyunsang/my-own-library-backend/logger"
 	"google.golang.org/api/option"
 )
 

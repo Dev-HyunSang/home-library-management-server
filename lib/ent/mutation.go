@@ -11,14 +11,14 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/dev-hyunsang/home-library-backend/lib/ent/adminapikey"
-	"github.com/dev-hyunsang/home-library-backend/lib/ent/book"
-	"github.com/dev-hyunsang/home-library-backend/lib/ent/bookmark"
-	"github.com/dev-hyunsang/home-library-backend/lib/ent/emailverification"
-	"github.com/dev-hyunsang/home-library-backend/lib/ent/predicate"
-	"github.com/dev-hyunsang/home-library-backend/lib/ent/readingreminder"
-	"github.com/dev-hyunsang/home-library-backend/lib/ent/review"
-	"github.com/dev-hyunsang/home-library-backend/lib/ent/user"
+	"github.com/dev-hyunsang/my-own-library-backend/lib/ent/adminapikey"
+	"github.com/dev-hyunsang/my-own-library-backend/lib/ent/book"
+	"github.com/dev-hyunsang/my-own-library-backend/lib/ent/bookmark"
+	"github.com/dev-hyunsang/my-own-library-backend/lib/ent/emailverification"
+	"github.com/dev-hyunsang/my-own-library-backend/lib/ent/predicate"
+	"github.com/dev-hyunsang/my-own-library-backend/lib/ent/readingreminder"
+	"github.com/dev-hyunsang/my-own-library-backend/lib/ent/review"
+	"github.com/dev-hyunsang/my-own-library-backend/lib/ent/user"
 	"github.com/google/uuid"
 )
 

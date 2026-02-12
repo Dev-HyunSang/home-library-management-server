@@ -9,7 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/dev-hyunsang/home-library-backend/lib/ent/emailverification"
+	"github.com/dev-hyunsang/my-own-library-backend/lib/ent/emailverification"
 	"github.com/google/uuid"
 )
 

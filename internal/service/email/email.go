@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/smtp"
 
-	"github.com/dev-hyunsang/home-library-backend/internal/config"
-	"github.com/dev-hyunsang/home-library-backend/logger"
+	"github.com/dev-hyunsang/my-own-library-backend/internal/config"
+	"github.com/dev-hyunsang/my-own-library-backend/logger"
 )
 
 // Service handles email sending operations

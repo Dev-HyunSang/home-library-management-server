@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/dev-hyunsang/home-library-backend/logger"
+	"github.com/dev-hyunsang/my-own-library-backend/logger"
 	"github.com/joho/godotenv"
 )
 

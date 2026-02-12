@@ -8,10 +8,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dev-hyunsang/home-library-backend/internal/config"
-	"github.com/dev-hyunsang/home-library-backend/internal/domain"
-	"github.com/dev-hyunsang/home-library-backend/lib/ent"
-	"github.com/dev-hyunsang/home-library-backend/logger"
+	"github.com/dev-hyunsang/my-own-library-backend/internal/config"
+	"github.com/dev-hyunsang/my-own-library-backend/internal/domain"
+	"github.com/dev-hyunsang/my-own-library-backend/lib/ent"
+	"github.com/dev-hyunsang/my-own-library-backend/logger"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
