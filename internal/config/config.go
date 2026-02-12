@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"strconv"
-	"strings"
 
 	"github.com/dev-hyunsang/home-library-backend/logger"
 	"github.com/joho/godotenv"
@@ -15,7 +14,6 @@ type Config struct {
 	DB    DBConfig    `json:"db"`
 	Auth  AuthConfig  `json:"auth"`
 	JWT   JWTConfig   `json:"jwt"`
-	Kafka KafkaConfig `json:"kafka"`
 	FCM   FCMConfig   `json:"fcm"`
 	Admin AdminConfig `json:"admin"`
 }
@@ -134,11 +132,6 @@ func LoadConfig(env string) (*Config, error) {
 			Issuer:   getEnvOrDefault("JWT_ISSUER", "home-library"),
 			Audience: getEnvOrDefault("JWT_AUDIENCE", "home-library-api"),
 		},
-		Kafka: KafkaConfig{
-			Brokers: strings.Split(getEnvOrDefault("KAFKA_BROKERS", "localhost:29092"), ","),
-			Topic:   getEnvOrDefault("KAFKA_TOPIC", "notifications"),
-			GroupID: getEnvOrDefault("KAFKA_GROUP_ID", "home-library-notification-group"),
-		},
 		FCM: FCMConfig{
 			ServiceAccountPath: getEnvOrDefault("FCM_SERVICE_ACCOUNT_PATH", "serviceAccountKey.json"),
 		},
@@ -170,12 +163,6 @@ func validateConfig(config *Config) error {
 		return fmt.Errorf("JWT_SECRET is required")
 	}
 	return nil
-}
-
-type KafkaConfig struct {
-	Brokers []string `json:"brokers"`
-	Topic   string   `json:"topic"`
-	GroupID string   `json:"group_id"`
 }
 
 type FCMConfig struct {

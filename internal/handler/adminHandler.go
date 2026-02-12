@@ -1,10 +1,7 @@
 package handler
 
 import (
-	"context"
-
 	"github.com/dev-hyunsang/home-library-backend/internal/domain"
-	"github.com/dev-hyunsang/home-library-backend/internal/infrastructure/kafka"
 	"github.com/dev-hyunsang/home-library-backend/logger"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -12,14 +9,12 @@ import (
 
 type AdminHandler struct {
 	userRepo      domain.UserRepository
-	kafkaProducer *kafka.Producer
 	apiKeyUseCase domain.AdminAPIKeyUseCase
 }
 
-func NewAdminHandler(userRepo domain.UserRepository, kafkaProducer *kafka.Producer, apiKeyUseCase domain.AdminAPIKeyUseCase) *AdminHandler {
+func NewAdminHandler(userRepo domain.UserRepository, apiKeyUseCase domain.AdminAPIKeyUseCase) *AdminHandler {
 	return &AdminHandler{
 		userRepo:      userRepo,
-		kafkaProducer: kafkaProducer,
 		apiKeyUseCase: apiKeyUseCase,
 	}
 }
@@ -38,60 +33,9 @@ type BroadcastNotificationResponse struct {
 }
 
 func (h *AdminHandler) BroadcastNotificationHandler(ctx *fiber.Ctx) error {
-	req := new(BroadcastNotificationRequest)
-	if err := ctx.BodyParser(req); err != nil {
-		logger.Sugar().Errorf("요청 바디 파싱 실패: %v", err)
-		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
-	}
-
-	if req.Title == "" || req.Message == "" {
-		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
-	}
-
-	users, err := h.userRepo.GetAllUsersWithFCM()
-	if err != nil {
-		logger.Sugar().Errorf("사용자 목록 조회 실패: %v", err)
-		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(domain.ErrInternal))
-	}
-
-	if len(users) == 0 {
-		return ctx.Status(fiber.StatusOK).JSON(BroadcastNotificationResponse{
-			Success:     true,
-			Message:     "FCM 토큰이 등록된 사용자가 없습니다.",
-			TotalUsers:  0,
-			SentCount:   0,
-			FailedCount: 0,
-		})
-	}
-
-	sentCount := 0
-	failedCount := 0
-
-	for _, user := range users {
-		err := h.kafkaProducer.ProduceNotification(
-			context.Background(),
-			user.ID.String(),
-			req.Title,
-			req.Message,
-			"admin_broadcast",
-		)
-		if err != nil {
-			logger.Sugar().Errorf("사용자 %s에게 알림 발송 실패: %v", user.ID.String(), err)
-			failedCount++
-			continue
-		}
-		sentCount++
-	}
-
-	logger.Sugar().Infof("관리자 일괄 알림 발송 완료 - 전체: %d, 성공: %d, 실패: %d",
-		len(users), sentCount, failedCount)
-
-	return ctx.Status(fiber.StatusOK).JSON(BroadcastNotificationResponse{
-		Success:     true,
-		Message:     "알림 발송이 완료되었습니다.",
-		TotalUsers:  len(users),
-		SentCount:   sentCount,
-		FailedCount: failedCount,
+	return ctx.Status(fiber.StatusNotImplemented).JSON(fiber.Map{
+		"success": false,
+		"message": "일괄 알림 기능은 현재 지원되지 않습니다.",
 	})
 }
 

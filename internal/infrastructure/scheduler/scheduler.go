@@ -5,27 +5,27 @@ import (
 	"time"
 
 	"github.com/dev-hyunsang/home-library-backend/internal/domain"
-	"github.com/dev-hyunsang/home-library-backend/internal/infrastructure/kafka"
+	"github.com/dev-hyunsang/home-library-backend/internal/infrastructure/fcm"
 	"github.com/dev-hyunsang/home-library-backend/logger"
 	"github.com/go-co-op/gocron/v2"
 )
 
 type ReminderScheduler struct {
-	scheduler     gocron.Scheduler
-	reminderRepo  domain.ReadingReminderRepository
-	kafkaProducer *kafka.Producer
+	scheduler    gocron.Scheduler
+	reminderRepo domain.ReadingReminderRepository
+	fcmService   *fcm.FCMService
 }
 
-func NewReminderScheduler(reminderRepo domain.ReadingReminderRepository, kafkaProducer *kafka.Producer) (*ReminderScheduler, error) {
+func NewReminderScheduler(reminderRepo domain.ReadingReminderRepository, fcmService *fcm.FCMService) (*ReminderScheduler, error) {
 	s, err := gocron.NewScheduler()
 	if err != nil {
 		return nil, err
 	}
 
 	return &ReminderScheduler{
-		scheduler:     s,
-		reminderRepo:  reminderRepo,
-		kafkaProducer: kafkaProducer,
+		scheduler:    s,
+		reminderRepo: reminderRepo,
+		fcmService:   fcmService,
 	}, nil
 }
 
@@ -89,15 +89,14 @@ func (rs *ReminderScheduler) processRemindersForTimezone(ctx context.Context, lo
 			continue
 		}
 
-		err := rs.kafkaProducer.ProduceNotification(
-			ctx,
-			rw.UserID.String(),
-			"Reading Reminder",
-			rw.Reminder.Message,
-			"reading_reminder",
-		)
+		if rs.fcmService == nil {
+			logger.Sugar().Warn("FCM service is not initialized, skipping reminder")
+			continue
+		}
+
+		err := rs.fcmService.SendPush(ctx, rw.FCMToken, "Reading Reminder", rw.Reminder.Message)
 		if err != nil {
-			logger.Sugar().Errorf("Failed to produce notification for user %s: %v", rw.UserID.String(), err)
+			logger.Sugar().Errorf("Failed to send push notification for user %s: %v", rw.UserID.String(), err)
 			continue
 		}
 

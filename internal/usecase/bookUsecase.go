@@ -7,13 +7,11 @@ import (
 
 type BookUseCase struct {
 	bookRepo domain.BookRepository
-	notifier domain.NotificationProducer
 }
 
-func NewBookUseCase(repo domain.BookRepository, notifier domain.NotificationProducer) *BookUseCase {
+func NewBookUseCase(repo domain.BookRepository) *BookUseCase {
 	return &BookUseCase{
 		bookRepo: repo,
-		notifier: notifier,
 	}
 }
 

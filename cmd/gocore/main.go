@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"log"
 	"time"
@@ -11,7 +10,6 @@ import (
 	"github.com/dev-hyunsang/home-library-backend/internal/db"
 	"github.com/dev-hyunsang/home-library-backend/internal/handler"
 	"github.com/dev-hyunsang/home-library-backend/internal/infrastructure/fcm"
-	"github.com/dev-hyunsang/home-library-backend/internal/infrastructure/kafka"
 	"github.com/dev-hyunsang/home-library-backend/internal/infrastructure/scheduler"
 	"github.com/dev-hyunsang/home-library-backend/internal/middleware"
 	repository "github.com/dev-hyunsang/home-library-backend/internal/repository/mysql"
@@ -82,27 +80,13 @@ func main() {
 
 	// _ := csrf.New(csrfConfig)
 
-	// Kafka & FCM 초기화
-	// 1. FCM Service
+	// FCM 초기화
 	fcmService, err := fcm.NewFCMService(cfg.FCM.ServiceAccountPath)
 	if err != nil {
 		logger.Sugar().Warnf("FCM 서비스를 초기화하는데 실패했습니다(알림 기능 비활성화): %v", err)
 	} else {
 		logger.Sugar().Info("FCM 서비스가 성공적으로 초기화되었습니다.")
 	}
-
-	// 2. Kafka Producer
-	kafkaProducer := kafka.NewProducer(cfg.Kafka.Brokers, cfg.Kafka.Topic)
-	defer kafkaProducer.Close()
-	logger.Sugar().Info("Kafka Producer가 초기화되었습니다.")
-
-	// 3. Kafka Consumer (백그라운드 실행)
-	kafkaConsumer := kafka.NewConsumer(cfg.Kafka.Brokers, cfg.Kafka.Topic, cfg.Kafka.GroupID, fcmService)
-	go func() {
-		logger.Sugar().Info("Kafka Consumer가 시작되었습니다.")
-		kafkaConsumer.Start(context.Background())
-	}()
-	defer kafkaConsumer.Close()
 
 	// 사용자 관련 의존성 주입
 	authRepo := redisRepository.NewAuthRepository(cfg.JWT.Secret, 1*time.Hour, 24*time.Hour, redisClient, cfg.JWT.Issuer, cfg.JWT.Audience)
@@ -115,7 +99,7 @@ func main() {
 
 	// 책 관련 의존성 주입
 	bookRepo := repository.NewBookRepository(dbConn)
-	bookUseCase := usecase.NewBookUseCase(bookRepo, kafkaProducer)
+	bookUseCase := usecase.NewBookUseCase(bookRepo)
 	bookHandler := handler.NewBookHandler(bookUseCase, authUseCase)
 
 	// 리뷰 관련 의존성 주입
@@ -133,10 +117,10 @@ func main() {
 	apiKeyUseCase := usecase.NewAdminAPIKeyUseCase(apiKeyRepo)
 
 	// 관리자 핸들러 초기화
-	adminHandler := handler.NewAdminHandler(userRepo, kafkaProducer, apiKeyUseCase)
+	adminHandler := handler.NewAdminHandler(userRepo, apiKeyUseCase)
 
 	// 리마인더 스케줄러 시작
-	reminderScheduler, err := scheduler.NewReminderScheduler(reminderRepo, kafkaProducer)
+	reminderScheduler, err := scheduler.NewReminderScheduler(reminderRepo, fcmService)
 	if err != nil {
 		logger.Sugar().Warnf("리마인더 스케줄러 초기화 실패: %v", err)
 	} else {
