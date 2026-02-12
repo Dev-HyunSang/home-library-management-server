@@ -172,7 +172,7 @@ func main() {
 	books.Get("/:name", middleware.JWTAuthMiddleware(authUseCase), bookHandler.GetBooksByUserNameHandler)
 	books.Post("/search", middleware.JWTAuthMiddleware(authUseCase), bookHandler.SearchBookIsbnHandler)
 
-	// 새로운 ISBN 기반 리뷰 API
+	// ISBN 기반 리뷰 API
 	reviewsAPI := api.Group("/reviews")
 	reviewsAPI.Get("/me", middleware.JWTAuthMiddleware(authUseCase), reviewHandler.GetMyReviewsHandler)
 	reviewsAPI.Post("/:isbn", middleware.JWTAuthMiddleware(authUseCase), reviewHandler.CreateReviewHandler)
@@ -180,14 +180,6 @@ func main() {
 	reviewsAPI.Get("/:isbn/:id", reviewHandler.GetReviewByIDHandler)
 	reviewsAPI.Put("/:isbn/:id", middleware.JWTAuthMiddleware(authUseCase), reviewHandler.UpdateReviewHandler)
 	reviewsAPI.Delete("/:isbn/:id", middleware.JWTAuthMiddleware(authUseCase), reviewHandler.DeleteReviewHandler)
-
-	// 기존 리뷰 API (하위 호환성)
-	reviews := books.Group("/reviews")
-	reviews.Post("/", middleware.JWTAuthMiddleware(authUseCase), bookHandler.SaveBookReviewHandler)
-	reviews.Get("/get", middleware.JWTAuthMiddleware(authUseCase), bookHandler.GetBookReviewByUserIDHandler)
-	reviews.Get("/isbn/:isbn", bookHandler.GetPublicReviewsByISBNHandler)
-	reviews.Get("/:book_id", bookHandler.GetPublicReviewsByBookIDHandler)
-	reviews.Delete("/:id", middleware.JWTAuthMiddleware(authUseCase), bookHandler.DeleteBookReviewHandler)
 
 	bookmarks := books.Group("/bookmarks")
 	bookmarks.Post("/add/:id", middleware.JWTAuthMiddleware(authUseCase), bookHandler.AddBookmarkHandler)

@@ -18,20 +18,6 @@ type Book struct {
 	UpdatedAt    time.Time `json:"updated_at"`
 }
 
-type ReviewBook struct {
-	ID         uuid.UUID `json:"id"`
-	BookID     uuid.UUID `json:"book_id"`
-	OwnerID    uuid.UUID `json:"owner_id"`
-	BookISBN   string    `json:"book_isbn"`
-	BookTitle  string    `json:"book_title"`
-	BookAuthor string    `json:"book_author"`
-	Content    string    `json:"content"`
-	Rating     int       `json:"rating"`
-	IsPublic   bool      `json:"is_public"`
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
-}
-
 type Bookmark struct {
 	ID        uuid.UUID `json:"id"`
 	OwnerID   uuid.UUID `json:"owner_id"`
@@ -48,14 +34,6 @@ type BookRepository interface {
 	Edit(id uuid.UUID, book *Book) error
 	DeleteByID(userID, id uuid.UUID) error
 	GetBooksByUserName(name string) ([]*Book, error)
-	// Book Review
-	CreateReview(review *ReviewBook) error
-	GetReviewsByUserID(userID uuid.UUID) ([]*ReviewBook, error)
-	GetReviewByID(id uuid.UUID) (*ReviewBook, error)
-	UpdateReviewByID(review *ReviewBook) (ReviewBook, error)
-	DeleteReviewByID(userID, reviewID uuid.UUID) error
-	GetPublicReviewsByBookID(bookID uuid.UUID) ([]*ReviewBook, error)
-	GetPublicReviewsByISBN(isbn string) ([]*ReviewBook, error)
 	// Book Bookmark
 	AddBookmarkByBookID(userID, bookID uuid.UUID) (*Bookmark, error)
 	GetBookmarksByUserID(userID uuid.UUID) ([]*Bookmark, error)
@@ -71,14 +49,6 @@ type BookUseCase interface {
 	Edit(id uuid.UUID, book *Book) error
 	DeleteByID(userID, id uuid.UUID) error
 	GetBooksByUserName(name string) ([]*Book, error)
-	// Book Review
-	CreateReview(review *ReviewBook) error
-	GetReviewsByUserID(userID uuid.UUID) ([]*ReviewBook, error)
-	GetReviewByID(id uuid.UUID) (*ReviewBook, error)
-	UpdateReviewByID(review *ReviewBook) (ReviewBook, error)
-	DeleteReviewByID(userID, reviewID uuid.UUID) error
-	GetPublicReviewsByBookID(bookID uuid.UUID) ([]*ReviewBook, error)
-	GetPublicReviewsByISBN(isbn string) ([]*ReviewBook, error)
 	// Book Bookmark
 	AddBookmarkByBookID(userID, bookID uuid.UUID) (*Bookmark, error)
 	GetBookmarksByUserID(userID uuid.UUID) ([]*Bookmark, error)
