@@ -101,6 +101,13 @@ func (h *UserHandler) UserSignUpHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusConflict).JSON(ErrorHandler(domain.ErrAlreadyExists))
 	}
 
+	// 이메일 인증 여부 확인
+	verification, err := h.emailVerificationRepo.GetLatestByEmail(user.Email)
+	if err != nil || !verification.IsVerified {
+		logger.Sugar().Warnf("이메일 인증이 완료되지 않은 상태로 가입 시도: %s", user.Email)
+		return ctx.Status(fiber.StatusForbidden).JSON(ErrorHandler(domain.ErrEmailNotVerified))
+	}
+
 	if !user.IsTermsAgreed {
 		logger.Sugar().Warn("회원가입시 이용약관에 동의하지 않았습니다.")
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrTermsNotAgreed))
@@ -123,6 +130,9 @@ func (h *UserHandler) UserSignUpHandler(ctx *fiber.Ctx) error {
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
 	}
+
+	// 회원가입 완료 후 인증 정보 삭제
+	_ = h.emailVerificationRepo.DeleteByEmail(user.Email)
 
 	logger.Sugar().Infof("새로운 유저가 데이터베이스 상에 정상적으로 생성되었습니다 / 사용자ID: %s", result.ID.String())
 
@@ -303,6 +313,13 @@ func (h *UserHandler) UserVerifyByEmailHandler(ctx *fiber.Ctx) error {
 			"is_success": false,
 			"message":    "동일한 메일 주소가 이미 사용중입니다.",
 		})
+	}
+
+	// 이미 발송된 인증 코드가 있는지 확인 (5분 내 중복 발송 방지)
+	existingVerification, err := h.emailVerificationRepo.GetLatestByEmail(email)
+	if err == nil && !existingVerification.IsVerified && time.Now().Before(existingVerification.ExpiresAt) {
+		logger.Sugar().Warnf("5분 내 인증 메일 중복 발송 시도: %s", email)
+		return ctx.Status(fiber.StatusTooManyRequests).JSON(ErrorHandler(domain.ErrVerificationCodeSent))
 	}
 
 	// 6자리 인증번호 생성
