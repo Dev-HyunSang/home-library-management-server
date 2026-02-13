@@ -53,7 +53,7 @@ func (*EmailVerification) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the EmailVerification fields.
-func (ev *EmailVerification) assignValues(columns []string, values []any) error {
+func (_m *EmailVerification) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -63,40 +63,40 @@ func (ev *EmailVerification) assignValues(columns []string, values []any) error 
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				ev.ID = *value
+				_m.ID = *value
 			}
 		case emailverification.FieldEmail:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field email", values[i])
 			} else if value.Valid {
-				ev.Email = value.String
+				_m.Email = value.String
 			}
 		case emailverification.FieldCode:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field code", values[i])
 			} else if value.Valid {
-				ev.Code = value.String
+				_m.Code = value.String
 			}
 		case emailverification.FieldExpiresAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field expires_at", values[i])
 			} else if value.Valid {
-				ev.ExpiresAt = value.Time
+				_m.ExpiresAt = value.Time
 			}
 		case emailverification.FieldIsVerified:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field is_verified", values[i])
 			} else if value.Valid {
-				ev.IsVerified = value.Bool
+				_m.IsVerified = value.Bool
 			}
 		case emailverification.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				ev.CreatedAt = value.Time
+				_m.CreatedAt = value.Time
 			}
 		default:
-			ev.selectValues.Set(columns[i], values[i])
+			_m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -104,47 +104,47 @@ func (ev *EmailVerification) assignValues(columns []string, values []any) error 
 
 // Value returns the ent.Value that was dynamically selected and assigned to the EmailVerification.
 // This includes values selected through modifiers, order, etc.
-func (ev *EmailVerification) Value(name string) (ent.Value, error) {
-	return ev.selectValues.Get(name)
+func (_m *EmailVerification) Value(name string) (ent.Value, error) {
+	return _m.selectValues.Get(name)
 }
 
 // Update returns a builder for updating this EmailVerification.
 // Note that you need to call EmailVerification.Unwrap() before calling this method if this EmailVerification
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (ev *EmailVerification) Update() *EmailVerificationUpdateOne {
-	return NewEmailVerificationClient(ev.config).UpdateOne(ev)
+func (_m *EmailVerification) Update() *EmailVerificationUpdateOne {
+	return NewEmailVerificationClient(_m.config).UpdateOne(_m)
 }
 
 // Unwrap unwraps the EmailVerification entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (ev *EmailVerification) Unwrap() *EmailVerification {
-	_tx, ok := ev.config.driver.(*txDriver)
+func (_m *EmailVerification) Unwrap() *EmailVerification {
+	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: EmailVerification is not a transactional entity")
 	}
-	ev.config.driver = _tx.drv
-	return ev
+	_m.config.driver = _tx.drv
+	return _m
 }
 
 // String implements the fmt.Stringer.
-func (ev *EmailVerification) String() string {
+func (_m *EmailVerification) String() string {
 	var builder strings.Builder
 	builder.WriteString("EmailVerification(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", ev.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("email=")
-	builder.WriteString(ev.Email)
+	builder.WriteString(_m.Email)
 	builder.WriteString(", ")
 	builder.WriteString("code=")
-	builder.WriteString(ev.Code)
+	builder.WriteString(_m.Code)
 	builder.WriteString(", ")
 	builder.WriteString("expires_at=")
-	builder.WriteString(ev.ExpiresAt.Format(time.ANSIC))
+	builder.WriteString(_m.ExpiresAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("is_verified=")
-	builder.WriteString(fmt.Sprintf("%v", ev.IsVerified))
+	builder.WriteString(fmt.Sprintf("%v", _m.IsVerified))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
-	builder.WriteString(ev.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

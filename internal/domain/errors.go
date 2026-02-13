@@ -26,4 +26,5 @@ var (
 	ErrEmailNotVerified      = errors.New("이메일 인증이 완료되지 않았습니다.")
 	ErrVerificationCodeSent  = errors.New("이미 인증 메일이 발송되었습니다. 5분 후 다시 시도해주세요.")
 	ErrPasswordMismatch      = errors.New("새 비밀번호가 일치하지 않습니다.")
+	ErrPrivacyNotAgreed      = errors.New("개인정보 수집 이용에 동의해야 합니다.")
 )

@@ -26,136 +26,136 @@ type ReviewUpdate struct {
 }
 
 // Where appends a list predicates to the ReviewUpdate builder.
-func (ru *ReviewUpdate) Where(ps ...predicate.Review) *ReviewUpdate {
-	ru.mutation.Where(ps...)
-	return ru
+func (_u *ReviewUpdate) Where(ps ...predicate.Review) *ReviewUpdate {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // SetBookIsbn sets the "book_isbn" field.
-func (ru *ReviewUpdate) SetBookIsbn(s string) *ReviewUpdate {
-	ru.mutation.SetBookIsbn(s)
-	return ru
+func (_u *ReviewUpdate) SetBookIsbn(v string) *ReviewUpdate {
+	_u.mutation.SetBookIsbn(v)
+	return _u
 }
 
 // SetNillableBookIsbn sets the "book_isbn" field if the given value is not nil.
-func (ru *ReviewUpdate) SetNillableBookIsbn(s *string) *ReviewUpdate {
-	if s != nil {
-		ru.SetBookIsbn(*s)
+func (_u *ReviewUpdate) SetNillableBookIsbn(v *string) *ReviewUpdate {
+	if v != nil {
+		_u.SetBookIsbn(*v)
 	}
-	return ru
+	return _u
 }
 
 // SetContent sets the "content" field.
-func (ru *ReviewUpdate) SetContent(s string) *ReviewUpdate {
-	ru.mutation.SetContent(s)
-	return ru
+func (_u *ReviewUpdate) SetContent(v string) *ReviewUpdate {
+	_u.mutation.SetContent(v)
+	return _u
 }
 
 // SetNillableContent sets the "content" field if the given value is not nil.
-func (ru *ReviewUpdate) SetNillableContent(s *string) *ReviewUpdate {
-	if s != nil {
-		ru.SetContent(*s)
+func (_u *ReviewUpdate) SetNillableContent(v *string) *ReviewUpdate {
+	if v != nil {
+		_u.SetContent(*v)
 	}
-	return ru
+	return _u
 }
 
 // SetRating sets the "rating" field.
-func (ru *ReviewUpdate) SetRating(i int) *ReviewUpdate {
-	ru.mutation.ResetRating()
-	ru.mutation.SetRating(i)
-	return ru
+func (_u *ReviewUpdate) SetRating(v int) *ReviewUpdate {
+	_u.mutation.ResetRating()
+	_u.mutation.SetRating(v)
+	return _u
 }
 
 // SetNillableRating sets the "rating" field if the given value is not nil.
-func (ru *ReviewUpdate) SetNillableRating(i *int) *ReviewUpdate {
-	if i != nil {
-		ru.SetRating(*i)
+func (_u *ReviewUpdate) SetNillableRating(v *int) *ReviewUpdate {
+	if v != nil {
+		_u.SetRating(*v)
 	}
-	return ru
+	return _u
 }
 
-// AddRating adds i to the "rating" field.
-func (ru *ReviewUpdate) AddRating(i int) *ReviewUpdate {
-	ru.mutation.AddRating(i)
-	return ru
+// AddRating adds value to the "rating" field.
+func (_u *ReviewUpdate) AddRating(v int) *ReviewUpdate {
+	_u.mutation.AddRating(v)
+	return _u
 }
 
 // SetIsPublic sets the "is_public" field.
-func (ru *ReviewUpdate) SetIsPublic(b bool) *ReviewUpdate {
-	ru.mutation.SetIsPublic(b)
-	return ru
+func (_u *ReviewUpdate) SetIsPublic(v bool) *ReviewUpdate {
+	_u.mutation.SetIsPublic(v)
+	return _u
 }
 
 // SetNillableIsPublic sets the "is_public" field if the given value is not nil.
-func (ru *ReviewUpdate) SetNillableIsPublic(b *bool) *ReviewUpdate {
-	if b != nil {
-		ru.SetIsPublic(*b)
+func (_u *ReviewUpdate) SetNillableIsPublic(v *bool) *ReviewUpdate {
+	if v != nil {
+		_u.SetIsPublic(*v)
 	}
-	return ru
+	return _u
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (ru *ReviewUpdate) SetUpdatedAt(t time.Time) *ReviewUpdate {
-	ru.mutation.SetUpdatedAt(t)
-	return ru
+func (_u *ReviewUpdate) SetUpdatedAt(v time.Time) *ReviewUpdate {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
 }
 
 // SetOwnerID sets the "owner" edge to the User entity by ID.
-func (ru *ReviewUpdate) SetOwnerID(id uuid.UUID) *ReviewUpdate {
-	ru.mutation.SetOwnerID(id)
-	return ru
+func (_u *ReviewUpdate) SetOwnerID(id uuid.UUID) *ReviewUpdate {
+	_u.mutation.SetOwnerID(id)
+	return _u
 }
 
 // SetOwner sets the "owner" edge to the User entity.
-func (ru *ReviewUpdate) SetOwner(u *User) *ReviewUpdate {
-	return ru.SetOwnerID(u.ID)
+func (_u *ReviewUpdate) SetOwner(v *User) *ReviewUpdate {
+	return _u.SetOwnerID(v.ID)
 }
 
 // SetBookID sets the "book" edge to the Book entity by ID.
-func (ru *ReviewUpdate) SetBookID(id uuid.UUID) *ReviewUpdate {
-	ru.mutation.SetBookID(id)
-	return ru
+func (_u *ReviewUpdate) SetBookID(id uuid.UUID) *ReviewUpdate {
+	_u.mutation.SetBookID(id)
+	return _u
 }
 
 // SetNillableBookID sets the "book" edge to the Book entity by ID if the given value is not nil.
-func (ru *ReviewUpdate) SetNillableBookID(id *uuid.UUID) *ReviewUpdate {
+func (_u *ReviewUpdate) SetNillableBookID(id *uuid.UUID) *ReviewUpdate {
 	if id != nil {
-		ru = ru.SetBookID(*id)
+		_u = _u.SetBookID(*id)
 	}
-	return ru
+	return _u
 }
 
 // SetBook sets the "book" edge to the Book entity.
-func (ru *ReviewUpdate) SetBook(b *Book) *ReviewUpdate {
-	return ru.SetBookID(b.ID)
+func (_u *ReviewUpdate) SetBook(v *Book) *ReviewUpdate {
+	return _u.SetBookID(v.ID)
 }
 
 // Mutation returns the ReviewMutation object of the builder.
-func (ru *ReviewUpdate) Mutation() *ReviewMutation {
-	return ru.mutation
+func (_u *ReviewUpdate) Mutation() *ReviewMutation {
+	return _u.mutation
 }
 
 // ClearOwner clears the "owner" edge to the User entity.
-func (ru *ReviewUpdate) ClearOwner() *ReviewUpdate {
-	ru.mutation.ClearOwner()
-	return ru
+func (_u *ReviewUpdate) ClearOwner() *ReviewUpdate {
+	_u.mutation.ClearOwner()
+	return _u
 }
 
 // ClearBook clears the "book" edge to the Book entity.
-func (ru *ReviewUpdate) ClearBook() *ReviewUpdate {
-	ru.mutation.ClearBook()
-	return ru
+func (_u *ReviewUpdate) ClearBook() *ReviewUpdate {
+	_u.mutation.ClearBook()
+	return _u
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (ru *ReviewUpdate) Save(ctx context.Context) (int, error) {
-	ru.defaults()
-	return withHooks(ctx, ru.sqlSave, ru.mutation, ru.hooks)
+func (_u *ReviewUpdate) Save(ctx context.Context) (int, error) {
+	_u.defaults()
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (ru *ReviewUpdate) SaveX(ctx context.Context) int {
-	affected, err := ru.Save(ctx)
+func (_u *ReviewUpdate) SaveX(ctx context.Context) int {
+	affected, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -163,80 +163,80 @@ func (ru *ReviewUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (ru *ReviewUpdate) Exec(ctx context.Context) error {
-	_, err := ru.Save(ctx)
+func (_u *ReviewUpdate) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ru *ReviewUpdate) ExecX(ctx context.Context) {
-	if err := ru.Exec(ctx); err != nil {
+func (_u *ReviewUpdate) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (ru *ReviewUpdate) defaults() {
-	if _, ok := ru.mutation.UpdatedAt(); !ok {
+func (_u *ReviewUpdate) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
 		v := review.UpdateDefaultUpdatedAt()
-		ru.mutation.SetUpdatedAt(v)
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (ru *ReviewUpdate) check() error {
-	if v, ok := ru.mutation.BookIsbn(); ok {
+func (_u *ReviewUpdate) check() error {
+	if v, ok := _u.mutation.BookIsbn(); ok {
 		if err := review.BookIsbnValidator(v); err != nil {
 			return &ValidationError{Name: "book_isbn", err: fmt.Errorf(`ent: validator failed for field "Review.book_isbn": %w`, err)}
 		}
 	}
-	if v, ok := ru.mutation.Content(); ok {
+	if v, ok := _u.mutation.Content(); ok {
 		if err := review.ContentValidator(v); err != nil {
 			return &ValidationError{Name: "content", err: fmt.Errorf(`ent: validator failed for field "Review.content": %w`, err)}
 		}
 	}
-	if v, ok := ru.mutation.Rating(); ok {
+	if v, ok := _u.mutation.Rating(); ok {
 		if err := review.RatingValidator(v); err != nil {
 			return &ValidationError{Name: "rating", err: fmt.Errorf(`ent: validator failed for field "Review.rating": %w`, err)}
 		}
 	}
-	if ru.mutation.OwnerCleared() && len(ru.mutation.OwnerIDs()) > 0 {
+	if _u.mutation.OwnerCleared() && len(_u.mutation.OwnerIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Review.owner"`)
 	}
 	return nil
 }
 
-func (ru *ReviewUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := ru.check(); err != nil {
-		return n, err
+func (_u *ReviewUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(review.Table, review.Columns, sqlgraph.NewFieldSpec(review.FieldID, field.TypeUUID))
-	if ps := ru.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := ru.mutation.BookIsbn(); ok {
+	if value, ok := _u.mutation.BookIsbn(); ok {
 		_spec.SetField(review.FieldBookIsbn, field.TypeString, value)
 	}
-	if value, ok := ru.mutation.Content(); ok {
+	if value, ok := _u.mutation.Content(); ok {
 		_spec.SetField(review.FieldContent, field.TypeString, value)
 	}
-	if value, ok := ru.mutation.Rating(); ok {
+	if value, ok := _u.mutation.Rating(); ok {
 		_spec.SetField(review.FieldRating, field.TypeInt, value)
 	}
-	if value, ok := ru.mutation.AddedRating(); ok {
+	if value, ok := _u.mutation.AddedRating(); ok {
 		_spec.AddField(review.FieldRating, field.TypeInt, value)
 	}
-	if value, ok := ru.mutation.IsPublic(); ok {
+	if value, ok := _u.mutation.IsPublic(); ok {
 		_spec.SetField(review.FieldIsPublic, field.TypeBool, value)
 	}
-	if value, ok := ru.mutation.UpdatedAt(); ok {
+	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(review.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if ru.mutation.OwnerCleared() {
+	if _u.mutation.OwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -249,7 +249,7 @@ func (ru *ReviewUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ru.mutation.OwnerIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.OwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -265,7 +265,7 @@ func (ru *ReviewUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ru.mutation.BookCleared() {
+	if _u.mutation.BookCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -278,7 +278,7 @@ func (ru *ReviewUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ru.mutation.BookIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.BookIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -294,7 +294,7 @@ func (ru *ReviewUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, ru.driver, _spec); err != nil {
+	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{review.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -302,8 +302,8 @@ func (ru *ReviewUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
-	ru.mutation.done = true
-	return n, nil
+	_u.mutation.done = true
+	return _node, nil
 }
 
 // ReviewUpdateOne is the builder for updating a single Review entity.
@@ -315,143 +315,143 @@ type ReviewUpdateOne struct {
 }
 
 // SetBookIsbn sets the "book_isbn" field.
-func (ruo *ReviewUpdateOne) SetBookIsbn(s string) *ReviewUpdateOne {
-	ruo.mutation.SetBookIsbn(s)
-	return ruo
+func (_u *ReviewUpdateOne) SetBookIsbn(v string) *ReviewUpdateOne {
+	_u.mutation.SetBookIsbn(v)
+	return _u
 }
 
 // SetNillableBookIsbn sets the "book_isbn" field if the given value is not nil.
-func (ruo *ReviewUpdateOne) SetNillableBookIsbn(s *string) *ReviewUpdateOne {
-	if s != nil {
-		ruo.SetBookIsbn(*s)
+func (_u *ReviewUpdateOne) SetNillableBookIsbn(v *string) *ReviewUpdateOne {
+	if v != nil {
+		_u.SetBookIsbn(*v)
 	}
-	return ruo
+	return _u
 }
 
 // SetContent sets the "content" field.
-func (ruo *ReviewUpdateOne) SetContent(s string) *ReviewUpdateOne {
-	ruo.mutation.SetContent(s)
-	return ruo
+func (_u *ReviewUpdateOne) SetContent(v string) *ReviewUpdateOne {
+	_u.mutation.SetContent(v)
+	return _u
 }
 
 // SetNillableContent sets the "content" field if the given value is not nil.
-func (ruo *ReviewUpdateOne) SetNillableContent(s *string) *ReviewUpdateOne {
-	if s != nil {
-		ruo.SetContent(*s)
+func (_u *ReviewUpdateOne) SetNillableContent(v *string) *ReviewUpdateOne {
+	if v != nil {
+		_u.SetContent(*v)
 	}
-	return ruo
+	return _u
 }
 
 // SetRating sets the "rating" field.
-func (ruo *ReviewUpdateOne) SetRating(i int) *ReviewUpdateOne {
-	ruo.mutation.ResetRating()
-	ruo.mutation.SetRating(i)
-	return ruo
+func (_u *ReviewUpdateOne) SetRating(v int) *ReviewUpdateOne {
+	_u.mutation.ResetRating()
+	_u.mutation.SetRating(v)
+	return _u
 }
 
 // SetNillableRating sets the "rating" field if the given value is not nil.
-func (ruo *ReviewUpdateOne) SetNillableRating(i *int) *ReviewUpdateOne {
-	if i != nil {
-		ruo.SetRating(*i)
+func (_u *ReviewUpdateOne) SetNillableRating(v *int) *ReviewUpdateOne {
+	if v != nil {
+		_u.SetRating(*v)
 	}
-	return ruo
+	return _u
 }
 
-// AddRating adds i to the "rating" field.
-func (ruo *ReviewUpdateOne) AddRating(i int) *ReviewUpdateOne {
-	ruo.mutation.AddRating(i)
-	return ruo
+// AddRating adds value to the "rating" field.
+func (_u *ReviewUpdateOne) AddRating(v int) *ReviewUpdateOne {
+	_u.mutation.AddRating(v)
+	return _u
 }
 
 // SetIsPublic sets the "is_public" field.
-func (ruo *ReviewUpdateOne) SetIsPublic(b bool) *ReviewUpdateOne {
-	ruo.mutation.SetIsPublic(b)
-	return ruo
+func (_u *ReviewUpdateOne) SetIsPublic(v bool) *ReviewUpdateOne {
+	_u.mutation.SetIsPublic(v)
+	return _u
 }
 
 // SetNillableIsPublic sets the "is_public" field if the given value is not nil.
-func (ruo *ReviewUpdateOne) SetNillableIsPublic(b *bool) *ReviewUpdateOne {
-	if b != nil {
-		ruo.SetIsPublic(*b)
+func (_u *ReviewUpdateOne) SetNillableIsPublic(v *bool) *ReviewUpdateOne {
+	if v != nil {
+		_u.SetIsPublic(*v)
 	}
-	return ruo
+	return _u
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (ruo *ReviewUpdateOne) SetUpdatedAt(t time.Time) *ReviewUpdateOne {
-	ruo.mutation.SetUpdatedAt(t)
-	return ruo
+func (_u *ReviewUpdateOne) SetUpdatedAt(v time.Time) *ReviewUpdateOne {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
 }
 
 // SetOwnerID sets the "owner" edge to the User entity by ID.
-func (ruo *ReviewUpdateOne) SetOwnerID(id uuid.UUID) *ReviewUpdateOne {
-	ruo.mutation.SetOwnerID(id)
-	return ruo
+func (_u *ReviewUpdateOne) SetOwnerID(id uuid.UUID) *ReviewUpdateOne {
+	_u.mutation.SetOwnerID(id)
+	return _u
 }
 
 // SetOwner sets the "owner" edge to the User entity.
-func (ruo *ReviewUpdateOne) SetOwner(u *User) *ReviewUpdateOne {
-	return ruo.SetOwnerID(u.ID)
+func (_u *ReviewUpdateOne) SetOwner(v *User) *ReviewUpdateOne {
+	return _u.SetOwnerID(v.ID)
 }
 
 // SetBookID sets the "book" edge to the Book entity by ID.
-func (ruo *ReviewUpdateOne) SetBookID(id uuid.UUID) *ReviewUpdateOne {
-	ruo.mutation.SetBookID(id)
-	return ruo
+func (_u *ReviewUpdateOne) SetBookID(id uuid.UUID) *ReviewUpdateOne {
+	_u.mutation.SetBookID(id)
+	return _u
 }
 
 // SetNillableBookID sets the "book" edge to the Book entity by ID if the given value is not nil.
-func (ruo *ReviewUpdateOne) SetNillableBookID(id *uuid.UUID) *ReviewUpdateOne {
+func (_u *ReviewUpdateOne) SetNillableBookID(id *uuid.UUID) *ReviewUpdateOne {
 	if id != nil {
-		ruo = ruo.SetBookID(*id)
+		_u = _u.SetBookID(*id)
 	}
-	return ruo
+	return _u
 }
 
 // SetBook sets the "book" edge to the Book entity.
-func (ruo *ReviewUpdateOne) SetBook(b *Book) *ReviewUpdateOne {
-	return ruo.SetBookID(b.ID)
+func (_u *ReviewUpdateOne) SetBook(v *Book) *ReviewUpdateOne {
+	return _u.SetBookID(v.ID)
 }
 
 // Mutation returns the ReviewMutation object of the builder.
-func (ruo *ReviewUpdateOne) Mutation() *ReviewMutation {
-	return ruo.mutation
+func (_u *ReviewUpdateOne) Mutation() *ReviewMutation {
+	return _u.mutation
 }
 
 // ClearOwner clears the "owner" edge to the User entity.
-func (ruo *ReviewUpdateOne) ClearOwner() *ReviewUpdateOne {
-	ruo.mutation.ClearOwner()
-	return ruo
+func (_u *ReviewUpdateOne) ClearOwner() *ReviewUpdateOne {
+	_u.mutation.ClearOwner()
+	return _u
 }
 
 // ClearBook clears the "book" edge to the Book entity.
-func (ruo *ReviewUpdateOne) ClearBook() *ReviewUpdateOne {
-	ruo.mutation.ClearBook()
-	return ruo
+func (_u *ReviewUpdateOne) ClearBook() *ReviewUpdateOne {
+	_u.mutation.ClearBook()
+	return _u
 }
 
 // Where appends a list predicates to the ReviewUpdate builder.
-func (ruo *ReviewUpdateOne) Where(ps ...predicate.Review) *ReviewUpdateOne {
-	ruo.mutation.Where(ps...)
-	return ruo
+func (_u *ReviewUpdateOne) Where(ps ...predicate.Review) *ReviewUpdateOne {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (ruo *ReviewUpdateOne) Select(field string, fields ...string) *ReviewUpdateOne {
-	ruo.fields = append([]string{field}, fields...)
-	return ruo
+func (_u *ReviewUpdateOne) Select(field string, fields ...string) *ReviewUpdateOne {
+	_u.fields = append([]string{field}, fields...)
+	return _u
 }
 
 // Save executes the query and returns the updated Review entity.
-func (ruo *ReviewUpdateOne) Save(ctx context.Context) (*Review, error) {
-	ruo.defaults()
-	return withHooks(ctx, ruo.sqlSave, ruo.mutation, ruo.hooks)
+func (_u *ReviewUpdateOne) Save(ctx context.Context) (*Review, error) {
+	_u.defaults()
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (ruo *ReviewUpdateOne) SaveX(ctx context.Context) *Review {
-	node, err := ruo.Save(ctx)
+func (_u *ReviewUpdateOne) SaveX(ctx context.Context) *Review {
+	node, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -459,60 +459,60 @@ func (ruo *ReviewUpdateOne) SaveX(ctx context.Context) *Review {
 }
 
 // Exec executes the query on the entity.
-func (ruo *ReviewUpdateOne) Exec(ctx context.Context) error {
-	_, err := ruo.Save(ctx)
+func (_u *ReviewUpdateOne) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ruo *ReviewUpdateOne) ExecX(ctx context.Context) {
-	if err := ruo.Exec(ctx); err != nil {
+func (_u *ReviewUpdateOne) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (ruo *ReviewUpdateOne) defaults() {
-	if _, ok := ruo.mutation.UpdatedAt(); !ok {
+func (_u *ReviewUpdateOne) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
 		v := review.UpdateDefaultUpdatedAt()
-		ruo.mutation.SetUpdatedAt(v)
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (ruo *ReviewUpdateOne) check() error {
-	if v, ok := ruo.mutation.BookIsbn(); ok {
+func (_u *ReviewUpdateOne) check() error {
+	if v, ok := _u.mutation.BookIsbn(); ok {
 		if err := review.BookIsbnValidator(v); err != nil {
 			return &ValidationError{Name: "book_isbn", err: fmt.Errorf(`ent: validator failed for field "Review.book_isbn": %w`, err)}
 		}
 	}
-	if v, ok := ruo.mutation.Content(); ok {
+	if v, ok := _u.mutation.Content(); ok {
 		if err := review.ContentValidator(v); err != nil {
 			return &ValidationError{Name: "content", err: fmt.Errorf(`ent: validator failed for field "Review.content": %w`, err)}
 		}
 	}
-	if v, ok := ruo.mutation.Rating(); ok {
+	if v, ok := _u.mutation.Rating(); ok {
 		if err := review.RatingValidator(v); err != nil {
 			return &ValidationError{Name: "rating", err: fmt.Errorf(`ent: validator failed for field "Review.rating": %w`, err)}
 		}
 	}
-	if ruo.mutation.OwnerCleared() && len(ruo.mutation.OwnerIDs()) > 0 {
+	if _u.mutation.OwnerCleared() && len(_u.mutation.OwnerIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Review.owner"`)
 	}
 	return nil
 }
 
-func (ruo *ReviewUpdateOne) sqlSave(ctx context.Context) (_node *Review, err error) {
-	if err := ruo.check(); err != nil {
+func (_u *ReviewUpdateOne) sqlSave(ctx context.Context) (_node *Review, err error) {
+	if err := _u.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(review.Table, review.Columns, sqlgraph.NewFieldSpec(review.FieldID, field.TypeUUID))
-	id, ok := ruo.mutation.ID()
+	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Review.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := ruo.fields; len(fields) > 0 {
+	if fields := _u.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, review.FieldID)
 		for _, f := range fields {
@@ -524,32 +524,32 @@ func (ruo *ReviewUpdateOne) sqlSave(ctx context.Context) (_node *Review, err err
 			}
 		}
 	}
-	if ps := ruo.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := ruo.mutation.BookIsbn(); ok {
+	if value, ok := _u.mutation.BookIsbn(); ok {
 		_spec.SetField(review.FieldBookIsbn, field.TypeString, value)
 	}
-	if value, ok := ruo.mutation.Content(); ok {
+	if value, ok := _u.mutation.Content(); ok {
 		_spec.SetField(review.FieldContent, field.TypeString, value)
 	}
-	if value, ok := ruo.mutation.Rating(); ok {
+	if value, ok := _u.mutation.Rating(); ok {
 		_spec.SetField(review.FieldRating, field.TypeInt, value)
 	}
-	if value, ok := ruo.mutation.AddedRating(); ok {
+	if value, ok := _u.mutation.AddedRating(); ok {
 		_spec.AddField(review.FieldRating, field.TypeInt, value)
 	}
-	if value, ok := ruo.mutation.IsPublic(); ok {
+	if value, ok := _u.mutation.IsPublic(); ok {
 		_spec.SetField(review.FieldIsPublic, field.TypeBool, value)
 	}
-	if value, ok := ruo.mutation.UpdatedAt(); ok {
+	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(review.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if ruo.mutation.OwnerCleared() {
+	if _u.mutation.OwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -562,7 +562,7 @@ func (ruo *ReviewUpdateOne) sqlSave(ctx context.Context) (_node *Review, err err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ruo.mutation.OwnerIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.OwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -578,7 +578,7 @@ func (ruo *ReviewUpdateOne) sqlSave(ctx context.Context) (_node *Review, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ruo.mutation.BookCleared() {
+	if _u.mutation.BookCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -591,7 +591,7 @@ func (ruo *ReviewUpdateOne) sqlSave(ctx context.Context) (_node *Review, err err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ruo.mutation.BookIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.BookIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -607,10 +607,10 @@ func (ruo *ReviewUpdateOne) sqlSave(ctx context.Context) (_node *Review, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_node = &Review{config: ruo.config}
+	_node = &Review{config: _u.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, ruo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{review.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -618,6 +618,6 @@ func (ruo *ReviewUpdateOne) sqlSave(ctx context.Context) (_node *Review, err err
 		}
 		return nil, err
 	}
-	ruo.mutation.done = true
+	_u.mutation.done = true
 	return _node, nil
 }

@@ -22,113 +22,113 @@ type AdminAPIKeyCreate struct {
 }
 
 // SetName sets the "name" field.
-func (aakc *AdminAPIKeyCreate) SetName(s string) *AdminAPIKeyCreate {
-	aakc.mutation.SetName(s)
-	return aakc
+func (_c *AdminAPIKeyCreate) SetName(v string) *AdminAPIKeyCreate {
+	_c.mutation.SetName(v)
+	return _c
 }
 
 // SetKeyHash sets the "key_hash" field.
-func (aakc *AdminAPIKeyCreate) SetKeyHash(s string) *AdminAPIKeyCreate {
-	aakc.mutation.SetKeyHash(s)
-	return aakc
+func (_c *AdminAPIKeyCreate) SetKeyHash(v string) *AdminAPIKeyCreate {
+	_c.mutation.SetKeyHash(v)
+	return _c
 }
 
 // SetKeyPrefix sets the "key_prefix" field.
-func (aakc *AdminAPIKeyCreate) SetKeyPrefix(s string) *AdminAPIKeyCreate {
-	aakc.mutation.SetKeyPrefix(s)
-	return aakc
+func (_c *AdminAPIKeyCreate) SetKeyPrefix(v string) *AdminAPIKeyCreate {
+	_c.mutation.SetKeyPrefix(v)
+	return _c
 }
 
 // SetIsActive sets the "is_active" field.
-func (aakc *AdminAPIKeyCreate) SetIsActive(b bool) *AdminAPIKeyCreate {
-	aakc.mutation.SetIsActive(b)
-	return aakc
+func (_c *AdminAPIKeyCreate) SetIsActive(v bool) *AdminAPIKeyCreate {
+	_c.mutation.SetIsActive(v)
+	return _c
 }
 
 // SetNillableIsActive sets the "is_active" field if the given value is not nil.
-func (aakc *AdminAPIKeyCreate) SetNillableIsActive(b *bool) *AdminAPIKeyCreate {
-	if b != nil {
-		aakc.SetIsActive(*b)
+func (_c *AdminAPIKeyCreate) SetNillableIsActive(v *bool) *AdminAPIKeyCreate {
+	if v != nil {
+		_c.SetIsActive(*v)
 	}
-	return aakc
+	return _c
 }
 
 // SetLastUsedAt sets the "last_used_at" field.
-func (aakc *AdminAPIKeyCreate) SetLastUsedAt(t time.Time) *AdminAPIKeyCreate {
-	aakc.mutation.SetLastUsedAt(t)
-	return aakc
+func (_c *AdminAPIKeyCreate) SetLastUsedAt(v time.Time) *AdminAPIKeyCreate {
+	_c.mutation.SetLastUsedAt(v)
+	return _c
 }
 
 // SetNillableLastUsedAt sets the "last_used_at" field if the given value is not nil.
-func (aakc *AdminAPIKeyCreate) SetNillableLastUsedAt(t *time.Time) *AdminAPIKeyCreate {
-	if t != nil {
-		aakc.SetLastUsedAt(*t)
+func (_c *AdminAPIKeyCreate) SetNillableLastUsedAt(v *time.Time) *AdminAPIKeyCreate {
+	if v != nil {
+		_c.SetLastUsedAt(*v)
 	}
-	return aakc
+	return _c
 }
 
 // SetExpiresAt sets the "expires_at" field.
-func (aakc *AdminAPIKeyCreate) SetExpiresAt(t time.Time) *AdminAPIKeyCreate {
-	aakc.mutation.SetExpiresAt(t)
-	return aakc
+func (_c *AdminAPIKeyCreate) SetExpiresAt(v time.Time) *AdminAPIKeyCreate {
+	_c.mutation.SetExpiresAt(v)
+	return _c
 }
 
 // SetNillableExpiresAt sets the "expires_at" field if the given value is not nil.
-func (aakc *AdminAPIKeyCreate) SetNillableExpiresAt(t *time.Time) *AdminAPIKeyCreate {
-	if t != nil {
-		aakc.SetExpiresAt(*t)
+func (_c *AdminAPIKeyCreate) SetNillableExpiresAt(v *time.Time) *AdminAPIKeyCreate {
+	if v != nil {
+		_c.SetExpiresAt(*v)
 	}
-	return aakc
+	return _c
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (aakc *AdminAPIKeyCreate) SetCreatedAt(t time.Time) *AdminAPIKeyCreate {
-	aakc.mutation.SetCreatedAt(t)
-	return aakc
+func (_c *AdminAPIKeyCreate) SetCreatedAt(v time.Time) *AdminAPIKeyCreate {
+	_c.mutation.SetCreatedAt(v)
+	return _c
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (aakc *AdminAPIKeyCreate) SetNillableCreatedAt(t *time.Time) *AdminAPIKeyCreate {
-	if t != nil {
-		aakc.SetCreatedAt(*t)
+func (_c *AdminAPIKeyCreate) SetNillableCreatedAt(v *time.Time) *AdminAPIKeyCreate {
+	if v != nil {
+		_c.SetCreatedAt(*v)
 	}
-	return aakc
+	return _c
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (aakc *AdminAPIKeyCreate) SetUpdatedAt(t time.Time) *AdminAPIKeyCreate {
-	aakc.mutation.SetUpdatedAt(t)
-	return aakc
+func (_c *AdminAPIKeyCreate) SetUpdatedAt(v time.Time) *AdminAPIKeyCreate {
+	_c.mutation.SetUpdatedAt(v)
+	return _c
 }
 
 // SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (aakc *AdminAPIKeyCreate) SetNillableUpdatedAt(t *time.Time) *AdminAPIKeyCreate {
-	if t != nil {
-		aakc.SetUpdatedAt(*t)
+func (_c *AdminAPIKeyCreate) SetNillableUpdatedAt(v *time.Time) *AdminAPIKeyCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
 	}
-	return aakc
+	return _c
 }
 
 // SetID sets the "id" field.
-func (aakc *AdminAPIKeyCreate) SetID(u uuid.UUID) *AdminAPIKeyCreate {
-	aakc.mutation.SetID(u)
-	return aakc
+func (_c *AdminAPIKeyCreate) SetID(v uuid.UUID) *AdminAPIKeyCreate {
+	_c.mutation.SetID(v)
+	return _c
 }
 
 // Mutation returns the AdminAPIKeyMutation object of the builder.
-func (aakc *AdminAPIKeyCreate) Mutation() *AdminAPIKeyMutation {
-	return aakc.mutation
+func (_c *AdminAPIKeyCreate) Mutation() *AdminAPIKeyMutation {
+	return _c.mutation
 }
 
 // Save creates the AdminAPIKey in the database.
-func (aakc *AdminAPIKeyCreate) Save(ctx context.Context) (*AdminAPIKey, error) {
-	aakc.defaults()
-	return withHooks(ctx, aakc.sqlSave, aakc.mutation, aakc.hooks)
+func (_c *AdminAPIKeyCreate) Save(ctx context.Context) (*AdminAPIKey, error) {
+	_c.defaults()
+	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (aakc *AdminAPIKeyCreate) SaveX(ctx context.Context) *AdminAPIKey {
-	v, err := aakc.Save(ctx)
+func (_c *AdminAPIKeyCreate) SaveX(ctx context.Context) *AdminAPIKey {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -136,78 +136,78 @@ func (aakc *AdminAPIKeyCreate) SaveX(ctx context.Context) *AdminAPIKey {
 }
 
 // Exec executes the query.
-func (aakc *AdminAPIKeyCreate) Exec(ctx context.Context) error {
-	_, err := aakc.Save(ctx)
+func (_c *AdminAPIKeyCreate) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (aakc *AdminAPIKeyCreate) ExecX(ctx context.Context) {
-	if err := aakc.Exec(ctx); err != nil {
+func (_c *AdminAPIKeyCreate) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (aakc *AdminAPIKeyCreate) defaults() {
-	if _, ok := aakc.mutation.IsActive(); !ok {
+func (_c *AdminAPIKeyCreate) defaults() {
+	if _, ok := _c.mutation.IsActive(); !ok {
 		v := adminapikey.DefaultIsActive
-		aakc.mutation.SetIsActive(v)
+		_c.mutation.SetIsActive(v)
 	}
-	if _, ok := aakc.mutation.CreatedAt(); !ok {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := adminapikey.DefaultCreatedAt()
-		aakc.mutation.SetCreatedAt(v)
+		_c.mutation.SetCreatedAt(v)
 	}
-	if _, ok := aakc.mutation.UpdatedAt(); !ok {
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		v := adminapikey.DefaultUpdatedAt()
-		aakc.mutation.SetUpdatedAt(v)
+		_c.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (aakc *AdminAPIKeyCreate) check() error {
-	if _, ok := aakc.mutation.Name(); !ok {
+func (_c *AdminAPIKeyCreate) check() error {
+	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "AdminAPIKey.name"`)}
 	}
-	if v, ok := aakc.mutation.Name(); ok {
+	if v, ok := _c.mutation.Name(); ok {
 		if err := adminapikey.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "AdminAPIKey.name": %w`, err)}
 		}
 	}
-	if _, ok := aakc.mutation.KeyHash(); !ok {
+	if _, ok := _c.mutation.KeyHash(); !ok {
 		return &ValidationError{Name: "key_hash", err: errors.New(`ent: missing required field "AdminAPIKey.key_hash"`)}
 	}
-	if v, ok := aakc.mutation.KeyHash(); ok {
+	if v, ok := _c.mutation.KeyHash(); ok {
 		if err := adminapikey.KeyHashValidator(v); err != nil {
 			return &ValidationError{Name: "key_hash", err: fmt.Errorf(`ent: validator failed for field "AdminAPIKey.key_hash": %w`, err)}
 		}
 	}
-	if _, ok := aakc.mutation.KeyPrefix(); !ok {
+	if _, ok := _c.mutation.KeyPrefix(); !ok {
 		return &ValidationError{Name: "key_prefix", err: errors.New(`ent: missing required field "AdminAPIKey.key_prefix"`)}
 	}
-	if v, ok := aakc.mutation.KeyPrefix(); ok {
+	if v, ok := _c.mutation.KeyPrefix(); ok {
 		if err := adminapikey.KeyPrefixValidator(v); err != nil {
 			return &ValidationError{Name: "key_prefix", err: fmt.Errorf(`ent: validator failed for field "AdminAPIKey.key_prefix": %w`, err)}
 		}
 	}
-	if _, ok := aakc.mutation.IsActive(); !ok {
+	if _, ok := _c.mutation.IsActive(); !ok {
 		return &ValidationError{Name: "is_active", err: errors.New(`ent: missing required field "AdminAPIKey.is_active"`)}
 	}
-	if _, ok := aakc.mutation.CreatedAt(); !ok {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "AdminAPIKey.created_at"`)}
 	}
-	if _, ok := aakc.mutation.UpdatedAt(); !ok {
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "AdminAPIKey.updated_at"`)}
 	}
 	return nil
 }
 
-func (aakc *AdminAPIKeyCreate) sqlSave(ctx context.Context) (*AdminAPIKey, error) {
-	if err := aakc.check(); err != nil {
+func (_c *AdminAPIKeyCreate) sqlSave(ctx context.Context) (*AdminAPIKey, error) {
+	if err := _c.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := aakc.createSpec()
-	if err := sqlgraph.CreateNode(ctx, aakc.driver, _spec); err != nil {
+	_node, _spec := _c.createSpec()
+	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -220,49 +220,49 @@ func (aakc *AdminAPIKeyCreate) sqlSave(ctx context.Context) (*AdminAPIKey, error
 			return nil, err
 		}
 	}
-	aakc.mutation.id = &_node.ID
-	aakc.mutation.done = true
+	_c.mutation.id = &_node.ID
+	_c.mutation.done = true
 	return _node, nil
 }
 
-func (aakc *AdminAPIKeyCreate) createSpec() (*AdminAPIKey, *sqlgraph.CreateSpec) {
+func (_c *AdminAPIKeyCreate) createSpec() (*AdminAPIKey, *sqlgraph.CreateSpec) {
 	var (
-		_node = &AdminAPIKey{config: aakc.config}
+		_node = &AdminAPIKey{config: _c.config}
 		_spec = sqlgraph.NewCreateSpec(adminapikey.Table, sqlgraph.NewFieldSpec(adminapikey.FieldID, field.TypeUUID))
 	)
-	if id, ok := aakc.mutation.ID(); ok {
+	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
-	if value, ok := aakc.mutation.Name(); ok {
+	if value, ok := _c.mutation.Name(); ok {
 		_spec.SetField(adminapikey.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
-	if value, ok := aakc.mutation.KeyHash(); ok {
+	if value, ok := _c.mutation.KeyHash(); ok {
 		_spec.SetField(adminapikey.FieldKeyHash, field.TypeString, value)
 		_node.KeyHash = value
 	}
-	if value, ok := aakc.mutation.KeyPrefix(); ok {
+	if value, ok := _c.mutation.KeyPrefix(); ok {
 		_spec.SetField(adminapikey.FieldKeyPrefix, field.TypeString, value)
 		_node.KeyPrefix = value
 	}
-	if value, ok := aakc.mutation.IsActive(); ok {
+	if value, ok := _c.mutation.IsActive(); ok {
 		_spec.SetField(adminapikey.FieldIsActive, field.TypeBool, value)
 		_node.IsActive = value
 	}
-	if value, ok := aakc.mutation.LastUsedAt(); ok {
+	if value, ok := _c.mutation.LastUsedAt(); ok {
 		_spec.SetField(adminapikey.FieldLastUsedAt, field.TypeTime, value)
 		_node.LastUsedAt = &value
 	}
-	if value, ok := aakc.mutation.ExpiresAt(); ok {
+	if value, ok := _c.mutation.ExpiresAt(); ok {
 		_spec.SetField(adminapikey.FieldExpiresAt, field.TypeTime, value)
 		_node.ExpiresAt = &value
 	}
-	if value, ok := aakc.mutation.CreatedAt(); ok {
+	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(adminapikey.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
-	if value, ok := aakc.mutation.UpdatedAt(); ok {
+	if value, ok := _c.mutation.UpdatedAt(); ok {
 		_spec.SetField(adminapikey.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
@@ -277,16 +277,16 @@ type AdminAPIKeyCreateBulk struct {
 }
 
 // Save creates the AdminAPIKey entities in the database.
-func (aakcb *AdminAPIKeyCreateBulk) Save(ctx context.Context) ([]*AdminAPIKey, error) {
-	if aakcb.err != nil {
-		return nil, aakcb.err
+func (_c *AdminAPIKeyCreateBulk) Save(ctx context.Context) ([]*AdminAPIKey, error) {
+	if _c.err != nil {
+		return nil, _c.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(aakcb.builders))
-	nodes := make([]*AdminAPIKey, len(aakcb.builders))
-	mutators := make([]Mutator, len(aakcb.builders))
-	for i := range aakcb.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
+	nodes := make([]*AdminAPIKey, len(_c.builders))
+	mutators := make([]Mutator, len(_c.builders))
+	for i := range _c.builders {
 		func(i int, root context.Context) {
-			builder := aakcb.builders[i]
+			builder := _c.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*AdminAPIKeyMutation)
@@ -300,11 +300,11 @@ func (aakcb *AdminAPIKeyCreateBulk) Save(ctx context.Context) ([]*AdminAPIKey, e
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, aakcb.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, aakcb.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -324,7 +324,7 @@ func (aakcb *AdminAPIKeyCreateBulk) Save(ctx context.Context) ([]*AdminAPIKey, e
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, aakcb.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -332,8 +332,8 @@ func (aakcb *AdminAPIKeyCreateBulk) Save(ctx context.Context) ([]*AdminAPIKey, e
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (aakcb *AdminAPIKeyCreateBulk) SaveX(ctx context.Context) []*AdminAPIKey {
-	v, err := aakcb.Save(ctx)
+func (_c *AdminAPIKeyCreateBulk) SaveX(ctx context.Context) []*AdminAPIKey {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -341,14 +341,14 @@ func (aakcb *AdminAPIKeyCreateBulk) SaveX(ctx context.Context) []*AdminAPIKey {
 }
 
 // Exec executes the query.
-func (aakcb *AdminAPIKeyCreateBulk) Exec(ctx context.Context) error {
-	_, err := aakcb.Save(ctx)
+func (_c *AdminAPIKeyCreateBulk) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (aakcb *AdminAPIKeyCreateBulk) ExecX(ctx context.Context) {
-	if err := aakcb.Exec(ctx); err != nil {
+func (_c *AdminAPIKeyCreateBulk) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

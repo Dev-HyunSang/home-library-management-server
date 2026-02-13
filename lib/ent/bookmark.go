@@ -85,7 +85,7 @@ func (*Bookmark) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Bookmark fields.
-func (b *Bookmark) assignValues(columns []string, values []any) error {
+func (_m *Bookmark) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -95,30 +95,30 @@ func (b *Bookmark) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				b.ID = *value
+				_m.ID = *value
 			}
 		case bookmark.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				b.CreatedAt = value.Time
+				_m.CreatedAt = value.Time
 			}
 		case bookmark.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field book_bookmarks", values[i])
 			} else if value.Valid {
-				b.book_bookmarks = new(uuid.UUID)
-				*b.book_bookmarks = *value.S.(*uuid.UUID)
+				_m.book_bookmarks = new(uuid.UUID)
+				*_m.book_bookmarks = *value.S.(*uuid.UUID)
 			}
 		case bookmark.ForeignKeys[1]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field user_bookmarks", values[i])
 			} else if value.Valid {
-				b.user_bookmarks = new(uuid.UUID)
-				*b.user_bookmarks = *value.S.(*uuid.UUID)
+				_m.user_bookmarks = new(uuid.UUID)
+				*_m.user_bookmarks = *value.S.(*uuid.UUID)
 			}
 		default:
-			b.selectValues.Set(columns[i], values[i])
+			_m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -126,45 +126,45 @@ func (b *Bookmark) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the Bookmark.
 // This includes values selected through modifiers, order, etc.
-func (b *Bookmark) Value(name string) (ent.Value, error) {
-	return b.selectValues.Get(name)
+func (_m *Bookmark) Value(name string) (ent.Value, error) {
+	return _m.selectValues.Get(name)
 }
 
 // QueryOwner queries the "owner" edge of the Bookmark entity.
-func (b *Bookmark) QueryOwner() *UserQuery {
-	return NewBookmarkClient(b.config).QueryOwner(b)
+func (_m *Bookmark) QueryOwner() *UserQuery {
+	return NewBookmarkClient(_m.config).QueryOwner(_m)
 }
 
 // QueryBook queries the "book" edge of the Bookmark entity.
-func (b *Bookmark) QueryBook() *BookQuery {
-	return NewBookmarkClient(b.config).QueryBook(b)
+func (_m *Bookmark) QueryBook() *BookQuery {
+	return NewBookmarkClient(_m.config).QueryBook(_m)
 }
 
 // Update returns a builder for updating this Bookmark.
 // Note that you need to call Bookmark.Unwrap() before calling this method if this Bookmark
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (b *Bookmark) Update() *BookmarkUpdateOne {
-	return NewBookmarkClient(b.config).UpdateOne(b)
+func (_m *Bookmark) Update() *BookmarkUpdateOne {
+	return NewBookmarkClient(_m.config).UpdateOne(_m)
 }
 
 // Unwrap unwraps the Bookmark entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (b *Bookmark) Unwrap() *Bookmark {
-	_tx, ok := b.config.driver.(*txDriver)
+func (_m *Bookmark) Unwrap() *Bookmark {
+	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: Bookmark is not a transactional entity")
 	}
-	b.config.driver = _tx.drv
-	return b
+	_m.config.driver = _tx.drv
+	return _m
 }
 
 // String implements the fmt.Stringer.
-func (b *Bookmark) String() string {
+func (_m *Bookmark) String() string {
 	var builder strings.Builder
 	builder.WriteString("Bookmark(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", b.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("created_at=")
-	builder.WriteString(b.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

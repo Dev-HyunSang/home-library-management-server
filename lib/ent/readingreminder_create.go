@@ -23,112 +23,112 @@ type ReadingReminderCreate struct {
 }
 
 // SetReminderTime sets the "reminder_time" field.
-func (rrc *ReadingReminderCreate) SetReminderTime(s string) *ReadingReminderCreate {
-	rrc.mutation.SetReminderTime(s)
-	return rrc
+func (_c *ReadingReminderCreate) SetReminderTime(v string) *ReadingReminderCreate {
+	_c.mutation.SetReminderTime(v)
+	return _c
 }
 
 // SetDayOfWeek sets the "day_of_week" field.
-func (rrc *ReadingReminderCreate) SetDayOfWeek(row readingreminder.DayOfWeek) *ReadingReminderCreate {
-	rrc.mutation.SetDayOfWeek(row)
-	return rrc
+func (_c *ReadingReminderCreate) SetDayOfWeek(v readingreminder.DayOfWeek) *ReadingReminderCreate {
+	_c.mutation.SetDayOfWeek(v)
+	return _c
 }
 
 // SetNillableDayOfWeek sets the "day_of_week" field if the given value is not nil.
-func (rrc *ReadingReminderCreate) SetNillableDayOfWeek(row *readingreminder.DayOfWeek) *ReadingReminderCreate {
-	if row != nil {
-		rrc.SetDayOfWeek(*row)
+func (_c *ReadingReminderCreate) SetNillableDayOfWeek(v *readingreminder.DayOfWeek) *ReadingReminderCreate {
+	if v != nil {
+		_c.SetDayOfWeek(*v)
 	}
-	return rrc
+	return _c
 }
 
 // SetIsEnabled sets the "is_enabled" field.
-func (rrc *ReadingReminderCreate) SetIsEnabled(b bool) *ReadingReminderCreate {
-	rrc.mutation.SetIsEnabled(b)
-	return rrc
+func (_c *ReadingReminderCreate) SetIsEnabled(v bool) *ReadingReminderCreate {
+	_c.mutation.SetIsEnabled(v)
+	return _c
 }
 
 // SetNillableIsEnabled sets the "is_enabled" field if the given value is not nil.
-func (rrc *ReadingReminderCreate) SetNillableIsEnabled(b *bool) *ReadingReminderCreate {
-	if b != nil {
-		rrc.SetIsEnabled(*b)
+func (_c *ReadingReminderCreate) SetNillableIsEnabled(v *bool) *ReadingReminderCreate {
+	if v != nil {
+		_c.SetIsEnabled(*v)
 	}
-	return rrc
+	return _c
 }
 
 // SetMessage sets the "message" field.
-func (rrc *ReadingReminderCreate) SetMessage(s string) *ReadingReminderCreate {
-	rrc.mutation.SetMessage(s)
-	return rrc
+func (_c *ReadingReminderCreate) SetMessage(v string) *ReadingReminderCreate {
+	_c.mutation.SetMessage(v)
+	return _c
 }
 
 // SetNillableMessage sets the "message" field if the given value is not nil.
-func (rrc *ReadingReminderCreate) SetNillableMessage(s *string) *ReadingReminderCreate {
-	if s != nil {
-		rrc.SetMessage(*s)
+func (_c *ReadingReminderCreate) SetNillableMessage(v *string) *ReadingReminderCreate {
+	if v != nil {
+		_c.SetMessage(*v)
 	}
-	return rrc
+	return _c
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (rrc *ReadingReminderCreate) SetCreatedAt(t time.Time) *ReadingReminderCreate {
-	rrc.mutation.SetCreatedAt(t)
-	return rrc
+func (_c *ReadingReminderCreate) SetCreatedAt(v time.Time) *ReadingReminderCreate {
+	_c.mutation.SetCreatedAt(v)
+	return _c
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (rrc *ReadingReminderCreate) SetNillableCreatedAt(t *time.Time) *ReadingReminderCreate {
-	if t != nil {
-		rrc.SetCreatedAt(*t)
+func (_c *ReadingReminderCreate) SetNillableCreatedAt(v *time.Time) *ReadingReminderCreate {
+	if v != nil {
+		_c.SetCreatedAt(*v)
 	}
-	return rrc
+	return _c
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (rrc *ReadingReminderCreate) SetUpdatedAt(t time.Time) *ReadingReminderCreate {
-	rrc.mutation.SetUpdatedAt(t)
-	return rrc
+func (_c *ReadingReminderCreate) SetUpdatedAt(v time.Time) *ReadingReminderCreate {
+	_c.mutation.SetUpdatedAt(v)
+	return _c
 }
 
 // SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (rrc *ReadingReminderCreate) SetNillableUpdatedAt(t *time.Time) *ReadingReminderCreate {
-	if t != nil {
-		rrc.SetUpdatedAt(*t)
+func (_c *ReadingReminderCreate) SetNillableUpdatedAt(v *time.Time) *ReadingReminderCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
 	}
-	return rrc
+	return _c
 }
 
 // SetID sets the "id" field.
-func (rrc *ReadingReminderCreate) SetID(u uuid.UUID) *ReadingReminderCreate {
-	rrc.mutation.SetID(u)
-	return rrc
+func (_c *ReadingReminderCreate) SetID(v uuid.UUID) *ReadingReminderCreate {
+	_c.mutation.SetID(v)
+	return _c
 }
 
 // SetOwnerID sets the "owner" edge to the User entity by ID.
-func (rrc *ReadingReminderCreate) SetOwnerID(id uuid.UUID) *ReadingReminderCreate {
-	rrc.mutation.SetOwnerID(id)
-	return rrc
+func (_c *ReadingReminderCreate) SetOwnerID(id uuid.UUID) *ReadingReminderCreate {
+	_c.mutation.SetOwnerID(id)
+	return _c
 }
 
 // SetOwner sets the "owner" edge to the User entity.
-func (rrc *ReadingReminderCreate) SetOwner(u *User) *ReadingReminderCreate {
-	return rrc.SetOwnerID(u.ID)
+func (_c *ReadingReminderCreate) SetOwner(v *User) *ReadingReminderCreate {
+	return _c.SetOwnerID(v.ID)
 }
 
 // Mutation returns the ReadingReminderMutation object of the builder.
-func (rrc *ReadingReminderCreate) Mutation() *ReadingReminderMutation {
-	return rrc.mutation
+func (_c *ReadingReminderCreate) Mutation() *ReadingReminderMutation {
+	return _c.mutation
 }
 
 // Save creates the ReadingReminder in the database.
-func (rrc *ReadingReminderCreate) Save(ctx context.Context) (*ReadingReminder, error) {
-	rrc.defaults()
-	return withHooks(ctx, rrc.sqlSave, rrc.mutation, rrc.hooks)
+func (_c *ReadingReminderCreate) Save(ctx context.Context) (*ReadingReminder, error) {
+	_c.defaults()
+	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (rrc *ReadingReminderCreate) SaveX(ctx context.Context) *ReadingReminder {
-	v, err := rrc.Save(ctx)
+func (_c *ReadingReminderCreate) SaveX(ctx context.Context) *ReadingReminder {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -136,84 +136,84 @@ func (rrc *ReadingReminderCreate) SaveX(ctx context.Context) *ReadingReminder {
 }
 
 // Exec executes the query.
-func (rrc *ReadingReminderCreate) Exec(ctx context.Context) error {
-	_, err := rrc.Save(ctx)
+func (_c *ReadingReminderCreate) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (rrc *ReadingReminderCreate) ExecX(ctx context.Context) {
-	if err := rrc.Exec(ctx); err != nil {
+func (_c *ReadingReminderCreate) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (rrc *ReadingReminderCreate) defaults() {
-	if _, ok := rrc.mutation.DayOfWeek(); !ok {
+func (_c *ReadingReminderCreate) defaults() {
+	if _, ok := _c.mutation.DayOfWeek(); !ok {
 		v := readingreminder.DefaultDayOfWeek
-		rrc.mutation.SetDayOfWeek(v)
+		_c.mutation.SetDayOfWeek(v)
 	}
-	if _, ok := rrc.mutation.IsEnabled(); !ok {
+	if _, ok := _c.mutation.IsEnabled(); !ok {
 		v := readingreminder.DefaultIsEnabled
-		rrc.mutation.SetIsEnabled(v)
+		_c.mutation.SetIsEnabled(v)
 	}
-	if _, ok := rrc.mutation.Message(); !ok {
+	if _, ok := _c.mutation.Message(); !ok {
 		v := readingreminder.DefaultMessage
-		rrc.mutation.SetMessage(v)
+		_c.mutation.SetMessage(v)
 	}
-	if _, ok := rrc.mutation.CreatedAt(); !ok {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := readingreminder.DefaultCreatedAt()
-		rrc.mutation.SetCreatedAt(v)
+		_c.mutation.SetCreatedAt(v)
 	}
-	if _, ok := rrc.mutation.UpdatedAt(); !ok {
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		v := readingreminder.DefaultUpdatedAt()
-		rrc.mutation.SetUpdatedAt(v)
+		_c.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (rrc *ReadingReminderCreate) check() error {
-	if _, ok := rrc.mutation.ReminderTime(); !ok {
+func (_c *ReadingReminderCreate) check() error {
+	if _, ok := _c.mutation.ReminderTime(); !ok {
 		return &ValidationError{Name: "reminder_time", err: errors.New(`ent: missing required field "ReadingReminder.reminder_time"`)}
 	}
-	if v, ok := rrc.mutation.ReminderTime(); ok {
+	if v, ok := _c.mutation.ReminderTime(); ok {
 		if err := readingreminder.ReminderTimeValidator(v); err != nil {
 			return &ValidationError{Name: "reminder_time", err: fmt.Errorf(`ent: validator failed for field "ReadingReminder.reminder_time": %w`, err)}
 		}
 	}
-	if _, ok := rrc.mutation.DayOfWeek(); !ok {
+	if _, ok := _c.mutation.DayOfWeek(); !ok {
 		return &ValidationError{Name: "day_of_week", err: errors.New(`ent: missing required field "ReadingReminder.day_of_week"`)}
 	}
-	if v, ok := rrc.mutation.DayOfWeek(); ok {
+	if v, ok := _c.mutation.DayOfWeek(); ok {
 		if err := readingreminder.DayOfWeekValidator(v); err != nil {
 			return &ValidationError{Name: "day_of_week", err: fmt.Errorf(`ent: validator failed for field "ReadingReminder.day_of_week": %w`, err)}
 		}
 	}
-	if _, ok := rrc.mutation.IsEnabled(); !ok {
+	if _, ok := _c.mutation.IsEnabled(); !ok {
 		return &ValidationError{Name: "is_enabled", err: errors.New(`ent: missing required field "ReadingReminder.is_enabled"`)}
 	}
-	if _, ok := rrc.mutation.Message(); !ok {
+	if _, ok := _c.mutation.Message(); !ok {
 		return &ValidationError{Name: "message", err: errors.New(`ent: missing required field "ReadingReminder.message"`)}
 	}
-	if _, ok := rrc.mutation.CreatedAt(); !ok {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "ReadingReminder.created_at"`)}
 	}
-	if _, ok := rrc.mutation.UpdatedAt(); !ok {
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "ReadingReminder.updated_at"`)}
 	}
-	if len(rrc.mutation.OwnerIDs()) == 0 {
+	if len(_c.mutation.OwnerIDs()) == 0 {
 		return &ValidationError{Name: "owner", err: errors.New(`ent: missing required edge "ReadingReminder.owner"`)}
 	}
 	return nil
 }
 
-func (rrc *ReadingReminderCreate) sqlSave(ctx context.Context) (*ReadingReminder, error) {
-	if err := rrc.check(); err != nil {
+func (_c *ReadingReminderCreate) sqlSave(ctx context.Context) (*ReadingReminder, error) {
+	if err := _c.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := rrc.createSpec()
-	if err := sqlgraph.CreateNode(ctx, rrc.driver, _spec); err != nil {
+	_node, _spec := _c.createSpec()
+	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -226,45 +226,45 @@ func (rrc *ReadingReminderCreate) sqlSave(ctx context.Context) (*ReadingReminder
 			return nil, err
 		}
 	}
-	rrc.mutation.id = &_node.ID
-	rrc.mutation.done = true
+	_c.mutation.id = &_node.ID
+	_c.mutation.done = true
 	return _node, nil
 }
 
-func (rrc *ReadingReminderCreate) createSpec() (*ReadingReminder, *sqlgraph.CreateSpec) {
+func (_c *ReadingReminderCreate) createSpec() (*ReadingReminder, *sqlgraph.CreateSpec) {
 	var (
-		_node = &ReadingReminder{config: rrc.config}
+		_node = &ReadingReminder{config: _c.config}
 		_spec = sqlgraph.NewCreateSpec(readingreminder.Table, sqlgraph.NewFieldSpec(readingreminder.FieldID, field.TypeUUID))
 	)
-	if id, ok := rrc.mutation.ID(); ok {
+	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
-	if value, ok := rrc.mutation.ReminderTime(); ok {
+	if value, ok := _c.mutation.ReminderTime(); ok {
 		_spec.SetField(readingreminder.FieldReminderTime, field.TypeString, value)
 		_node.ReminderTime = value
 	}
-	if value, ok := rrc.mutation.DayOfWeek(); ok {
+	if value, ok := _c.mutation.DayOfWeek(); ok {
 		_spec.SetField(readingreminder.FieldDayOfWeek, field.TypeEnum, value)
 		_node.DayOfWeek = value
 	}
-	if value, ok := rrc.mutation.IsEnabled(); ok {
+	if value, ok := _c.mutation.IsEnabled(); ok {
 		_spec.SetField(readingreminder.FieldIsEnabled, field.TypeBool, value)
 		_node.IsEnabled = value
 	}
-	if value, ok := rrc.mutation.Message(); ok {
+	if value, ok := _c.mutation.Message(); ok {
 		_spec.SetField(readingreminder.FieldMessage, field.TypeString, value)
 		_node.Message = value
 	}
-	if value, ok := rrc.mutation.CreatedAt(); ok {
+	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(readingreminder.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
-	if value, ok := rrc.mutation.UpdatedAt(); ok {
+	if value, ok := _c.mutation.UpdatedAt(); ok {
 		_spec.SetField(readingreminder.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if nodes := rrc.mutation.OwnerIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.OwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -292,16 +292,16 @@ type ReadingReminderCreateBulk struct {
 }
 
 // Save creates the ReadingReminder entities in the database.
-func (rrcb *ReadingReminderCreateBulk) Save(ctx context.Context) ([]*ReadingReminder, error) {
-	if rrcb.err != nil {
-		return nil, rrcb.err
+func (_c *ReadingReminderCreateBulk) Save(ctx context.Context) ([]*ReadingReminder, error) {
+	if _c.err != nil {
+		return nil, _c.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(rrcb.builders))
-	nodes := make([]*ReadingReminder, len(rrcb.builders))
-	mutators := make([]Mutator, len(rrcb.builders))
-	for i := range rrcb.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
+	nodes := make([]*ReadingReminder, len(_c.builders))
+	mutators := make([]Mutator, len(_c.builders))
+	for i := range _c.builders {
 		func(i int, root context.Context) {
-			builder := rrcb.builders[i]
+			builder := _c.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*ReadingReminderMutation)
@@ -315,11 +315,11 @@ func (rrcb *ReadingReminderCreateBulk) Save(ctx context.Context) ([]*ReadingRemi
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, rrcb.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, rrcb.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -339,7 +339,7 @@ func (rrcb *ReadingReminderCreateBulk) Save(ctx context.Context) ([]*ReadingRemi
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, rrcb.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -347,8 +347,8 @@ func (rrcb *ReadingReminderCreateBulk) Save(ctx context.Context) ([]*ReadingRemi
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (rrcb *ReadingReminderCreateBulk) SaveX(ctx context.Context) []*ReadingReminder {
-	v, err := rrcb.Save(ctx)
+func (_c *ReadingReminderCreateBulk) SaveX(ctx context.Context) []*ReadingReminder {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -356,14 +356,14 @@ func (rrcb *ReadingReminderCreateBulk) SaveX(ctx context.Context) []*ReadingRemi
 }
 
 // Exec executes the query.
-func (rrcb *ReadingReminderCreateBulk) Exec(ctx context.Context) error {
-	_, err := rrcb.Save(ctx)
+func (_c *ReadingReminderCreateBulk) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (rrcb *ReadingReminderCreateBulk) ExecX(ctx context.Context) {
-	if err := rrcb.Exec(ctx); err != nil {
+func (_c *ReadingReminderCreateBulk) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

@@ -81,6 +81,11 @@ func IsTermsAgreed(v bool) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldIsTermsAgreed, v))
 }
 
+// IsPrivacyAgreed applies equality check predicate on the "is_privacy_agreed" field. It's identical to IsPrivacyAgreedEQ.
+func IsPrivacyAgreed(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldIsPrivacyAgreed, v))
+}
+
 // FcmToken applies equality check predicate on the "fcm_token" field. It's identical to FcmTokenEQ.
 func FcmToken(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldFcmToken, v))
@@ -324,6 +329,16 @@ func IsTermsAgreedEQ(v bool) predicate.User {
 // IsTermsAgreedNEQ applies the NEQ predicate on the "is_terms_agreed" field.
 func IsTermsAgreedNEQ(v bool) predicate.User {
 	return predicate.User(sql.FieldNEQ(FieldIsTermsAgreed, v))
+}
+
+// IsPrivacyAgreedEQ applies the EQ predicate on the "is_privacy_agreed" field.
+func IsPrivacyAgreedEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldIsPrivacyAgreed, v))
+}
+
+// IsPrivacyAgreedNEQ applies the NEQ predicate on the "is_privacy_agreed" field.
+func IsPrivacyAgreedNEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldIsPrivacyAgreed, v))
 }
 
 // FcmTokenEQ applies the EQ predicate on the "fcm_token" field.

@@ -2,11 +2,12 @@ package request
 
 // RegistrationRequest is the request body for user registration
 type RegistrationRequest struct {
-	NickName      string `json:"nick_name"`
-	Email         string `json:"email"`
-	Password      string `json:"password"`
-	IsPublished   bool   `json:"is_published"`
-	IsTermsAgreed bool   `json:"is_terms_agreed"`
+	NickName        string `json:"nick_name"`
+	Email           string `json:"email"`
+	Password        string `json:"password"`
+	IsPublished     bool   `json:"is_published"`
+	IsTermsAgreed   bool   `json:"is_terms_agreed"`
+	IsPrivacyAgreed bool   `json:"is_privacy_agreed"`
 }
 
 // UpdateUserRequest is the request body for updating user information

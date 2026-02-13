@@ -106,7 +106,7 @@ func (*Book) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Book fields.
-func (b *Book) assignValues(columns []string, values []any) error {
+func (_m *Book) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -116,59 +116,59 @@ func (b *Book) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				b.ID = *value
+				_m.ID = *value
 			}
 		case book.FieldBookTitle:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field book_title", values[i])
 			} else if value.Valid {
-				b.BookTitle = value.String
+				_m.BookTitle = value.String
 			}
 		case book.FieldAuthor:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field author", values[i])
 			} else if value.Valid {
-				b.Author = value.String
+				_m.Author = value.String
 			}
 		case book.FieldBookIsbn:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field book_isbn", values[i])
 			} else if value.Valid {
-				b.BookIsbn = value.String
+				_m.BookIsbn = value.String
 			}
 		case book.FieldThumbnailURL:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field thumbnail_url", values[i])
 			} else if value.Valid {
-				b.ThumbnailURL = value.String
+				_m.ThumbnailURL = value.String
 			}
 		case book.FieldStatus:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
-				b.Status = int(value.Int64)
+				_m.Status = int(value.Int64)
 			}
 		case book.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				b.CreatedAt = value.Time
+				_m.CreatedAt = value.Time
 			}
 		case book.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				b.UpdatedAt = value.Time
+				_m.UpdatedAt = value.Time
 			}
 		case book.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field user_books", values[i])
 			} else if value.Valid {
-				b.user_books = new(uuid.UUID)
-				*b.user_books = *value.S.(*uuid.UUID)
+				_m.user_books = new(uuid.UUID)
+				*_m.user_books = *value.S.(*uuid.UUID)
 			}
 		default:
-			b.selectValues.Set(columns[i], values[i])
+			_m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -176,68 +176,68 @@ func (b *Book) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the Book.
 // This includes values selected through modifiers, order, etc.
-func (b *Book) Value(name string) (ent.Value, error) {
-	return b.selectValues.Get(name)
+func (_m *Book) Value(name string) (ent.Value, error) {
+	return _m.selectValues.Get(name)
 }
 
 // QueryOwner queries the "owner" edge of the Book entity.
-func (b *Book) QueryOwner() *UserQuery {
-	return NewBookClient(b.config).QueryOwner(b)
+func (_m *Book) QueryOwner() *UserQuery {
+	return NewBookClient(_m.config).QueryOwner(_m)
 }
 
 // QueryReviews queries the "reviews" edge of the Book entity.
-func (b *Book) QueryReviews() *ReviewQuery {
-	return NewBookClient(b.config).QueryReviews(b)
+func (_m *Book) QueryReviews() *ReviewQuery {
+	return NewBookClient(_m.config).QueryReviews(_m)
 }
 
 // QueryBookmarks queries the "bookmarks" edge of the Book entity.
-func (b *Book) QueryBookmarks() *BookmarkQuery {
-	return NewBookClient(b.config).QueryBookmarks(b)
+func (_m *Book) QueryBookmarks() *BookmarkQuery {
+	return NewBookClient(_m.config).QueryBookmarks(_m)
 }
 
 // Update returns a builder for updating this Book.
 // Note that you need to call Book.Unwrap() before calling this method if this Book
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (b *Book) Update() *BookUpdateOne {
-	return NewBookClient(b.config).UpdateOne(b)
+func (_m *Book) Update() *BookUpdateOne {
+	return NewBookClient(_m.config).UpdateOne(_m)
 }
 
 // Unwrap unwraps the Book entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (b *Book) Unwrap() *Book {
-	_tx, ok := b.config.driver.(*txDriver)
+func (_m *Book) Unwrap() *Book {
+	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: Book is not a transactional entity")
 	}
-	b.config.driver = _tx.drv
-	return b
+	_m.config.driver = _tx.drv
+	return _m
 }
 
 // String implements the fmt.Stringer.
-func (b *Book) String() string {
+func (_m *Book) String() string {
 	var builder strings.Builder
 	builder.WriteString("Book(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", b.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("book_title=")
-	builder.WriteString(b.BookTitle)
+	builder.WriteString(_m.BookTitle)
 	builder.WriteString(", ")
 	builder.WriteString("author=")
-	builder.WriteString(b.Author)
+	builder.WriteString(_m.Author)
 	builder.WriteString(", ")
 	builder.WriteString("book_isbn=")
-	builder.WriteString(b.BookIsbn)
+	builder.WriteString(_m.BookIsbn)
 	builder.WriteString(", ")
 	builder.WriteString("thumbnail_url=")
-	builder.WriteString(b.ThumbnailURL)
+	builder.WriteString(_m.ThumbnailURL)
 	builder.WriteString(", ")
 	builder.WriteString("status=")
-	builder.WriteString(fmt.Sprintf("%v", b.Status))
+	builder.WriteString(fmt.Sprintf("%v", _m.Status))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
-	builder.WriteString(b.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
-	builder.WriteString(b.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

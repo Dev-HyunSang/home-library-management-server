@@ -97,6 +97,11 @@ func (h *UserHandler) UserSignUpHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrTermsNotAgreed))
 	}
 
+	if !user.IsPrivacyAgreed {
+		logger.Sugar().Warn("회원가입시 개인정보 수집 이용에 동의하지 않았습니다.")
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrPrivacyNotAgreed))
+	}
+
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		logger.Sugar().Errorf("사용자 비밀번호 해시화 중 오류가 발생했습니다: %v", err)
@@ -104,12 +109,13 @@ func (h *UserHandler) UserSignUpHandler(ctx *fiber.Ctx) error {
 	}
 
 	result, err := h.userUseCase.Save(&domain.User{
-		ID:            uuid.New(),
-		NickName:      user.NickName,
-		Email:         user.Email,
-		Password:      string(hashedPassword),
-		IsPublished:   user.IsPublished,
-		IsTermsAgreed: user.IsTermsAgreed,
+		ID:              uuid.New(),
+		NickName:        user.NickName,
+		Email:           user.Email,
+		Password:        string(hashedPassword),
+		IsPublished:     user.IsPublished,
+		IsTermsAgreed:   user.IsTermsAgreed,
+		IsPrivacyAgreed: user.IsPrivacyAgreed,
 	})
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))

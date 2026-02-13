@@ -22,71 +22,71 @@ type EmailVerificationCreate struct {
 }
 
 // SetEmail sets the "email" field.
-func (evc *EmailVerificationCreate) SetEmail(s string) *EmailVerificationCreate {
-	evc.mutation.SetEmail(s)
-	return evc
+func (_c *EmailVerificationCreate) SetEmail(v string) *EmailVerificationCreate {
+	_c.mutation.SetEmail(v)
+	return _c
 }
 
 // SetCode sets the "code" field.
-func (evc *EmailVerificationCreate) SetCode(s string) *EmailVerificationCreate {
-	evc.mutation.SetCode(s)
-	return evc
+func (_c *EmailVerificationCreate) SetCode(v string) *EmailVerificationCreate {
+	_c.mutation.SetCode(v)
+	return _c
 }
 
 // SetExpiresAt sets the "expires_at" field.
-func (evc *EmailVerificationCreate) SetExpiresAt(t time.Time) *EmailVerificationCreate {
-	evc.mutation.SetExpiresAt(t)
-	return evc
+func (_c *EmailVerificationCreate) SetExpiresAt(v time.Time) *EmailVerificationCreate {
+	_c.mutation.SetExpiresAt(v)
+	return _c
 }
 
 // SetIsVerified sets the "is_verified" field.
-func (evc *EmailVerificationCreate) SetIsVerified(b bool) *EmailVerificationCreate {
-	evc.mutation.SetIsVerified(b)
-	return evc
+func (_c *EmailVerificationCreate) SetIsVerified(v bool) *EmailVerificationCreate {
+	_c.mutation.SetIsVerified(v)
+	return _c
 }
 
 // SetNillableIsVerified sets the "is_verified" field if the given value is not nil.
-func (evc *EmailVerificationCreate) SetNillableIsVerified(b *bool) *EmailVerificationCreate {
-	if b != nil {
-		evc.SetIsVerified(*b)
+func (_c *EmailVerificationCreate) SetNillableIsVerified(v *bool) *EmailVerificationCreate {
+	if v != nil {
+		_c.SetIsVerified(*v)
 	}
-	return evc
+	return _c
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (evc *EmailVerificationCreate) SetCreatedAt(t time.Time) *EmailVerificationCreate {
-	evc.mutation.SetCreatedAt(t)
-	return evc
+func (_c *EmailVerificationCreate) SetCreatedAt(v time.Time) *EmailVerificationCreate {
+	_c.mutation.SetCreatedAt(v)
+	return _c
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (evc *EmailVerificationCreate) SetNillableCreatedAt(t *time.Time) *EmailVerificationCreate {
-	if t != nil {
-		evc.SetCreatedAt(*t)
+func (_c *EmailVerificationCreate) SetNillableCreatedAt(v *time.Time) *EmailVerificationCreate {
+	if v != nil {
+		_c.SetCreatedAt(*v)
 	}
-	return evc
+	return _c
 }
 
 // SetID sets the "id" field.
-func (evc *EmailVerificationCreate) SetID(u uuid.UUID) *EmailVerificationCreate {
-	evc.mutation.SetID(u)
-	return evc
+func (_c *EmailVerificationCreate) SetID(v uuid.UUID) *EmailVerificationCreate {
+	_c.mutation.SetID(v)
+	return _c
 }
 
 // Mutation returns the EmailVerificationMutation object of the builder.
-func (evc *EmailVerificationCreate) Mutation() *EmailVerificationMutation {
-	return evc.mutation
+func (_c *EmailVerificationCreate) Mutation() *EmailVerificationMutation {
+	return _c.mutation
 }
 
 // Save creates the EmailVerification in the database.
-func (evc *EmailVerificationCreate) Save(ctx context.Context) (*EmailVerification, error) {
-	evc.defaults()
-	return withHooks(ctx, evc.sqlSave, evc.mutation, evc.hooks)
+func (_c *EmailVerificationCreate) Save(ctx context.Context) (*EmailVerification, error) {
+	_c.defaults()
+	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (evc *EmailVerificationCreate) SaveX(ctx context.Context) *EmailVerification {
-	v, err := evc.Save(ctx)
+func (_c *EmailVerificationCreate) SaveX(ctx context.Context) *EmailVerification {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -94,66 +94,66 @@ func (evc *EmailVerificationCreate) SaveX(ctx context.Context) *EmailVerificatio
 }
 
 // Exec executes the query.
-func (evc *EmailVerificationCreate) Exec(ctx context.Context) error {
-	_, err := evc.Save(ctx)
+func (_c *EmailVerificationCreate) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (evc *EmailVerificationCreate) ExecX(ctx context.Context) {
-	if err := evc.Exec(ctx); err != nil {
+func (_c *EmailVerificationCreate) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (evc *EmailVerificationCreate) defaults() {
-	if _, ok := evc.mutation.IsVerified(); !ok {
+func (_c *EmailVerificationCreate) defaults() {
+	if _, ok := _c.mutation.IsVerified(); !ok {
 		v := emailverification.DefaultIsVerified
-		evc.mutation.SetIsVerified(v)
+		_c.mutation.SetIsVerified(v)
 	}
-	if _, ok := evc.mutation.CreatedAt(); !ok {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := emailverification.DefaultCreatedAt()
-		evc.mutation.SetCreatedAt(v)
+		_c.mutation.SetCreatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (evc *EmailVerificationCreate) check() error {
-	if _, ok := evc.mutation.Email(); !ok {
+func (_c *EmailVerificationCreate) check() error {
+	if _, ok := _c.mutation.Email(); !ok {
 		return &ValidationError{Name: "email", err: errors.New(`ent: missing required field "EmailVerification.email"`)}
 	}
-	if v, ok := evc.mutation.Email(); ok {
+	if v, ok := _c.mutation.Email(); ok {
 		if err := emailverification.EmailValidator(v); err != nil {
 			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "EmailVerification.email": %w`, err)}
 		}
 	}
-	if _, ok := evc.mutation.Code(); !ok {
+	if _, ok := _c.mutation.Code(); !ok {
 		return &ValidationError{Name: "code", err: errors.New(`ent: missing required field "EmailVerification.code"`)}
 	}
-	if v, ok := evc.mutation.Code(); ok {
+	if v, ok := _c.mutation.Code(); ok {
 		if err := emailverification.CodeValidator(v); err != nil {
 			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "EmailVerification.code": %w`, err)}
 		}
 	}
-	if _, ok := evc.mutation.ExpiresAt(); !ok {
+	if _, ok := _c.mutation.ExpiresAt(); !ok {
 		return &ValidationError{Name: "expires_at", err: errors.New(`ent: missing required field "EmailVerification.expires_at"`)}
 	}
-	if _, ok := evc.mutation.IsVerified(); !ok {
+	if _, ok := _c.mutation.IsVerified(); !ok {
 		return &ValidationError{Name: "is_verified", err: errors.New(`ent: missing required field "EmailVerification.is_verified"`)}
 	}
-	if _, ok := evc.mutation.CreatedAt(); !ok {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "EmailVerification.created_at"`)}
 	}
 	return nil
 }
 
-func (evc *EmailVerificationCreate) sqlSave(ctx context.Context) (*EmailVerification, error) {
-	if err := evc.check(); err != nil {
+func (_c *EmailVerificationCreate) sqlSave(ctx context.Context) (*EmailVerification, error) {
+	if err := _c.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := evc.createSpec()
-	if err := sqlgraph.CreateNode(ctx, evc.driver, _spec); err != nil {
+	_node, _spec := _c.createSpec()
+	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -166,37 +166,37 @@ func (evc *EmailVerificationCreate) sqlSave(ctx context.Context) (*EmailVerifica
 			return nil, err
 		}
 	}
-	evc.mutation.id = &_node.ID
-	evc.mutation.done = true
+	_c.mutation.id = &_node.ID
+	_c.mutation.done = true
 	return _node, nil
 }
 
-func (evc *EmailVerificationCreate) createSpec() (*EmailVerification, *sqlgraph.CreateSpec) {
+func (_c *EmailVerificationCreate) createSpec() (*EmailVerification, *sqlgraph.CreateSpec) {
 	var (
-		_node = &EmailVerification{config: evc.config}
+		_node = &EmailVerification{config: _c.config}
 		_spec = sqlgraph.NewCreateSpec(emailverification.Table, sqlgraph.NewFieldSpec(emailverification.FieldID, field.TypeUUID))
 	)
-	if id, ok := evc.mutation.ID(); ok {
+	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
-	if value, ok := evc.mutation.Email(); ok {
+	if value, ok := _c.mutation.Email(); ok {
 		_spec.SetField(emailverification.FieldEmail, field.TypeString, value)
 		_node.Email = value
 	}
-	if value, ok := evc.mutation.Code(); ok {
+	if value, ok := _c.mutation.Code(); ok {
 		_spec.SetField(emailverification.FieldCode, field.TypeString, value)
 		_node.Code = value
 	}
-	if value, ok := evc.mutation.ExpiresAt(); ok {
+	if value, ok := _c.mutation.ExpiresAt(); ok {
 		_spec.SetField(emailverification.FieldExpiresAt, field.TypeTime, value)
 		_node.ExpiresAt = value
 	}
-	if value, ok := evc.mutation.IsVerified(); ok {
+	if value, ok := _c.mutation.IsVerified(); ok {
 		_spec.SetField(emailverification.FieldIsVerified, field.TypeBool, value)
 		_node.IsVerified = value
 	}
-	if value, ok := evc.mutation.CreatedAt(); ok {
+	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(emailverification.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
@@ -211,16 +211,16 @@ type EmailVerificationCreateBulk struct {
 }
 
 // Save creates the EmailVerification entities in the database.
-func (evcb *EmailVerificationCreateBulk) Save(ctx context.Context) ([]*EmailVerification, error) {
-	if evcb.err != nil {
-		return nil, evcb.err
+func (_c *EmailVerificationCreateBulk) Save(ctx context.Context) ([]*EmailVerification, error) {
+	if _c.err != nil {
+		return nil, _c.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(evcb.builders))
-	nodes := make([]*EmailVerification, len(evcb.builders))
-	mutators := make([]Mutator, len(evcb.builders))
-	for i := range evcb.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
+	nodes := make([]*EmailVerification, len(_c.builders))
+	mutators := make([]Mutator, len(_c.builders))
+	for i := range _c.builders {
 		func(i int, root context.Context) {
-			builder := evcb.builders[i]
+			builder := _c.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*EmailVerificationMutation)
@@ -234,11 +234,11 @@ func (evcb *EmailVerificationCreateBulk) Save(ctx context.Context) ([]*EmailVeri
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, evcb.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, evcb.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -258,7 +258,7 @@ func (evcb *EmailVerificationCreateBulk) Save(ctx context.Context) ([]*EmailVeri
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, evcb.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -266,8 +266,8 @@ func (evcb *EmailVerificationCreateBulk) Save(ctx context.Context) ([]*EmailVeri
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (evcb *EmailVerificationCreateBulk) SaveX(ctx context.Context) []*EmailVerification {
-	v, err := evcb.Save(ctx)
+func (_c *EmailVerificationCreateBulk) SaveX(ctx context.Context) []*EmailVerification {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -275,14 +275,14 @@ func (evcb *EmailVerificationCreateBulk) SaveX(ctx context.Context) []*EmailVeri
 }
 
 // Exec executes the query.
-func (evcb *EmailVerificationCreateBulk) Exec(ctx context.Context) error {
-	_, err := evcb.Save(ctx)
+func (_c *EmailVerificationCreateBulk) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (evcb *EmailVerificationCreateBulk) ExecX(ctx context.Context) {
-	if err := evcb.Exec(ctx); err != nil {
+func (_c *EmailVerificationCreateBulk) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

@@ -24,6 +24,8 @@ const (
 	FieldIsPublished = "is_published"
 	// FieldIsTermsAgreed holds the string denoting the is_terms_agreed field in the database.
 	FieldIsTermsAgreed = "is_terms_agreed"
+	// FieldIsPrivacyAgreed holds the string denoting the is_privacy_agreed field in the database.
+	FieldIsPrivacyAgreed = "is_privacy_agreed"
 	// FieldFcmToken holds the string denoting the fcm_token field in the database.
 	FieldFcmToken = "fcm_token"
 	// FieldTimezone holds the string denoting the timezone field in the database.
@@ -80,6 +82,7 @@ var Columns = []string{
 	FieldPassword,
 	FieldIsPublished,
 	FieldIsTermsAgreed,
+	FieldIsPrivacyAgreed,
 	FieldFcmToken,
 	FieldTimezone,
 	FieldCreatedAt,
@@ -105,6 +108,8 @@ var (
 	DefaultIsPublished bool
 	// DefaultIsTermsAgreed holds the default value on creation for the "is_terms_agreed" field.
 	DefaultIsTermsAgreed bool
+	// DefaultIsPrivacyAgreed holds the default value on creation for the "is_privacy_agreed" field.
+	DefaultIsPrivacyAgreed bool
 	// DefaultTimezone holds the default value on creation for the "timezone" field.
 	DefaultTimezone string
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
@@ -144,6 +149,11 @@ func ByIsPublished(opts ...sql.OrderTermOption) OrderOption {
 // ByIsTermsAgreed orders the results by the is_terms_agreed field.
 func ByIsTermsAgreed(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsTermsAgreed, opts...).ToFunc()
+}
+
+// ByIsPrivacyAgreed orders the results by the is_privacy_agreed field.
+func ByIsPrivacyAgreed(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsPrivacyAgreed, opts...).ToFunc()
 }
 
 // ByFcmToken orders the results by the fcm_token field.

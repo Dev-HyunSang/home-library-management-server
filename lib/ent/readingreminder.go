@@ -82,7 +82,7 @@ func (*ReadingReminder) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the ReadingReminder fields.
-func (rr *ReadingReminder) assignValues(columns []string, values []any) error {
+func (_m *ReadingReminder) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -92,53 +92,53 @@ func (rr *ReadingReminder) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				rr.ID = *value
+				_m.ID = *value
 			}
 		case readingreminder.FieldReminderTime:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field reminder_time", values[i])
 			} else if value.Valid {
-				rr.ReminderTime = value.String
+				_m.ReminderTime = value.String
 			}
 		case readingreminder.FieldDayOfWeek:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field day_of_week", values[i])
 			} else if value.Valid {
-				rr.DayOfWeek = readingreminder.DayOfWeek(value.String)
+				_m.DayOfWeek = readingreminder.DayOfWeek(value.String)
 			}
 		case readingreminder.FieldIsEnabled:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field is_enabled", values[i])
 			} else if value.Valid {
-				rr.IsEnabled = value.Bool
+				_m.IsEnabled = value.Bool
 			}
 		case readingreminder.FieldMessage:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field message", values[i])
 			} else if value.Valid {
-				rr.Message = value.String
+				_m.Message = value.String
 			}
 		case readingreminder.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				rr.CreatedAt = value.Time
+				_m.CreatedAt = value.Time
 			}
 		case readingreminder.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				rr.UpdatedAt = value.Time
+				_m.UpdatedAt = value.Time
 			}
 		case readingreminder.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field user_reading_reminders", values[i])
 			} else if value.Valid {
-				rr.user_reading_reminders = new(uuid.UUID)
-				*rr.user_reading_reminders = *value.S.(*uuid.UUID)
+				_m.user_reading_reminders = new(uuid.UUID)
+				*_m.user_reading_reminders = *value.S.(*uuid.UUID)
 			}
 		default:
-			rr.selectValues.Set(columns[i], values[i])
+			_m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -146,55 +146,55 @@ func (rr *ReadingReminder) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the ReadingReminder.
 // This includes values selected through modifiers, order, etc.
-func (rr *ReadingReminder) Value(name string) (ent.Value, error) {
-	return rr.selectValues.Get(name)
+func (_m *ReadingReminder) Value(name string) (ent.Value, error) {
+	return _m.selectValues.Get(name)
 }
 
 // QueryOwner queries the "owner" edge of the ReadingReminder entity.
-func (rr *ReadingReminder) QueryOwner() *UserQuery {
-	return NewReadingReminderClient(rr.config).QueryOwner(rr)
+func (_m *ReadingReminder) QueryOwner() *UserQuery {
+	return NewReadingReminderClient(_m.config).QueryOwner(_m)
 }
 
 // Update returns a builder for updating this ReadingReminder.
 // Note that you need to call ReadingReminder.Unwrap() before calling this method if this ReadingReminder
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (rr *ReadingReminder) Update() *ReadingReminderUpdateOne {
-	return NewReadingReminderClient(rr.config).UpdateOne(rr)
+func (_m *ReadingReminder) Update() *ReadingReminderUpdateOne {
+	return NewReadingReminderClient(_m.config).UpdateOne(_m)
 }
 
 // Unwrap unwraps the ReadingReminder entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (rr *ReadingReminder) Unwrap() *ReadingReminder {
-	_tx, ok := rr.config.driver.(*txDriver)
+func (_m *ReadingReminder) Unwrap() *ReadingReminder {
+	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: ReadingReminder is not a transactional entity")
 	}
-	rr.config.driver = _tx.drv
-	return rr
+	_m.config.driver = _tx.drv
+	return _m
 }
 
 // String implements the fmt.Stringer.
-func (rr *ReadingReminder) String() string {
+func (_m *ReadingReminder) String() string {
 	var builder strings.Builder
 	builder.WriteString("ReadingReminder(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", rr.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("reminder_time=")
-	builder.WriteString(rr.ReminderTime)
+	builder.WriteString(_m.ReminderTime)
 	builder.WriteString(", ")
 	builder.WriteString("day_of_week=")
-	builder.WriteString(fmt.Sprintf("%v", rr.DayOfWeek))
+	builder.WriteString(fmt.Sprintf("%v", _m.DayOfWeek))
 	builder.WriteString(", ")
 	builder.WriteString("is_enabled=")
-	builder.WriteString(fmt.Sprintf("%v", rr.IsEnabled))
+	builder.WriteString(fmt.Sprintf("%v", _m.IsEnabled))
 	builder.WriteString(", ")
 	builder.WriteString("message=")
-	builder.WriteString(rr.Message)
+	builder.WriteString(_m.Message)
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
-	builder.WriteString(rr.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
-	builder.WriteString(rr.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

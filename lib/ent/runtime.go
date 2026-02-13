@@ -203,16 +203,20 @@ func init() {
 	userDescIsTermsAgreed := userFields[5].Descriptor()
 	// user.DefaultIsTermsAgreed holds the default value on creation for the is_terms_agreed field.
 	user.DefaultIsTermsAgreed = userDescIsTermsAgreed.Default.(bool)
+	// userDescIsPrivacyAgreed is the schema descriptor for is_privacy_agreed field.
+	userDescIsPrivacyAgreed := userFields[6].Descriptor()
+	// user.DefaultIsPrivacyAgreed holds the default value on creation for the is_privacy_agreed field.
+	user.DefaultIsPrivacyAgreed = userDescIsPrivacyAgreed.Default.(bool)
 	// userDescTimezone is the schema descriptor for timezone field.
-	userDescTimezone := userFields[7].Descriptor()
+	userDescTimezone := userFields[8].Descriptor()
 	// user.DefaultTimezone holds the default value on creation for the timezone field.
 	user.DefaultTimezone = userDescTimezone.Default.(string)
 	// userDescCreatedAt is the schema descriptor for created_at field.
-	userDescCreatedAt := userFields[8].Descriptor()
+	userDescCreatedAt := userFields[9].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
 	// userDescUpdatedAt is the schema descriptor for updated_at field.
-	userDescUpdatedAt := userFields[9].Descriptor()
+	userDescUpdatedAt := userFields[10].Descriptor()
 	// user.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() time.Time)
 }

@@ -26,72 +26,72 @@ type BookmarkUpdate struct {
 }
 
 // Where appends a list predicates to the BookmarkUpdate builder.
-func (bu *BookmarkUpdate) Where(ps ...predicate.Bookmark) *BookmarkUpdate {
-	bu.mutation.Where(ps...)
-	return bu
+func (_u *BookmarkUpdate) Where(ps ...predicate.Bookmark) *BookmarkUpdate {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (bu *BookmarkUpdate) SetCreatedAt(t time.Time) *BookmarkUpdate {
-	bu.mutation.SetCreatedAt(t)
-	return bu
+func (_u *BookmarkUpdate) SetCreatedAt(v time.Time) *BookmarkUpdate {
+	_u.mutation.SetCreatedAt(v)
+	return _u
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (bu *BookmarkUpdate) SetNillableCreatedAt(t *time.Time) *BookmarkUpdate {
-	if t != nil {
-		bu.SetCreatedAt(*t)
+func (_u *BookmarkUpdate) SetNillableCreatedAt(v *time.Time) *BookmarkUpdate {
+	if v != nil {
+		_u.SetCreatedAt(*v)
 	}
-	return bu
+	return _u
 }
 
 // SetOwnerID sets the "owner" edge to the User entity by ID.
-func (bu *BookmarkUpdate) SetOwnerID(id uuid.UUID) *BookmarkUpdate {
-	bu.mutation.SetOwnerID(id)
-	return bu
+func (_u *BookmarkUpdate) SetOwnerID(id uuid.UUID) *BookmarkUpdate {
+	_u.mutation.SetOwnerID(id)
+	return _u
 }
 
 // SetOwner sets the "owner" edge to the User entity.
-func (bu *BookmarkUpdate) SetOwner(u *User) *BookmarkUpdate {
-	return bu.SetOwnerID(u.ID)
+func (_u *BookmarkUpdate) SetOwner(v *User) *BookmarkUpdate {
+	return _u.SetOwnerID(v.ID)
 }
 
 // SetBookID sets the "book" edge to the Book entity by ID.
-func (bu *BookmarkUpdate) SetBookID(id uuid.UUID) *BookmarkUpdate {
-	bu.mutation.SetBookID(id)
-	return bu
+func (_u *BookmarkUpdate) SetBookID(id uuid.UUID) *BookmarkUpdate {
+	_u.mutation.SetBookID(id)
+	return _u
 }
 
 // SetBook sets the "book" edge to the Book entity.
-func (bu *BookmarkUpdate) SetBook(b *Book) *BookmarkUpdate {
-	return bu.SetBookID(b.ID)
+func (_u *BookmarkUpdate) SetBook(v *Book) *BookmarkUpdate {
+	return _u.SetBookID(v.ID)
 }
 
 // Mutation returns the BookmarkMutation object of the builder.
-func (bu *BookmarkUpdate) Mutation() *BookmarkMutation {
-	return bu.mutation
+func (_u *BookmarkUpdate) Mutation() *BookmarkMutation {
+	return _u.mutation
 }
 
 // ClearOwner clears the "owner" edge to the User entity.
-func (bu *BookmarkUpdate) ClearOwner() *BookmarkUpdate {
-	bu.mutation.ClearOwner()
-	return bu
+func (_u *BookmarkUpdate) ClearOwner() *BookmarkUpdate {
+	_u.mutation.ClearOwner()
+	return _u
 }
 
 // ClearBook clears the "book" edge to the Book entity.
-func (bu *BookmarkUpdate) ClearBook() *BookmarkUpdate {
-	bu.mutation.ClearBook()
-	return bu
+func (_u *BookmarkUpdate) ClearBook() *BookmarkUpdate {
+	_u.mutation.ClearBook()
+	return _u
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (bu *BookmarkUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks(ctx, bu.sqlSave, bu.mutation, bu.hooks)
+func (_u *BookmarkUpdate) Save(ctx context.Context) (int, error) {
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (bu *BookmarkUpdate) SaveX(ctx context.Context) int {
-	affected, err := bu.Save(ctx)
+func (_u *BookmarkUpdate) SaveX(ctx context.Context) int {
+	affected, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -99,45 +99,45 @@ func (bu *BookmarkUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (bu *BookmarkUpdate) Exec(ctx context.Context) error {
-	_, err := bu.Save(ctx)
+func (_u *BookmarkUpdate) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (bu *BookmarkUpdate) ExecX(ctx context.Context) {
-	if err := bu.Exec(ctx); err != nil {
+func (_u *BookmarkUpdate) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (bu *BookmarkUpdate) check() error {
-	if bu.mutation.OwnerCleared() && len(bu.mutation.OwnerIDs()) > 0 {
+func (_u *BookmarkUpdate) check() error {
+	if _u.mutation.OwnerCleared() && len(_u.mutation.OwnerIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Bookmark.owner"`)
 	}
-	if bu.mutation.BookCleared() && len(bu.mutation.BookIDs()) > 0 {
+	if _u.mutation.BookCleared() && len(_u.mutation.BookIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Bookmark.book"`)
 	}
 	return nil
 }
 
-func (bu *BookmarkUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := bu.check(); err != nil {
-		return n, err
+func (_u *BookmarkUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(bookmark.Table, bookmark.Columns, sqlgraph.NewFieldSpec(bookmark.FieldID, field.TypeUUID))
-	if ps := bu.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := bu.mutation.CreatedAt(); ok {
+	if value, ok := _u.mutation.CreatedAt(); ok {
 		_spec.SetField(bookmark.FieldCreatedAt, field.TypeTime, value)
 	}
-	if bu.mutation.OwnerCleared() {
+	if _u.mutation.OwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -150,7 +150,7 @@ func (bu *BookmarkUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := bu.mutation.OwnerIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.OwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -166,7 +166,7 @@ func (bu *BookmarkUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if bu.mutation.BookCleared() {
+	if _u.mutation.BookCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -179,7 +179,7 @@ func (bu *BookmarkUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := bu.mutation.BookIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.BookIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -195,7 +195,7 @@ func (bu *BookmarkUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, bu.driver, _spec); err != nil {
+	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{bookmark.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -203,8 +203,8 @@ func (bu *BookmarkUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
-	bu.mutation.done = true
-	return n, nil
+	_u.mutation.done = true
+	return _node, nil
 }
 
 // BookmarkUpdateOne is the builder for updating a single Bookmark entity.
@@ -216,79 +216,79 @@ type BookmarkUpdateOne struct {
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (buo *BookmarkUpdateOne) SetCreatedAt(t time.Time) *BookmarkUpdateOne {
-	buo.mutation.SetCreatedAt(t)
-	return buo
+func (_u *BookmarkUpdateOne) SetCreatedAt(v time.Time) *BookmarkUpdateOne {
+	_u.mutation.SetCreatedAt(v)
+	return _u
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (buo *BookmarkUpdateOne) SetNillableCreatedAt(t *time.Time) *BookmarkUpdateOne {
-	if t != nil {
-		buo.SetCreatedAt(*t)
+func (_u *BookmarkUpdateOne) SetNillableCreatedAt(v *time.Time) *BookmarkUpdateOne {
+	if v != nil {
+		_u.SetCreatedAt(*v)
 	}
-	return buo
+	return _u
 }
 
 // SetOwnerID sets the "owner" edge to the User entity by ID.
-func (buo *BookmarkUpdateOne) SetOwnerID(id uuid.UUID) *BookmarkUpdateOne {
-	buo.mutation.SetOwnerID(id)
-	return buo
+func (_u *BookmarkUpdateOne) SetOwnerID(id uuid.UUID) *BookmarkUpdateOne {
+	_u.mutation.SetOwnerID(id)
+	return _u
 }
 
 // SetOwner sets the "owner" edge to the User entity.
-func (buo *BookmarkUpdateOne) SetOwner(u *User) *BookmarkUpdateOne {
-	return buo.SetOwnerID(u.ID)
+func (_u *BookmarkUpdateOne) SetOwner(v *User) *BookmarkUpdateOne {
+	return _u.SetOwnerID(v.ID)
 }
 
 // SetBookID sets the "book" edge to the Book entity by ID.
-func (buo *BookmarkUpdateOne) SetBookID(id uuid.UUID) *BookmarkUpdateOne {
-	buo.mutation.SetBookID(id)
-	return buo
+func (_u *BookmarkUpdateOne) SetBookID(id uuid.UUID) *BookmarkUpdateOne {
+	_u.mutation.SetBookID(id)
+	return _u
 }
 
 // SetBook sets the "book" edge to the Book entity.
-func (buo *BookmarkUpdateOne) SetBook(b *Book) *BookmarkUpdateOne {
-	return buo.SetBookID(b.ID)
+func (_u *BookmarkUpdateOne) SetBook(v *Book) *BookmarkUpdateOne {
+	return _u.SetBookID(v.ID)
 }
 
 // Mutation returns the BookmarkMutation object of the builder.
-func (buo *BookmarkUpdateOne) Mutation() *BookmarkMutation {
-	return buo.mutation
+func (_u *BookmarkUpdateOne) Mutation() *BookmarkMutation {
+	return _u.mutation
 }
 
 // ClearOwner clears the "owner" edge to the User entity.
-func (buo *BookmarkUpdateOne) ClearOwner() *BookmarkUpdateOne {
-	buo.mutation.ClearOwner()
-	return buo
+func (_u *BookmarkUpdateOne) ClearOwner() *BookmarkUpdateOne {
+	_u.mutation.ClearOwner()
+	return _u
 }
 
 // ClearBook clears the "book" edge to the Book entity.
-func (buo *BookmarkUpdateOne) ClearBook() *BookmarkUpdateOne {
-	buo.mutation.ClearBook()
-	return buo
+func (_u *BookmarkUpdateOne) ClearBook() *BookmarkUpdateOne {
+	_u.mutation.ClearBook()
+	return _u
 }
 
 // Where appends a list predicates to the BookmarkUpdate builder.
-func (buo *BookmarkUpdateOne) Where(ps ...predicate.Bookmark) *BookmarkUpdateOne {
-	buo.mutation.Where(ps...)
-	return buo
+func (_u *BookmarkUpdateOne) Where(ps ...predicate.Bookmark) *BookmarkUpdateOne {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (buo *BookmarkUpdateOne) Select(field string, fields ...string) *BookmarkUpdateOne {
-	buo.fields = append([]string{field}, fields...)
-	return buo
+func (_u *BookmarkUpdateOne) Select(field string, fields ...string) *BookmarkUpdateOne {
+	_u.fields = append([]string{field}, fields...)
+	return _u
 }
 
 // Save executes the query and returns the updated Bookmark entity.
-func (buo *BookmarkUpdateOne) Save(ctx context.Context) (*Bookmark, error) {
-	return withHooks(ctx, buo.sqlSave, buo.mutation, buo.hooks)
+func (_u *BookmarkUpdateOne) Save(ctx context.Context) (*Bookmark, error) {
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (buo *BookmarkUpdateOne) SaveX(ctx context.Context) *Bookmark {
-	node, err := buo.Save(ctx)
+func (_u *BookmarkUpdateOne) SaveX(ctx context.Context) *Bookmark {
+	node, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -296,40 +296,40 @@ func (buo *BookmarkUpdateOne) SaveX(ctx context.Context) *Bookmark {
 }
 
 // Exec executes the query on the entity.
-func (buo *BookmarkUpdateOne) Exec(ctx context.Context) error {
-	_, err := buo.Save(ctx)
+func (_u *BookmarkUpdateOne) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (buo *BookmarkUpdateOne) ExecX(ctx context.Context) {
-	if err := buo.Exec(ctx); err != nil {
+func (_u *BookmarkUpdateOne) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (buo *BookmarkUpdateOne) check() error {
-	if buo.mutation.OwnerCleared() && len(buo.mutation.OwnerIDs()) > 0 {
+func (_u *BookmarkUpdateOne) check() error {
+	if _u.mutation.OwnerCleared() && len(_u.mutation.OwnerIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Bookmark.owner"`)
 	}
-	if buo.mutation.BookCleared() && len(buo.mutation.BookIDs()) > 0 {
+	if _u.mutation.BookCleared() && len(_u.mutation.BookIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Bookmark.book"`)
 	}
 	return nil
 }
 
-func (buo *BookmarkUpdateOne) sqlSave(ctx context.Context) (_node *Bookmark, err error) {
-	if err := buo.check(); err != nil {
+func (_u *BookmarkUpdateOne) sqlSave(ctx context.Context) (_node *Bookmark, err error) {
+	if err := _u.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(bookmark.Table, bookmark.Columns, sqlgraph.NewFieldSpec(bookmark.FieldID, field.TypeUUID))
-	id, ok := buo.mutation.ID()
+	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Bookmark.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := buo.fields; len(fields) > 0 {
+	if fields := _u.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, bookmark.FieldID)
 		for _, f := range fields {
@@ -341,17 +341,17 @@ func (buo *BookmarkUpdateOne) sqlSave(ctx context.Context) (_node *Bookmark, err
 			}
 		}
 	}
-	if ps := buo.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := buo.mutation.CreatedAt(); ok {
+	if value, ok := _u.mutation.CreatedAt(); ok {
 		_spec.SetField(bookmark.FieldCreatedAt, field.TypeTime, value)
 	}
-	if buo.mutation.OwnerCleared() {
+	if _u.mutation.OwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -364,7 +364,7 @@ func (buo *BookmarkUpdateOne) sqlSave(ctx context.Context) (_node *Bookmark, err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := buo.mutation.OwnerIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.OwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -380,7 +380,7 @@ func (buo *BookmarkUpdateOne) sqlSave(ctx context.Context) (_node *Bookmark, err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if buo.mutation.BookCleared() {
+	if _u.mutation.BookCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -393,7 +393,7 @@ func (buo *BookmarkUpdateOne) sqlSave(ctx context.Context) (_node *Bookmark, err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := buo.mutation.BookIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.BookIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -409,10 +409,10 @@ func (buo *BookmarkUpdateOne) sqlSave(ctx context.Context) (_node *Bookmark, err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_node = &Bookmark{config: buo.config}
+	_node = &Bookmark{config: _u.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, buo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{bookmark.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -420,6 +420,6 @@ func (buo *BookmarkUpdateOne) sqlSave(ctx context.Context) (_node *Bookmark, err
 		}
 		return nil, err
 	}
-	buo.mutation.done = true
+	_u.mutation.done = true
 	return _node, nil
 }

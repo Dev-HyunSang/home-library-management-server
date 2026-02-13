@@ -159,6 +159,7 @@ var (
 		{Name: "password", Type: field.TypeString, Nullable: true},
 		{Name: "is_published", Type: field.TypeBool, Default: false},
 		{Name: "is_terms_agreed", Type: field.TypeBool, Default: false},
+		{Name: "is_privacy_agreed", Type: field.TypeBool, Default: false},
 		{Name: "fcm_token", Type: field.TypeString, Nullable: true},
 		{Name: "timezone", Type: field.TypeString, Default: "Asia/Seoul"},
 		{Name: "created_at", Type: field.TypeTime},

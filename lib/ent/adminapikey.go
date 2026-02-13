@@ -59,7 +59,7 @@ func (*AdminAPIKey) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the AdminAPIKey fields.
-func (aak *AdminAPIKey) assignValues(columns []string, values []any) error {
+func (_m *AdminAPIKey) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -69,60 +69,60 @@ func (aak *AdminAPIKey) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				aak.ID = *value
+				_m.ID = *value
 			}
 		case adminapikey.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
-				aak.Name = value.String
+				_m.Name = value.String
 			}
 		case adminapikey.FieldKeyHash:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field key_hash", values[i])
 			} else if value.Valid {
-				aak.KeyHash = value.String
+				_m.KeyHash = value.String
 			}
 		case adminapikey.FieldKeyPrefix:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field key_prefix", values[i])
 			} else if value.Valid {
-				aak.KeyPrefix = value.String
+				_m.KeyPrefix = value.String
 			}
 		case adminapikey.FieldIsActive:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field is_active", values[i])
 			} else if value.Valid {
-				aak.IsActive = value.Bool
+				_m.IsActive = value.Bool
 			}
 		case adminapikey.FieldLastUsedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field last_used_at", values[i])
 			} else if value.Valid {
-				aak.LastUsedAt = new(time.Time)
-				*aak.LastUsedAt = value.Time
+				_m.LastUsedAt = new(time.Time)
+				*_m.LastUsedAt = value.Time
 			}
 		case adminapikey.FieldExpiresAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field expires_at", values[i])
 			} else if value.Valid {
-				aak.ExpiresAt = new(time.Time)
-				*aak.ExpiresAt = value.Time
+				_m.ExpiresAt = new(time.Time)
+				*_m.ExpiresAt = value.Time
 			}
 		case adminapikey.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				aak.CreatedAt = value.Time
+				_m.CreatedAt = value.Time
 			}
 		case adminapikey.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				aak.UpdatedAt = value.Time
+				_m.UpdatedAt = value.Time
 			}
 		default:
-			aak.selectValues.Set(columns[i], values[i])
+			_m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -130,60 +130,60 @@ func (aak *AdminAPIKey) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the AdminAPIKey.
 // This includes values selected through modifiers, order, etc.
-func (aak *AdminAPIKey) Value(name string) (ent.Value, error) {
-	return aak.selectValues.Get(name)
+func (_m *AdminAPIKey) Value(name string) (ent.Value, error) {
+	return _m.selectValues.Get(name)
 }
 
 // Update returns a builder for updating this AdminAPIKey.
 // Note that you need to call AdminAPIKey.Unwrap() before calling this method if this AdminAPIKey
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (aak *AdminAPIKey) Update() *AdminAPIKeyUpdateOne {
-	return NewAdminAPIKeyClient(aak.config).UpdateOne(aak)
+func (_m *AdminAPIKey) Update() *AdminAPIKeyUpdateOne {
+	return NewAdminAPIKeyClient(_m.config).UpdateOne(_m)
 }
 
 // Unwrap unwraps the AdminAPIKey entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (aak *AdminAPIKey) Unwrap() *AdminAPIKey {
-	_tx, ok := aak.config.driver.(*txDriver)
+func (_m *AdminAPIKey) Unwrap() *AdminAPIKey {
+	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: AdminAPIKey is not a transactional entity")
 	}
-	aak.config.driver = _tx.drv
-	return aak
+	_m.config.driver = _tx.drv
+	return _m
 }
 
 // String implements the fmt.Stringer.
-func (aak *AdminAPIKey) String() string {
+func (_m *AdminAPIKey) String() string {
 	var builder strings.Builder
 	builder.WriteString("AdminAPIKey(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", aak.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("name=")
-	builder.WriteString(aak.Name)
+	builder.WriteString(_m.Name)
 	builder.WriteString(", ")
 	builder.WriteString("key_hash=")
-	builder.WriteString(aak.KeyHash)
+	builder.WriteString(_m.KeyHash)
 	builder.WriteString(", ")
 	builder.WriteString("key_prefix=")
-	builder.WriteString(aak.KeyPrefix)
+	builder.WriteString(_m.KeyPrefix)
 	builder.WriteString(", ")
 	builder.WriteString("is_active=")
-	builder.WriteString(fmt.Sprintf("%v", aak.IsActive))
+	builder.WriteString(fmt.Sprintf("%v", _m.IsActive))
 	builder.WriteString(", ")
-	if v := aak.LastUsedAt; v != nil {
+	if v := _m.LastUsedAt; v != nil {
 		builder.WriteString("last_used_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
-	if v := aak.ExpiresAt; v != nil {
+	if v := _m.ExpiresAt; v != nil {
 		builder.WriteString("expires_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
-	builder.WriteString(aak.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
-	builder.WriteString(aak.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

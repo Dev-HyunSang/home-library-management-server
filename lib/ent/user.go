@@ -28,6 +28,8 @@ type User struct {
 	IsPublished bool `json:"is_published,omitempty"`
 	// 사용자 이용약관 동의 여부
 	IsTermsAgreed bool `json:"is_terms_agreed,omitempty"`
+	// 사용자 개인정보 수집 이용 동의 여부
+	IsPrivacyAgreed bool `json:"is_privacy_agreed,omitempty"`
 	// FCM 디바이스 토큰
 	FcmToken string `json:"fcm_token,omitempty"`
 	// 사용자 타임존
@@ -98,7 +100,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldIsPublished, user.FieldIsTermsAgreed:
+		case user.FieldIsPublished, user.FieldIsTermsAgreed, user.FieldIsPrivacyAgreed:
 			values[i] = new(sql.NullBool)
 		case user.FieldNickName, user.FieldEmail, user.FieldPassword, user.FieldFcmToken, user.FieldTimezone:
 			values[i] = new(sql.NullString)
@@ -115,7 +117,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the User fields.
-func (u *User) assignValues(columns []string, values []any) error {
+func (_m *User) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -125,64 +127,70 @@ func (u *User) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				u.ID = *value
+				_m.ID = *value
 			}
 		case user.FieldNickName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field nick_name", values[i])
 			} else if value.Valid {
-				u.NickName = value.String
+				_m.NickName = value.String
 			}
 		case user.FieldEmail:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field email", values[i])
 			} else if value.Valid {
-				u.Email = value.String
+				_m.Email = value.String
 			}
 		case user.FieldPassword:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field password", values[i])
 			} else if value.Valid {
-				u.Password = value.String
+				_m.Password = value.String
 			}
 		case user.FieldIsPublished:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field is_published", values[i])
 			} else if value.Valid {
-				u.IsPublished = value.Bool
+				_m.IsPublished = value.Bool
 			}
 		case user.FieldIsTermsAgreed:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field is_terms_agreed", values[i])
 			} else if value.Valid {
-				u.IsTermsAgreed = value.Bool
+				_m.IsTermsAgreed = value.Bool
+			}
+		case user.FieldIsPrivacyAgreed:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_privacy_agreed", values[i])
+			} else if value.Valid {
+				_m.IsPrivacyAgreed = value.Bool
 			}
 		case user.FieldFcmToken:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field fcm_token", values[i])
 			} else if value.Valid {
-				u.FcmToken = value.String
+				_m.FcmToken = value.String
 			}
 		case user.FieldTimezone:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field timezone", values[i])
 			} else if value.Valid {
-				u.Timezone = value.String
+				_m.Timezone = value.String
 			}
 		case user.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				u.CreatedAt = value.Time
+				_m.CreatedAt = value.Time
 			}
 		case user.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				u.UpdatedAt = value.Time
+				_m.UpdatedAt = value.Time
 			}
 		default:
-			u.selectValues.Set(columns[i], values[i])
+			_m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -190,79 +198,82 @@ func (u *User) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the User.
 // This includes values selected through modifiers, order, etc.
-func (u *User) Value(name string) (ent.Value, error) {
-	return u.selectValues.Get(name)
+func (_m *User) Value(name string) (ent.Value, error) {
+	return _m.selectValues.Get(name)
 }
 
 // QueryBooks queries the "books" edge of the User entity.
-func (u *User) QueryBooks() *BookQuery {
-	return NewUserClient(u.config).QueryBooks(u)
+func (_m *User) QueryBooks() *BookQuery {
+	return NewUserClient(_m.config).QueryBooks(_m)
 }
 
 // QueryReviews queries the "reviews" edge of the User entity.
-func (u *User) QueryReviews() *ReviewQuery {
-	return NewUserClient(u.config).QueryReviews(u)
+func (_m *User) QueryReviews() *ReviewQuery {
+	return NewUserClient(_m.config).QueryReviews(_m)
 }
 
 // QueryBookmarks queries the "bookmarks" edge of the User entity.
-func (u *User) QueryBookmarks() *BookmarkQuery {
-	return NewUserClient(u.config).QueryBookmarks(u)
+func (_m *User) QueryBookmarks() *BookmarkQuery {
+	return NewUserClient(_m.config).QueryBookmarks(_m)
 }
 
 // QueryReadingReminders queries the "reading_reminders" edge of the User entity.
-func (u *User) QueryReadingReminders() *ReadingReminderQuery {
-	return NewUserClient(u.config).QueryReadingReminders(u)
+func (_m *User) QueryReadingReminders() *ReadingReminderQuery {
+	return NewUserClient(_m.config).QueryReadingReminders(_m)
 }
 
 // Update returns a builder for updating this User.
 // Note that you need to call User.Unwrap() before calling this method if this User
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (u *User) Update() *UserUpdateOne {
-	return NewUserClient(u.config).UpdateOne(u)
+func (_m *User) Update() *UserUpdateOne {
+	return NewUserClient(_m.config).UpdateOne(_m)
 }
 
 // Unwrap unwraps the User entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (u *User) Unwrap() *User {
-	_tx, ok := u.config.driver.(*txDriver)
+func (_m *User) Unwrap() *User {
+	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: User is not a transactional entity")
 	}
-	u.config.driver = _tx.drv
-	return u
+	_m.config.driver = _tx.drv
+	return _m
 }
 
 // String implements the fmt.Stringer.
-func (u *User) String() string {
+func (_m *User) String() string {
 	var builder strings.Builder
 	builder.WriteString("User(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", u.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("nick_name=")
-	builder.WriteString(u.NickName)
+	builder.WriteString(_m.NickName)
 	builder.WriteString(", ")
 	builder.WriteString("email=")
-	builder.WriteString(u.Email)
+	builder.WriteString(_m.Email)
 	builder.WriteString(", ")
 	builder.WriteString("password=")
-	builder.WriteString(u.Password)
+	builder.WriteString(_m.Password)
 	builder.WriteString(", ")
 	builder.WriteString("is_published=")
-	builder.WriteString(fmt.Sprintf("%v", u.IsPublished))
+	builder.WriteString(fmt.Sprintf("%v", _m.IsPublished))
 	builder.WriteString(", ")
 	builder.WriteString("is_terms_agreed=")
-	builder.WriteString(fmt.Sprintf("%v", u.IsTermsAgreed))
+	builder.WriteString(fmt.Sprintf("%v", _m.IsTermsAgreed))
+	builder.WriteString(", ")
+	builder.WriteString("is_privacy_agreed=")
+	builder.WriteString(fmt.Sprintf("%v", _m.IsPrivacyAgreed))
 	builder.WriteString(", ")
 	builder.WriteString("fcm_token=")
-	builder.WriteString(u.FcmToken)
+	builder.WriteString(_m.FcmToken)
 	builder.WriteString(", ")
 	builder.WriteString("timezone=")
-	builder.WriteString(u.Timezone)
+	builder.WriteString(_m.Timezone)
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
-	builder.WriteString(u.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
-	builder.WriteString(u.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

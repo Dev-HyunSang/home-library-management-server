@@ -39,6 +39,7 @@ func (r *UserRepository) Save(user *domain.User) (*domain.User, error) {
 		SetEmail(user.Email).
 		SetIsPublished(user.IsPublished). // 기본값은 비공개인 false로 설정
 		SetIsTermsAgreed(user.IsTermsAgreed).
+		SetIsPrivacyAgreed(user.IsPrivacyAgreed).
 		SetUpdatedAt(time.Now()).
 		SetCreatedAt(time.Now())
 
@@ -51,16 +52,17 @@ func (r *UserRepository) Save(user *domain.User) (*domain.User, error) {
 	if err == nil {
 		logger.Sugar().Infof("새로운 유저를 생성하였습니다. 새로운 유저: %s", u.ID.String())
 		return &domain.User{
-			ID:            u.ID,
-			NickName:      u.NickName,
-			Email:         u.Email,
-			Password:      u.Password,
-			IsPublished:   u.IsPublished,
-			IsTermsAgreed: u.IsTermsAgreed,
-			FCMToken:      u.FcmToken,
-			Timezone:      u.Timezone,
-			CreatedAt:     u.CreatedAt,
-			UpdatedAt:     u.UpdatedAt,
+			ID:              u.ID,
+			NickName:        u.NickName,
+			Email:           u.Email,
+			Password:        u.Password,
+			IsPublished:     u.IsPublished,
+			IsTermsAgreed:   u.IsTermsAgreed,
+			IsPrivacyAgreed: u.IsPrivacyAgreed,
+			FCMToken:        u.FcmToken,
+			Timezone:        u.Timezone,
+			CreatedAt:       u.CreatedAt,
+			UpdatedAt:       u.UpdatedAt,
 		}, nil
 	}
 
@@ -81,16 +83,17 @@ func (r *UserRepository) GetByID(id uuid.UUID) (*domain.User, error) {
 	if err == nil {
 		logger.Sugar().Infof("사용자 정보를 ID로 조회했습니다. 사용자ID: %s", u.ID.String())
 		return &domain.User{
-			ID:            u.ID,
-			NickName:      u.NickName,
-			Email:         u.Email,
-			Password:      u.Password,
-			IsPublished:   u.IsPublished,
-			IsTermsAgreed: u.IsTermsAgreed,
-			FCMToken:      u.FcmToken,
-			Timezone:      u.Timezone,
-			CreatedAt:     u.CreatedAt,
-			UpdatedAt:     u.UpdatedAt,
+			ID:              u.ID,
+			NickName:        u.NickName,
+			Email:           u.Email,
+			Password:        u.Password,
+			IsPublished:     u.IsPublished,
+			IsTermsAgreed:   u.IsTermsAgreed,
+			IsPrivacyAgreed: u.IsPrivacyAgreed,
+			FCMToken:        u.FcmToken,
+			Timezone:        u.Timezone,
+			CreatedAt:       u.CreatedAt,
+			UpdatedAt:       u.UpdatedAt,
 		}, nil
 	}
 
@@ -111,16 +114,17 @@ func (r *UserRepository) GetByEmail(email string) (*domain.User, error) {
 	if err == nil {
 		logger.Sugar().Infof("사용자 정보를 이메일로 조회했습니다. 사용자 이메일: %s", u.Email)
 		return &domain.User{
-			ID:            u.ID,
-			NickName:      u.NickName,
-			Email:         u.Email,
-			Password:      u.Password,
-			IsPublished:   u.IsPublished,
-			IsTermsAgreed: u.IsTermsAgreed,
-			FCMToken:      u.FcmToken,
-			Timezone:      u.Timezone,
-			CreatedAt:     u.CreatedAt,
-			UpdatedAt:     u.UpdatedAt,
+			ID:              u.ID,
+			NickName:        u.NickName,
+			Email:           u.Email,
+			Password:        u.Password,
+			IsPublished:     u.IsPublished,
+			IsTermsAgreed:   u.IsTermsAgreed,
+			IsPrivacyAgreed: u.IsPrivacyAgreed,
+			FCMToken:        u.FcmToken,
+			Timezone:        u.Timezone,
+			CreatedAt:       u.CreatedAt,
+			UpdatedAt:       u.UpdatedAt,
 		}, nil
 	}
 
@@ -141,16 +145,17 @@ func (r *UserRepository) GetByNickname(nickname string) (*domain.User, error) {
 	if err == nil {
 		logger.Sugar().Infof("사용자 정보를 닉네임으로 조회했습니다. 사용자 닉네임: %s", u.NickName)
 		return &domain.User{
-			ID:            u.ID,
-			NickName:      u.NickName,
-			Email:         u.Email,
-			Password:      u.Password,
-			IsPublished:   u.IsPublished,
-			IsTermsAgreed: u.IsTermsAgreed,
-			FCMToken:      u.FcmToken,
-			Timezone:      u.Timezone,
-			CreatedAt:     u.CreatedAt,
-			UpdatedAt:     u.UpdatedAt,
+			ID:              u.ID,
+			NickName:        u.NickName,
+			Email:           u.Email,
+			Password:        u.Password,
+			IsPublished:     u.IsPublished,
+			IsTermsAgreed:   u.IsTermsAgreed,
+			IsPrivacyAgreed: u.IsPrivacyAgreed,
+			FCMToken:        u.FcmToken,
+			Timezone:        u.Timezone,
+			CreatedAt:       u.CreatedAt,
+			UpdatedAt:       u.UpdatedAt,
 		}, nil
 	}
 
@@ -268,16 +273,17 @@ func (r *UserRepository) GetUserWithFCM(userID uuid.UUID) (*domain.User, error) 
 	}
 
 	return &domain.User{
-		ID:            u.ID,
-		NickName:      u.NickName,
-		Email:         u.Email,
-		Password:      u.Password,
-		IsPublished:   u.IsPublished,
-		IsTermsAgreed: u.IsTermsAgreed,
-		FCMToken:      u.FcmToken,
-		Timezone:      u.Timezone,
-		CreatedAt:     u.CreatedAt,
-		UpdatedAt:     u.UpdatedAt,
+		ID:              u.ID,
+		NickName:        u.NickName,
+		Email:           u.Email,
+		Password:        u.Password,
+		IsPublished:     u.IsPublished,
+		IsTermsAgreed:   u.IsTermsAgreed,
+		IsPrivacyAgreed: u.IsPrivacyAgreed,
+		FCMToken:        u.FcmToken,
+		Timezone:        u.Timezone,
+		CreatedAt:       u.CreatedAt,
+		UpdatedAt:       u.UpdatedAt,
 	}, nil
 }
 
@@ -293,15 +299,16 @@ func (r *UserRepository) GetAllUsersWithFCM() ([]*domain.User, error) {
 	result := make([]*domain.User, len(users))
 	for i, u := range users {
 		result[i] = &domain.User{
-			ID:            u.ID,
-			NickName:      u.NickName,
-			Email:         u.Email,
-			IsPublished:   u.IsPublished,
-			IsTermsAgreed: u.IsTermsAgreed,
-			FCMToken:      u.FcmToken,
-			Timezone:      u.Timezone,
-			CreatedAt:     u.CreatedAt,
-			UpdatedAt:     u.UpdatedAt,
+			ID:              u.ID,
+			NickName:        u.NickName,
+			Email:           u.Email,
+			IsPublished:     u.IsPublished,
+			IsTermsAgreed:   u.IsTermsAgreed,
+			IsPrivacyAgreed: u.IsPrivacyAgreed,
+			FCMToken:        u.FcmToken,
+			Timezone:        u.Timezone,
+			CreatedAt:       u.CreatedAt,
+			UpdatedAt:       u.UpdatedAt,
 		}
 	}
 

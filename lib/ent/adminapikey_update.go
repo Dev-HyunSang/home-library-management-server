@@ -23,127 +23,127 @@ type AdminAPIKeyUpdate struct {
 }
 
 // Where appends a list predicates to the AdminAPIKeyUpdate builder.
-func (aaku *AdminAPIKeyUpdate) Where(ps ...predicate.AdminAPIKey) *AdminAPIKeyUpdate {
-	aaku.mutation.Where(ps...)
-	return aaku
+func (_u *AdminAPIKeyUpdate) Where(ps ...predicate.AdminAPIKey) *AdminAPIKeyUpdate {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // SetName sets the "name" field.
-func (aaku *AdminAPIKeyUpdate) SetName(s string) *AdminAPIKeyUpdate {
-	aaku.mutation.SetName(s)
-	return aaku
+func (_u *AdminAPIKeyUpdate) SetName(v string) *AdminAPIKeyUpdate {
+	_u.mutation.SetName(v)
+	return _u
 }
 
 // SetNillableName sets the "name" field if the given value is not nil.
-func (aaku *AdminAPIKeyUpdate) SetNillableName(s *string) *AdminAPIKeyUpdate {
-	if s != nil {
-		aaku.SetName(*s)
+func (_u *AdminAPIKeyUpdate) SetNillableName(v *string) *AdminAPIKeyUpdate {
+	if v != nil {
+		_u.SetName(*v)
 	}
-	return aaku
+	return _u
 }
 
 // SetKeyHash sets the "key_hash" field.
-func (aaku *AdminAPIKeyUpdate) SetKeyHash(s string) *AdminAPIKeyUpdate {
-	aaku.mutation.SetKeyHash(s)
-	return aaku
+func (_u *AdminAPIKeyUpdate) SetKeyHash(v string) *AdminAPIKeyUpdate {
+	_u.mutation.SetKeyHash(v)
+	return _u
 }
 
 // SetNillableKeyHash sets the "key_hash" field if the given value is not nil.
-func (aaku *AdminAPIKeyUpdate) SetNillableKeyHash(s *string) *AdminAPIKeyUpdate {
-	if s != nil {
-		aaku.SetKeyHash(*s)
+func (_u *AdminAPIKeyUpdate) SetNillableKeyHash(v *string) *AdminAPIKeyUpdate {
+	if v != nil {
+		_u.SetKeyHash(*v)
 	}
-	return aaku
+	return _u
 }
 
 // SetKeyPrefix sets the "key_prefix" field.
-func (aaku *AdminAPIKeyUpdate) SetKeyPrefix(s string) *AdminAPIKeyUpdate {
-	aaku.mutation.SetKeyPrefix(s)
-	return aaku
+func (_u *AdminAPIKeyUpdate) SetKeyPrefix(v string) *AdminAPIKeyUpdate {
+	_u.mutation.SetKeyPrefix(v)
+	return _u
 }
 
 // SetNillableKeyPrefix sets the "key_prefix" field if the given value is not nil.
-func (aaku *AdminAPIKeyUpdate) SetNillableKeyPrefix(s *string) *AdminAPIKeyUpdate {
-	if s != nil {
-		aaku.SetKeyPrefix(*s)
+func (_u *AdminAPIKeyUpdate) SetNillableKeyPrefix(v *string) *AdminAPIKeyUpdate {
+	if v != nil {
+		_u.SetKeyPrefix(*v)
 	}
-	return aaku
+	return _u
 }
 
 // SetIsActive sets the "is_active" field.
-func (aaku *AdminAPIKeyUpdate) SetIsActive(b bool) *AdminAPIKeyUpdate {
-	aaku.mutation.SetIsActive(b)
-	return aaku
+func (_u *AdminAPIKeyUpdate) SetIsActive(v bool) *AdminAPIKeyUpdate {
+	_u.mutation.SetIsActive(v)
+	return _u
 }
 
 // SetNillableIsActive sets the "is_active" field if the given value is not nil.
-func (aaku *AdminAPIKeyUpdate) SetNillableIsActive(b *bool) *AdminAPIKeyUpdate {
-	if b != nil {
-		aaku.SetIsActive(*b)
+func (_u *AdminAPIKeyUpdate) SetNillableIsActive(v *bool) *AdminAPIKeyUpdate {
+	if v != nil {
+		_u.SetIsActive(*v)
 	}
-	return aaku
+	return _u
 }
 
 // SetLastUsedAt sets the "last_used_at" field.
-func (aaku *AdminAPIKeyUpdate) SetLastUsedAt(t time.Time) *AdminAPIKeyUpdate {
-	aaku.mutation.SetLastUsedAt(t)
-	return aaku
+func (_u *AdminAPIKeyUpdate) SetLastUsedAt(v time.Time) *AdminAPIKeyUpdate {
+	_u.mutation.SetLastUsedAt(v)
+	return _u
 }
 
 // SetNillableLastUsedAt sets the "last_used_at" field if the given value is not nil.
-func (aaku *AdminAPIKeyUpdate) SetNillableLastUsedAt(t *time.Time) *AdminAPIKeyUpdate {
-	if t != nil {
-		aaku.SetLastUsedAt(*t)
+func (_u *AdminAPIKeyUpdate) SetNillableLastUsedAt(v *time.Time) *AdminAPIKeyUpdate {
+	if v != nil {
+		_u.SetLastUsedAt(*v)
 	}
-	return aaku
+	return _u
 }
 
 // ClearLastUsedAt clears the value of the "last_used_at" field.
-func (aaku *AdminAPIKeyUpdate) ClearLastUsedAt() *AdminAPIKeyUpdate {
-	aaku.mutation.ClearLastUsedAt()
-	return aaku
+func (_u *AdminAPIKeyUpdate) ClearLastUsedAt() *AdminAPIKeyUpdate {
+	_u.mutation.ClearLastUsedAt()
+	return _u
 }
 
 // SetExpiresAt sets the "expires_at" field.
-func (aaku *AdminAPIKeyUpdate) SetExpiresAt(t time.Time) *AdminAPIKeyUpdate {
-	aaku.mutation.SetExpiresAt(t)
-	return aaku
+func (_u *AdminAPIKeyUpdate) SetExpiresAt(v time.Time) *AdminAPIKeyUpdate {
+	_u.mutation.SetExpiresAt(v)
+	return _u
 }
 
 // SetNillableExpiresAt sets the "expires_at" field if the given value is not nil.
-func (aaku *AdminAPIKeyUpdate) SetNillableExpiresAt(t *time.Time) *AdminAPIKeyUpdate {
-	if t != nil {
-		aaku.SetExpiresAt(*t)
+func (_u *AdminAPIKeyUpdate) SetNillableExpiresAt(v *time.Time) *AdminAPIKeyUpdate {
+	if v != nil {
+		_u.SetExpiresAt(*v)
 	}
-	return aaku
+	return _u
 }
 
 // ClearExpiresAt clears the value of the "expires_at" field.
-func (aaku *AdminAPIKeyUpdate) ClearExpiresAt() *AdminAPIKeyUpdate {
-	aaku.mutation.ClearExpiresAt()
-	return aaku
+func (_u *AdminAPIKeyUpdate) ClearExpiresAt() *AdminAPIKeyUpdate {
+	_u.mutation.ClearExpiresAt()
+	return _u
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (aaku *AdminAPIKeyUpdate) SetUpdatedAt(t time.Time) *AdminAPIKeyUpdate {
-	aaku.mutation.SetUpdatedAt(t)
-	return aaku
+func (_u *AdminAPIKeyUpdate) SetUpdatedAt(v time.Time) *AdminAPIKeyUpdate {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
 }
 
 // Mutation returns the AdminAPIKeyMutation object of the builder.
-func (aaku *AdminAPIKeyUpdate) Mutation() *AdminAPIKeyMutation {
-	return aaku.mutation
+func (_u *AdminAPIKeyUpdate) Mutation() *AdminAPIKeyMutation {
+	return _u.mutation
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (aaku *AdminAPIKeyUpdate) Save(ctx context.Context) (int, error) {
-	aaku.defaults()
-	return withHooks(ctx, aaku.sqlSave, aaku.mutation, aaku.hooks)
+func (_u *AdminAPIKeyUpdate) Save(ctx context.Context) (int, error) {
+	_u.defaults()
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (aaku *AdminAPIKeyUpdate) SaveX(ctx context.Context) int {
-	affected, err := aaku.Save(ctx)
+func (_u *AdminAPIKeyUpdate) SaveX(ctx context.Context) int {
+	affected, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -151,39 +151,39 @@ func (aaku *AdminAPIKeyUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (aaku *AdminAPIKeyUpdate) Exec(ctx context.Context) error {
-	_, err := aaku.Save(ctx)
+func (_u *AdminAPIKeyUpdate) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (aaku *AdminAPIKeyUpdate) ExecX(ctx context.Context) {
-	if err := aaku.Exec(ctx); err != nil {
+func (_u *AdminAPIKeyUpdate) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (aaku *AdminAPIKeyUpdate) defaults() {
-	if _, ok := aaku.mutation.UpdatedAt(); !ok {
+func (_u *AdminAPIKeyUpdate) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
 		v := adminapikey.UpdateDefaultUpdatedAt()
-		aaku.mutation.SetUpdatedAt(v)
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (aaku *AdminAPIKeyUpdate) check() error {
-	if v, ok := aaku.mutation.Name(); ok {
+func (_u *AdminAPIKeyUpdate) check() error {
+	if v, ok := _u.mutation.Name(); ok {
 		if err := adminapikey.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "AdminAPIKey.name": %w`, err)}
 		}
 	}
-	if v, ok := aaku.mutation.KeyHash(); ok {
+	if v, ok := _u.mutation.KeyHash(); ok {
 		if err := adminapikey.KeyHashValidator(v); err != nil {
 			return &ValidationError{Name: "key_hash", err: fmt.Errorf(`ent: validator failed for field "AdminAPIKey.key_hash": %w`, err)}
 		}
 	}
-	if v, ok := aaku.mutation.KeyPrefix(); ok {
+	if v, ok := _u.mutation.KeyPrefix(); ok {
 		if err := adminapikey.KeyPrefixValidator(v); err != nil {
 			return &ValidationError{Name: "key_prefix", err: fmt.Errorf(`ent: validator failed for field "AdminAPIKey.key_prefix": %w`, err)}
 		}
@@ -191,46 +191,46 @@ func (aaku *AdminAPIKeyUpdate) check() error {
 	return nil
 }
 
-func (aaku *AdminAPIKeyUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := aaku.check(); err != nil {
-		return n, err
+func (_u *AdminAPIKeyUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(adminapikey.Table, adminapikey.Columns, sqlgraph.NewFieldSpec(adminapikey.FieldID, field.TypeUUID))
-	if ps := aaku.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := aaku.mutation.Name(); ok {
+	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(adminapikey.FieldName, field.TypeString, value)
 	}
-	if value, ok := aaku.mutation.KeyHash(); ok {
+	if value, ok := _u.mutation.KeyHash(); ok {
 		_spec.SetField(adminapikey.FieldKeyHash, field.TypeString, value)
 	}
-	if value, ok := aaku.mutation.KeyPrefix(); ok {
+	if value, ok := _u.mutation.KeyPrefix(); ok {
 		_spec.SetField(adminapikey.FieldKeyPrefix, field.TypeString, value)
 	}
-	if value, ok := aaku.mutation.IsActive(); ok {
+	if value, ok := _u.mutation.IsActive(); ok {
 		_spec.SetField(adminapikey.FieldIsActive, field.TypeBool, value)
 	}
-	if value, ok := aaku.mutation.LastUsedAt(); ok {
+	if value, ok := _u.mutation.LastUsedAt(); ok {
 		_spec.SetField(adminapikey.FieldLastUsedAt, field.TypeTime, value)
 	}
-	if aaku.mutation.LastUsedAtCleared() {
+	if _u.mutation.LastUsedAtCleared() {
 		_spec.ClearField(adminapikey.FieldLastUsedAt, field.TypeTime)
 	}
-	if value, ok := aaku.mutation.ExpiresAt(); ok {
+	if value, ok := _u.mutation.ExpiresAt(); ok {
 		_spec.SetField(adminapikey.FieldExpiresAt, field.TypeTime, value)
 	}
-	if aaku.mutation.ExpiresAtCleared() {
+	if _u.mutation.ExpiresAtCleared() {
 		_spec.ClearField(adminapikey.FieldExpiresAt, field.TypeTime)
 	}
-	if value, ok := aaku.mutation.UpdatedAt(); ok {
+	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(adminapikey.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, aaku.driver, _spec); err != nil {
+	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{adminapikey.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -238,8 +238,8 @@ func (aaku *AdminAPIKeyUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
-	aaku.mutation.done = true
-	return n, nil
+	_u.mutation.done = true
+	return _node, nil
 }
 
 // AdminAPIKeyUpdateOne is the builder for updating a single AdminAPIKey entity.
@@ -251,134 +251,134 @@ type AdminAPIKeyUpdateOne struct {
 }
 
 // SetName sets the "name" field.
-func (aakuo *AdminAPIKeyUpdateOne) SetName(s string) *AdminAPIKeyUpdateOne {
-	aakuo.mutation.SetName(s)
-	return aakuo
+func (_u *AdminAPIKeyUpdateOne) SetName(v string) *AdminAPIKeyUpdateOne {
+	_u.mutation.SetName(v)
+	return _u
 }
 
 // SetNillableName sets the "name" field if the given value is not nil.
-func (aakuo *AdminAPIKeyUpdateOne) SetNillableName(s *string) *AdminAPIKeyUpdateOne {
-	if s != nil {
-		aakuo.SetName(*s)
+func (_u *AdminAPIKeyUpdateOne) SetNillableName(v *string) *AdminAPIKeyUpdateOne {
+	if v != nil {
+		_u.SetName(*v)
 	}
-	return aakuo
+	return _u
 }
 
 // SetKeyHash sets the "key_hash" field.
-func (aakuo *AdminAPIKeyUpdateOne) SetKeyHash(s string) *AdminAPIKeyUpdateOne {
-	aakuo.mutation.SetKeyHash(s)
-	return aakuo
+func (_u *AdminAPIKeyUpdateOne) SetKeyHash(v string) *AdminAPIKeyUpdateOne {
+	_u.mutation.SetKeyHash(v)
+	return _u
 }
 
 // SetNillableKeyHash sets the "key_hash" field if the given value is not nil.
-func (aakuo *AdminAPIKeyUpdateOne) SetNillableKeyHash(s *string) *AdminAPIKeyUpdateOne {
-	if s != nil {
-		aakuo.SetKeyHash(*s)
+func (_u *AdminAPIKeyUpdateOne) SetNillableKeyHash(v *string) *AdminAPIKeyUpdateOne {
+	if v != nil {
+		_u.SetKeyHash(*v)
 	}
-	return aakuo
+	return _u
 }
 
 // SetKeyPrefix sets the "key_prefix" field.
-func (aakuo *AdminAPIKeyUpdateOne) SetKeyPrefix(s string) *AdminAPIKeyUpdateOne {
-	aakuo.mutation.SetKeyPrefix(s)
-	return aakuo
+func (_u *AdminAPIKeyUpdateOne) SetKeyPrefix(v string) *AdminAPIKeyUpdateOne {
+	_u.mutation.SetKeyPrefix(v)
+	return _u
 }
 
 // SetNillableKeyPrefix sets the "key_prefix" field if the given value is not nil.
-func (aakuo *AdminAPIKeyUpdateOne) SetNillableKeyPrefix(s *string) *AdminAPIKeyUpdateOne {
-	if s != nil {
-		aakuo.SetKeyPrefix(*s)
+func (_u *AdminAPIKeyUpdateOne) SetNillableKeyPrefix(v *string) *AdminAPIKeyUpdateOne {
+	if v != nil {
+		_u.SetKeyPrefix(*v)
 	}
-	return aakuo
+	return _u
 }
 
 // SetIsActive sets the "is_active" field.
-func (aakuo *AdminAPIKeyUpdateOne) SetIsActive(b bool) *AdminAPIKeyUpdateOne {
-	aakuo.mutation.SetIsActive(b)
-	return aakuo
+func (_u *AdminAPIKeyUpdateOne) SetIsActive(v bool) *AdminAPIKeyUpdateOne {
+	_u.mutation.SetIsActive(v)
+	return _u
 }
 
 // SetNillableIsActive sets the "is_active" field if the given value is not nil.
-func (aakuo *AdminAPIKeyUpdateOne) SetNillableIsActive(b *bool) *AdminAPIKeyUpdateOne {
-	if b != nil {
-		aakuo.SetIsActive(*b)
+func (_u *AdminAPIKeyUpdateOne) SetNillableIsActive(v *bool) *AdminAPIKeyUpdateOne {
+	if v != nil {
+		_u.SetIsActive(*v)
 	}
-	return aakuo
+	return _u
 }
 
 // SetLastUsedAt sets the "last_used_at" field.
-func (aakuo *AdminAPIKeyUpdateOne) SetLastUsedAt(t time.Time) *AdminAPIKeyUpdateOne {
-	aakuo.mutation.SetLastUsedAt(t)
-	return aakuo
+func (_u *AdminAPIKeyUpdateOne) SetLastUsedAt(v time.Time) *AdminAPIKeyUpdateOne {
+	_u.mutation.SetLastUsedAt(v)
+	return _u
 }
 
 // SetNillableLastUsedAt sets the "last_used_at" field if the given value is not nil.
-func (aakuo *AdminAPIKeyUpdateOne) SetNillableLastUsedAt(t *time.Time) *AdminAPIKeyUpdateOne {
-	if t != nil {
-		aakuo.SetLastUsedAt(*t)
+func (_u *AdminAPIKeyUpdateOne) SetNillableLastUsedAt(v *time.Time) *AdminAPIKeyUpdateOne {
+	if v != nil {
+		_u.SetLastUsedAt(*v)
 	}
-	return aakuo
+	return _u
 }
 
 // ClearLastUsedAt clears the value of the "last_used_at" field.
-func (aakuo *AdminAPIKeyUpdateOne) ClearLastUsedAt() *AdminAPIKeyUpdateOne {
-	aakuo.mutation.ClearLastUsedAt()
-	return aakuo
+func (_u *AdminAPIKeyUpdateOne) ClearLastUsedAt() *AdminAPIKeyUpdateOne {
+	_u.mutation.ClearLastUsedAt()
+	return _u
 }
 
 // SetExpiresAt sets the "expires_at" field.
-func (aakuo *AdminAPIKeyUpdateOne) SetExpiresAt(t time.Time) *AdminAPIKeyUpdateOne {
-	aakuo.mutation.SetExpiresAt(t)
-	return aakuo
+func (_u *AdminAPIKeyUpdateOne) SetExpiresAt(v time.Time) *AdminAPIKeyUpdateOne {
+	_u.mutation.SetExpiresAt(v)
+	return _u
 }
 
 // SetNillableExpiresAt sets the "expires_at" field if the given value is not nil.
-func (aakuo *AdminAPIKeyUpdateOne) SetNillableExpiresAt(t *time.Time) *AdminAPIKeyUpdateOne {
-	if t != nil {
-		aakuo.SetExpiresAt(*t)
+func (_u *AdminAPIKeyUpdateOne) SetNillableExpiresAt(v *time.Time) *AdminAPIKeyUpdateOne {
+	if v != nil {
+		_u.SetExpiresAt(*v)
 	}
-	return aakuo
+	return _u
 }
 
 // ClearExpiresAt clears the value of the "expires_at" field.
-func (aakuo *AdminAPIKeyUpdateOne) ClearExpiresAt() *AdminAPIKeyUpdateOne {
-	aakuo.mutation.ClearExpiresAt()
-	return aakuo
+func (_u *AdminAPIKeyUpdateOne) ClearExpiresAt() *AdminAPIKeyUpdateOne {
+	_u.mutation.ClearExpiresAt()
+	return _u
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (aakuo *AdminAPIKeyUpdateOne) SetUpdatedAt(t time.Time) *AdminAPIKeyUpdateOne {
-	aakuo.mutation.SetUpdatedAt(t)
-	return aakuo
+func (_u *AdminAPIKeyUpdateOne) SetUpdatedAt(v time.Time) *AdminAPIKeyUpdateOne {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
 }
 
 // Mutation returns the AdminAPIKeyMutation object of the builder.
-func (aakuo *AdminAPIKeyUpdateOne) Mutation() *AdminAPIKeyMutation {
-	return aakuo.mutation
+func (_u *AdminAPIKeyUpdateOne) Mutation() *AdminAPIKeyMutation {
+	return _u.mutation
 }
 
 // Where appends a list predicates to the AdminAPIKeyUpdate builder.
-func (aakuo *AdminAPIKeyUpdateOne) Where(ps ...predicate.AdminAPIKey) *AdminAPIKeyUpdateOne {
-	aakuo.mutation.Where(ps...)
-	return aakuo
+func (_u *AdminAPIKeyUpdateOne) Where(ps ...predicate.AdminAPIKey) *AdminAPIKeyUpdateOne {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (aakuo *AdminAPIKeyUpdateOne) Select(field string, fields ...string) *AdminAPIKeyUpdateOne {
-	aakuo.fields = append([]string{field}, fields...)
-	return aakuo
+func (_u *AdminAPIKeyUpdateOne) Select(field string, fields ...string) *AdminAPIKeyUpdateOne {
+	_u.fields = append([]string{field}, fields...)
+	return _u
 }
 
 // Save executes the query and returns the updated AdminAPIKey entity.
-func (aakuo *AdminAPIKeyUpdateOne) Save(ctx context.Context) (*AdminAPIKey, error) {
-	aakuo.defaults()
-	return withHooks(ctx, aakuo.sqlSave, aakuo.mutation, aakuo.hooks)
+func (_u *AdminAPIKeyUpdateOne) Save(ctx context.Context) (*AdminAPIKey, error) {
+	_u.defaults()
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (aakuo *AdminAPIKeyUpdateOne) SaveX(ctx context.Context) *AdminAPIKey {
-	node, err := aakuo.Save(ctx)
+func (_u *AdminAPIKeyUpdateOne) SaveX(ctx context.Context) *AdminAPIKey {
+	node, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -386,39 +386,39 @@ func (aakuo *AdminAPIKeyUpdateOne) SaveX(ctx context.Context) *AdminAPIKey {
 }
 
 // Exec executes the query on the entity.
-func (aakuo *AdminAPIKeyUpdateOne) Exec(ctx context.Context) error {
-	_, err := aakuo.Save(ctx)
+func (_u *AdminAPIKeyUpdateOne) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (aakuo *AdminAPIKeyUpdateOne) ExecX(ctx context.Context) {
-	if err := aakuo.Exec(ctx); err != nil {
+func (_u *AdminAPIKeyUpdateOne) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (aakuo *AdminAPIKeyUpdateOne) defaults() {
-	if _, ok := aakuo.mutation.UpdatedAt(); !ok {
+func (_u *AdminAPIKeyUpdateOne) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
 		v := adminapikey.UpdateDefaultUpdatedAt()
-		aakuo.mutation.SetUpdatedAt(v)
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (aakuo *AdminAPIKeyUpdateOne) check() error {
-	if v, ok := aakuo.mutation.Name(); ok {
+func (_u *AdminAPIKeyUpdateOne) check() error {
+	if v, ok := _u.mutation.Name(); ok {
 		if err := adminapikey.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "AdminAPIKey.name": %w`, err)}
 		}
 	}
-	if v, ok := aakuo.mutation.KeyHash(); ok {
+	if v, ok := _u.mutation.KeyHash(); ok {
 		if err := adminapikey.KeyHashValidator(v); err != nil {
 			return &ValidationError{Name: "key_hash", err: fmt.Errorf(`ent: validator failed for field "AdminAPIKey.key_hash": %w`, err)}
 		}
 	}
-	if v, ok := aakuo.mutation.KeyPrefix(); ok {
+	if v, ok := _u.mutation.KeyPrefix(); ok {
 		if err := adminapikey.KeyPrefixValidator(v); err != nil {
 			return &ValidationError{Name: "key_prefix", err: fmt.Errorf(`ent: validator failed for field "AdminAPIKey.key_prefix": %w`, err)}
 		}
@@ -426,17 +426,17 @@ func (aakuo *AdminAPIKeyUpdateOne) check() error {
 	return nil
 }
 
-func (aakuo *AdminAPIKeyUpdateOne) sqlSave(ctx context.Context) (_node *AdminAPIKey, err error) {
-	if err := aakuo.check(); err != nil {
+func (_u *AdminAPIKeyUpdateOne) sqlSave(ctx context.Context) (_node *AdminAPIKey, err error) {
+	if err := _u.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(adminapikey.Table, adminapikey.Columns, sqlgraph.NewFieldSpec(adminapikey.FieldID, field.TypeUUID))
-	id, ok := aakuo.mutation.ID()
+	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "AdminAPIKey.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := aakuo.fields; len(fields) > 0 {
+	if fields := _u.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, adminapikey.FieldID)
 		for _, f := range fields {
@@ -448,44 +448,44 @@ func (aakuo *AdminAPIKeyUpdateOne) sqlSave(ctx context.Context) (_node *AdminAPI
 			}
 		}
 	}
-	if ps := aakuo.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := aakuo.mutation.Name(); ok {
+	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(adminapikey.FieldName, field.TypeString, value)
 	}
-	if value, ok := aakuo.mutation.KeyHash(); ok {
+	if value, ok := _u.mutation.KeyHash(); ok {
 		_spec.SetField(adminapikey.FieldKeyHash, field.TypeString, value)
 	}
-	if value, ok := aakuo.mutation.KeyPrefix(); ok {
+	if value, ok := _u.mutation.KeyPrefix(); ok {
 		_spec.SetField(adminapikey.FieldKeyPrefix, field.TypeString, value)
 	}
-	if value, ok := aakuo.mutation.IsActive(); ok {
+	if value, ok := _u.mutation.IsActive(); ok {
 		_spec.SetField(adminapikey.FieldIsActive, field.TypeBool, value)
 	}
-	if value, ok := aakuo.mutation.LastUsedAt(); ok {
+	if value, ok := _u.mutation.LastUsedAt(); ok {
 		_spec.SetField(adminapikey.FieldLastUsedAt, field.TypeTime, value)
 	}
-	if aakuo.mutation.LastUsedAtCleared() {
+	if _u.mutation.LastUsedAtCleared() {
 		_spec.ClearField(adminapikey.FieldLastUsedAt, field.TypeTime)
 	}
-	if value, ok := aakuo.mutation.ExpiresAt(); ok {
+	if value, ok := _u.mutation.ExpiresAt(); ok {
 		_spec.SetField(adminapikey.FieldExpiresAt, field.TypeTime, value)
 	}
-	if aakuo.mutation.ExpiresAtCleared() {
+	if _u.mutation.ExpiresAtCleared() {
 		_spec.ClearField(adminapikey.FieldExpiresAt, field.TypeTime)
 	}
-	if value, ok := aakuo.mutation.UpdatedAt(); ok {
+	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(adminapikey.FieldUpdatedAt, field.TypeTime, value)
 	}
-	_node = &AdminAPIKey{config: aakuo.config}
+	_node = &AdminAPIKey{config: _u.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, aakuo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{adminapikey.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -493,6 +493,6 @@ func (aakuo *AdminAPIKeyUpdateOne) sqlSave(ctx context.Context) (_node *AdminAPI
 		}
 		return nil, err
 	}
-	aakuo.mutation.done = true
+	_u.mutation.done = true
 	return _node, nil
 }

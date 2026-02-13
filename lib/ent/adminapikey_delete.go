@@ -20,56 +20,56 @@ type AdminAPIKeyDelete struct {
 }
 
 // Where appends a list predicates to the AdminAPIKeyDelete builder.
-func (aakd *AdminAPIKeyDelete) Where(ps ...predicate.AdminAPIKey) *AdminAPIKeyDelete {
-	aakd.mutation.Where(ps...)
-	return aakd
+func (_d *AdminAPIKeyDelete) Where(ps ...predicate.AdminAPIKey) *AdminAPIKeyDelete {
+	_d.mutation.Where(ps...)
+	return _d
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (aakd *AdminAPIKeyDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks(ctx, aakd.sqlExec, aakd.mutation, aakd.hooks)
+func (_d *AdminAPIKeyDelete) Exec(ctx context.Context) (int, error) {
+	return withHooks(ctx, _d.sqlExec, _d.mutation, _d.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (aakd *AdminAPIKeyDelete) ExecX(ctx context.Context) int {
-	n, err := aakd.Exec(ctx)
+func (_d *AdminAPIKeyDelete) ExecX(ctx context.Context) int {
+	n, err := _d.Exec(ctx)
 	if err != nil {
 		panic(err)
 	}
 	return n
 }
 
-func (aakd *AdminAPIKeyDelete) sqlExec(ctx context.Context) (int, error) {
+func (_d *AdminAPIKeyDelete) sqlExec(ctx context.Context) (int, error) {
 	_spec := sqlgraph.NewDeleteSpec(adminapikey.Table, sqlgraph.NewFieldSpec(adminapikey.FieldID, field.TypeUUID))
-	if ps := aakd.mutation.predicates; len(ps) > 0 {
+	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	affected, err := sqlgraph.DeleteNodes(ctx, aakd.driver, _spec)
+	affected, err := sqlgraph.DeleteNodes(ctx, _d.driver, _spec)
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
-	aakd.mutation.done = true
+	_d.mutation.done = true
 	return affected, err
 }
 
 // AdminAPIKeyDeleteOne is the builder for deleting a single AdminAPIKey entity.
 type AdminAPIKeyDeleteOne struct {
-	aakd *AdminAPIKeyDelete
+	_d *AdminAPIKeyDelete
 }
 
 // Where appends a list predicates to the AdminAPIKeyDelete builder.
-func (aakdo *AdminAPIKeyDeleteOne) Where(ps ...predicate.AdminAPIKey) *AdminAPIKeyDeleteOne {
-	aakdo.aakd.mutation.Where(ps...)
-	return aakdo
+func (_d *AdminAPIKeyDeleteOne) Where(ps ...predicate.AdminAPIKey) *AdminAPIKeyDeleteOne {
+	_d._d.mutation.Where(ps...)
+	return _d
 }
 
 // Exec executes the deletion query.
-func (aakdo *AdminAPIKeyDeleteOne) Exec(ctx context.Context) error {
-	n, err := aakdo.aakd.Exec(ctx)
+func (_d *AdminAPIKeyDeleteOne) Exec(ctx context.Context) error {
+	n, err := _d._d.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
@@ -81,8 +81,8 @@ func (aakdo *AdminAPIKeyDeleteOne) Exec(ctx context.Context) error {
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (aakdo *AdminAPIKeyDeleteOne) ExecX(ctx context.Context) {
-	if err := aakdo.Exec(ctx); err != nil {
+func (_d *AdminAPIKeyDeleteOne) ExecX(ctx context.Context) {
+	if err := _d.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

@@ -23,80 +23,80 @@ type EmailVerificationUpdate struct {
 }
 
 // Where appends a list predicates to the EmailVerificationUpdate builder.
-func (evu *EmailVerificationUpdate) Where(ps ...predicate.EmailVerification) *EmailVerificationUpdate {
-	evu.mutation.Where(ps...)
-	return evu
+func (_u *EmailVerificationUpdate) Where(ps ...predicate.EmailVerification) *EmailVerificationUpdate {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // SetEmail sets the "email" field.
-func (evu *EmailVerificationUpdate) SetEmail(s string) *EmailVerificationUpdate {
-	evu.mutation.SetEmail(s)
-	return evu
+func (_u *EmailVerificationUpdate) SetEmail(v string) *EmailVerificationUpdate {
+	_u.mutation.SetEmail(v)
+	return _u
 }
 
 // SetNillableEmail sets the "email" field if the given value is not nil.
-func (evu *EmailVerificationUpdate) SetNillableEmail(s *string) *EmailVerificationUpdate {
-	if s != nil {
-		evu.SetEmail(*s)
+func (_u *EmailVerificationUpdate) SetNillableEmail(v *string) *EmailVerificationUpdate {
+	if v != nil {
+		_u.SetEmail(*v)
 	}
-	return evu
+	return _u
 }
 
 // SetCode sets the "code" field.
-func (evu *EmailVerificationUpdate) SetCode(s string) *EmailVerificationUpdate {
-	evu.mutation.SetCode(s)
-	return evu
+func (_u *EmailVerificationUpdate) SetCode(v string) *EmailVerificationUpdate {
+	_u.mutation.SetCode(v)
+	return _u
 }
 
 // SetNillableCode sets the "code" field if the given value is not nil.
-func (evu *EmailVerificationUpdate) SetNillableCode(s *string) *EmailVerificationUpdate {
-	if s != nil {
-		evu.SetCode(*s)
+func (_u *EmailVerificationUpdate) SetNillableCode(v *string) *EmailVerificationUpdate {
+	if v != nil {
+		_u.SetCode(*v)
 	}
-	return evu
+	return _u
 }
 
 // SetExpiresAt sets the "expires_at" field.
-func (evu *EmailVerificationUpdate) SetExpiresAt(t time.Time) *EmailVerificationUpdate {
-	evu.mutation.SetExpiresAt(t)
-	return evu
+func (_u *EmailVerificationUpdate) SetExpiresAt(v time.Time) *EmailVerificationUpdate {
+	_u.mutation.SetExpiresAt(v)
+	return _u
 }
 
 // SetNillableExpiresAt sets the "expires_at" field if the given value is not nil.
-func (evu *EmailVerificationUpdate) SetNillableExpiresAt(t *time.Time) *EmailVerificationUpdate {
-	if t != nil {
-		evu.SetExpiresAt(*t)
+func (_u *EmailVerificationUpdate) SetNillableExpiresAt(v *time.Time) *EmailVerificationUpdate {
+	if v != nil {
+		_u.SetExpiresAt(*v)
 	}
-	return evu
+	return _u
 }
 
 // SetIsVerified sets the "is_verified" field.
-func (evu *EmailVerificationUpdate) SetIsVerified(b bool) *EmailVerificationUpdate {
-	evu.mutation.SetIsVerified(b)
-	return evu
+func (_u *EmailVerificationUpdate) SetIsVerified(v bool) *EmailVerificationUpdate {
+	_u.mutation.SetIsVerified(v)
+	return _u
 }
 
 // SetNillableIsVerified sets the "is_verified" field if the given value is not nil.
-func (evu *EmailVerificationUpdate) SetNillableIsVerified(b *bool) *EmailVerificationUpdate {
-	if b != nil {
-		evu.SetIsVerified(*b)
+func (_u *EmailVerificationUpdate) SetNillableIsVerified(v *bool) *EmailVerificationUpdate {
+	if v != nil {
+		_u.SetIsVerified(*v)
 	}
-	return evu
+	return _u
 }
 
 // Mutation returns the EmailVerificationMutation object of the builder.
-func (evu *EmailVerificationUpdate) Mutation() *EmailVerificationMutation {
-	return evu.mutation
+func (_u *EmailVerificationUpdate) Mutation() *EmailVerificationMutation {
+	return _u.mutation
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (evu *EmailVerificationUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks(ctx, evu.sqlSave, evu.mutation, evu.hooks)
+func (_u *EmailVerificationUpdate) Save(ctx context.Context) (int, error) {
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (evu *EmailVerificationUpdate) SaveX(ctx context.Context) int {
-	affected, err := evu.Save(ctx)
+func (_u *EmailVerificationUpdate) SaveX(ctx context.Context) int {
+	affected, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -104,26 +104,26 @@ func (evu *EmailVerificationUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (evu *EmailVerificationUpdate) Exec(ctx context.Context) error {
-	_, err := evu.Save(ctx)
+func (_u *EmailVerificationUpdate) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (evu *EmailVerificationUpdate) ExecX(ctx context.Context) {
-	if err := evu.Exec(ctx); err != nil {
+func (_u *EmailVerificationUpdate) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (evu *EmailVerificationUpdate) check() error {
-	if v, ok := evu.mutation.Email(); ok {
+func (_u *EmailVerificationUpdate) check() error {
+	if v, ok := _u.mutation.Email(); ok {
 		if err := emailverification.EmailValidator(v); err != nil {
 			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "EmailVerification.email": %w`, err)}
 		}
 	}
-	if v, ok := evu.mutation.Code(); ok {
+	if v, ok := _u.mutation.Code(); ok {
 		if err := emailverification.CodeValidator(v); err != nil {
 			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "EmailVerification.code": %w`, err)}
 		}
@@ -131,31 +131,31 @@ func (evu *EmailVerificationUpdate) check() error {
 	return nil
 }
 
-func (evu *EmailVerificationUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := evu.check(); err != nil {
-		return n, err
+func (_u *EmailVerificationUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(emailverification.Table, emailverification.Columns, sqlgraph.NewFieldSpec(emailverification.FieldID, field.TypeUUID))
-	if ps := evu.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := evu.mutation.Email(); ok {
+	if value, ok := _u.mutation.Email(); ok {
 		_spec.SetField(emailverification.FieldEmail, field.TypeString, value)
 	}
-	if value, ok := evu.mutation.Code(); ok {
+	if value, ok := _u.mutation.Code(); ok {
 		_spec.SetField(emailverification.FieldCode, field.TypeString, value)
 	}
-	if value, ok := evu.mutation.ExpiresAt(); ok {
+	if value, ok := _u.mutation.ExpiresAt(); ok {
 		_spec.SetField(emailverification.FieldExpiresAt, field.TypeTime, value)
 	}
-	if value, ok := evu.mutation.IsVerified(); ok {
+	if value, ok := _u.mutation.IsVerified(); ok {
 		_spec.SetField(emailverification.FieldIsVerified, field.TypeBool, value)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, evu.driver, _spec); err != nil {
+	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{emailverification.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -163,8 +163,8 @@ func (evu *EmailVerificationUpdate) sqlSave(ctx context.Context) (n int, err err
 		}
 		return 0, err
 	}
-	evu.mutation.done = true
-	return n, nil
+	_u.mutation.done = true
+	return _node, nil
 }
 
 // EmailVerificationUpdateOne is the builder for updating a single EmailVerification entity.
@@ -176,87 +176,87 @@ type EmailVerificationUpdateOne struct {
 }
 
 // SetEmail sets the "email" field.
-func (evuo *EmailVerificationUpdateOne) SetEmail(s string) *EmailVerificationUpdateOne {
-	evuo.mutation.SetEmail(s)
-	return evuo
+func (_u *EmailVerificationUpdateOne) SetEmail(v string) *EmailVerificationUpdateOne {
+	_u.mutation.SetEmail(v)
+	return _u
 }
 
 // SetNillableEmail sets the "email" field if the given value is not nil.
-func (evuo *EmailVerificationUpdateOne) SetNillableEmail(s *string) *EmailVerificationUpdateOne {
-	if s != nil {
-		evuo.SetEmail(*s)
+func (_u *EmailVerificationUpdateOne) SetNillableEmail(v *string) *EmailVerificationUpdateOne {
+	if v != nil {
+		_u.SetEmail(*v)
 	}
-	return evuo
+	return _u
 }
 
 // SetCode sets the "code" field.
-func (evuo *EmailVerificationUpdateOne) SetCode(s string) *EmailVerificationUpdateOne {
-	evuo.mutation.SetCode(s)
-	return evuo
+func (_u *EmailVerificationUpdateOne) SetCode(v string) *EmailVerificationUpdateOne {
+	_u.mutation.SetCode(v)
+	return _u
 }
 
 // SetNillableCode sets the "code" field if the given value is not nil.
-func (evuo *EmailVerificationUpdateOne) SetNillableCode(s *string) *EmailVerificationUpdateOne {
-	if s != nil {
-		evuo.SetCode(*s)
+func (_u *EmailVerificationUpdateOne) SetNillableCode(v *string) *EmailVerificationUpdateOne {
+	if v != nil {
+		_u.SetCode(*v)
 	}
-	return evuo
+	return _u
 }
 
 // SetExpiresAt sets the "expires_at" field.
-func (evuo *EmailVerificationUpdateOne) SetExpiresAt(t time.Time) *EmailVerificationUpdateOne {
-	evuo.mutation.SetExpiresAt(t)
-	return evuo
+func (_u *EmailVerificationUpdateOne) SetExpiresAt(v time.Time) *EmailVerificationUpdateOne {
+	_u.mutation.SetExpiresAt(v)
+	return _u
 }
 
 // SetNillableExpiresAt sets the "expires_at" field if the given value is not nil.
-func (evuo *EmailVerificationUpdateOne) SetNillableExpiresAt(t *time.Time) *EmailVerificationUpdateOne {
-	if t != nil {
-		evuo.SetExpiresAt(*t)
+func (_u *EmailVerificationUpdateOne) SetNillableExpiresAt(v *time.Time) *EmailVerificationUpdateOne {
+	if v != nil {
+		_u.SetExpiresAt(*v)
 	}
-	return evuo
+	return _u
 }
 
 // SetIsVerified sets the "is_verified" field.
-func (evuo *EmailVerificationUpdateOne) SetIsVerified(b bool) *EmailVerificationUpdateOne {
-	evuo.mutation.SetIsVerified(b)
-	return evuo
+func (_u *EmailVerificationUpdateOne) SetIsVerified(v bool) *EmailVerificationUpdateOne {
+	_u.mutation.SetIsVerified(v)
+	return _u
 }
 
 // SetNillableIsVerified sets the "is_verified" field if the given value is not nil.
-func (evuo *EmailVerificationUpdateOne) SetNillableIsVerified(b *bool) *EmailVerificationUpdateOne {
-	if b != nil {
-		evuo.SetIsVerified(*b)
+func (_u *EmailVerificationUpdateOne) SetNillableIsVerified(v *bool) *EmailVerificationUpdateOne {
+	if v != nil {
+		_u.SetIsVerified(*v)
 	}
-	return evuo
+	return _u
 }
 
 // Mutation returns the EmailVerificationMutation object of the builder.
-func (evuo *EmailVerificationUpdateOne) Mutation() *EmailVerificationMutation {
-	return evuo.mutation
+func (_u *EmailVerificationUpdateOne) Mutation() *EmailVerificationMutation {
+	return _u.mutation
 }
 
 // Where appends a list predicates to the EmailVerificationUpdate builder.
-func (evuo *EmailVerificationUpdateOne) Where(ps ...predicate.EmailVerification) *EmailVerificationUpdateOne {
-	evuo.mutation.Where(ps...)
-	return evuo
+func (_u *EmailVerificationUpdateOne) Where(ps ...predicate.EmailVerification) *EmailVerificationUpdateOne {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (evuo *EmailVerificationUpdateOne) Select(field string, fields ...string) *EmailVerificationUpdateOne {
-	evuo.fields = append([]string{field}, fields...)
-	return evuo
+func (_u *EmailVerificationUpdateOne) Select(field string, fields ...string) *EmailVerificationUpdateOne {
+	_u.fields = append([]string{field}, fields...)
+	return _u
 }
 
 // Save executes the query and returns the updated EmailVerification entity.
-func (evuo *EmailVerificationUpdateOne) Save(ctx context.Context) (*EmailVerification, error) {
-	return withHooks(ctx, evuo.sqlSave, evuo.mutation, evuo.hooks)
+func (_u *EmailVerificationUpdateOne) Save(ctx context.Context) (*EmailVerification, error) {
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (evuo *EmailVerificationUpdateOne) SaveX(ctx context.Context) *EmailVerification {
-	node, err := evuo.Save(ctx)
+func (_u *EmailVerificationUpdateOne) SaveX(ctx context.Context) *EmailVerification {
+	node, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -264,26 +264,26 @@ func (evuo *EmailVerificationUpdateOne) SaveX(ctx context.Context) *EmailVerific
 }
 
 // Exec executes the query on the entity.
-func (evuo *EmailVerificationUpdateOne) Exec(ctx context.Context) error {
-	_, err := evuo.Save(ctx)
+func (_u *EmailVerificationUpdateOne) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (evuo *EmailVerificationUpdateOne) ExecX(ctx context.Context) {
-	if err := evuo.Exec(ctx); err != nil {
+func (_u *EmailVerificationUpdateOne) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (evuo *EmailVerificationUpdateOne) check() error {
-	if v, ok := evuo.mutation.Email(); ok {
+func (_u *EmailVerificationUpdateOne) check() error {
+	if v, ok := _u.mutation.Email(); ok {
 		if err := emailverification.EmailValidator(v); err != nil {
 			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "EmailVerification.email": %w`, err)}
 		}
 	}
-	if v, ok := evuo.mutation.Code(); ok {
+	if v, ok := _u.mutation.Code(); ok {
 		if err := emailverification.CodeValidator(v); err != nil {
 			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "EmailVerification.code": %w`, err)}
 		}
@@ -291,17 +291,17 @@ func (evuo *EmailVerificationUpdateOne) check() error {
 	return nil
 }
 
-func (evuo *EmailVerificationUpdateOne) sqlSave(ctx context.Context) (_node *EmailVerification, err error) {
-	if err := evuo.check(); err != nil {
+func (_u *EmailVerificationUpdateOne) sqlSave(ctx context.Context) (_node *EmailVerification, err error) {
+	if err := _u.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(emailverification.Table, emailverification.Columns, sqlgraph.NewFieldSpec(emailverification.FieldID, field.TypeUUID))
-	id, ok := evuo.mutation.ID()
+	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "EmailVerification.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := evuo.fields; len(fields) > 0 {
+	if fields := _u.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, emailverification.FieldID)
 		for _, f := range fields {
@@ -313,29 +313,29 @@ func (evuo *EmailVerificationUpdateOne) sqlSave(ctx context.Context) (_node *Ema
 			}
 		}
 	}
-	if ps := evuo.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := evuo.mutation.Email(); ok {
+	if value, ok := _u.mutation.Email(); ok {
 		_spec.SetField(emailverification.FieldEmail, field.TypeString, value)
 	}
-	if value, ok := evuo.mutation.Code(); ok {
+	if value, ok := _u.mutation.Code(); ok {
 		_spec.SetField(emailverification.FieldCode, field.TypeString, value)
 	}
-	if value, ok := evuo.mutation.ExpiresAt(); ok {
+	if value, ok := _u.mutation.ExpiresAt(); ok {
 		_spec.SetField(emailverification.FieldExpiresAt, field.TypeTime, value)
 	}
-	if value, ok := evuo.mutation.IsVerified(); ok {
+	if value, ok := _u.mutation.IsVerified(); ok {
 		_spec.SetField(emailverification.FieldIsVerified, field.TypeBool, value)
 	}
-	_node = &EmailVerification{config: evuo.config}
+	_node = &EmailVerification{config: _u.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, evuo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{emailverification.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -343,6 +343,6 @@ func (evuo *EmailVerificationUpdateOne) sqlSave(ctx context.Context) (_node *Ema
 		}
 		return nil, err
 	}
-	evuo.mutation.done = true
+	_u.mutation.done = true
 	return _node, nil
 }

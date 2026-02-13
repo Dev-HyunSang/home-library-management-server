@@ -27,223 +27,223 @@ type BookUpdate struct {
 }
 
 // Where appends a list predicates to the BookUpdate builder.
-func (bu *BookUpdate) Where(ps ...predicate.Book) *BookUpdate {
-	bu.mutation.Where(ps...)
-	return bu
+func (_u *BookUpdate) Where(ps ...predicate.Book) *BookUpdate {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // SetBookTitle sets the "book_title" field.
-func (bu *BookUpdate) SetBookTitle(s string) *BookUpdate {
-	bu.mutation.SetBookTitle(s)
-	return bu
+func (_u *BookUpdate) SetBookTitle(v string) *BookUpdate {
+	_u.mutation.SetBookTitle(v)
+	return _u
 }
 
 // SetNillableBookTitle sets the "book_title" field if the given value is not nil.
-func (bu *BookUpdate) SetNillableBookTitle(s *string) *BookUpdate {
-	if s != nil {
-		bu.SetBookTitle(*s)
+func (_u *BookUpdate) SetNillableBookTitle(v *string) *BookUpdate {
+	if v != nil {
+		_u.SetBookTitle(*v)
 	}
-	return bu
+	return _u
 }
 
 // SetAuthor sets the "author" field.
-func (bu *BookUpdate) SetAuthor(s string) *BookUpdate {
-	bu.mutation.SetAuthor(s)
-	return bu
+func (_u *BookUpdate) SetAuthor(v string) *BookUpdate {
+	_u.mutation.SetAuthor(v)
+	return _u
 }
 
 // SetNillableAuthor sets the "author" field if the given value is not nil.
-func (bu *BookUpdate) SetNillableAuthor(s *string) *BookUpdate {
-	if s != nil {
-		bu.SetAuthor(*s)
+func (_u *BookUpdate) SetNillableAuthor(v *string) *BookUpdate {
+	if v != nil {
+		_u.SetAuthor(*v)
 	}
-	return bu
+	return _u
 }
 
 // SetBookIsbn sets the "book_isbn" field.
-func (bu *BookUpdate) SetBookIsbn(s string) *BookUpdate {
-	bu.mutation.SetBookIsbn(s)
-	return bu
+func (_u *BookUpdate) SetBookIsbn(v string) *BookUpdate {
+	_u.mutation.SetBookIsbn(v)
+	return _u
 }
 
 // SetNillableBookIsbn sets the "book_isbn" field if the given value is not nil.
-func (bu *BookUpdate) SetNillableBookIsbn(s *string) *BookUpdate {
-	if s != nil {
-		bu.SetBookIsbn(*s)
+func (_u *BookUpdate) SetNillableBookIsbn(v *string) *BookUpdate {
+	if v != nil {
+		_u.SetBookIsbn(*v)
 	}
-	return bu
+	return _u
 }
 
 // ClearBookIsbn clears the value of the "book_isbn" field.
-func (bu *BookUpdate) ClearBookIsbn() *BookUpdate {
-	bu.mutation.ClearBookIsbn()
-	return bu
+func (_u *BookUpdate) ClearBookIsbn() *BookUpdate {
+	_u.mutation.ClearBookIsbn()
+	return _u
 }
 
 // SetThumbnailURL sets the "thumbnail_url" field.
-func (bu *BookUpdate) SetThumbnailURL(s string) *BookUpdate {
-	bu.mutation.SetThumbnailURL(s)
-	return bu
+func (_u *BookUpdate) SetThumbnailURL(v string) *BookUpdate {
+	_u.mutation.SetThumbnailURL(v)
+	return _u
 }
 
 // SetNillableThumbnailURL sets the "thumbnail_url" field if the given value is not nil.
-func (bu *BookUpdate) SetNillableThumbnailURL(s *string) *BookUpdate {
-	if s != nil {
-		bu.SetThumbnailURL(*s)
+func (_u *BookUpdate) SetNillableThumbnailURL(v *string) *BookUpdate {
+	if v != nil {
+		_u.SetThumbnailURL(*v)
 	}
-	return bu
+	return _u
 }
 
 // ClearThumbnailURL clears the value of the "thumbnail_url" field.
-func (bu *BookUpdate) ClearThumbnailURL() *BookUpdate {
-	bu.mutation.ClearThumbnailURL()
-	return bu
+func (_u *BookUpdate) ClearThumbnailURL() *BookUpdate {
+	_u.mutation.ClearThumbnailURL()
+	return _u
 }
 
 // SetStatus sets the "status" field.
-func (bu *BookUpdate) SetStatus(i int) *BookUpdate {
-	bu.mutation.ResetStatus()
-	bu.mutation.SetStatus(i)
-	return bu
+func (_u *BookUpdate) SetStatus(v int) *BookUpdate {
+	_u.mutation.ResetStatus()
+	_u.mutation.SetStatus(v)
+	return _u
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (bu *BookUpdate) SetNillableStatus(i *int) *BookUpdate {
-	if i != nil {
-		bu.SetStatus(*i)
+func (_u *BookUpdate) SetNillableStatus(v *int) *BookUpdate {
+	if v != nil {
+		_u.SetStatus(*v)
 	}
-	return bu
+	return _u
 }
 
-// AddStatus adds i to the "status" field.
-func (bu *BookUpdate) AddStatus(i int) *BookUpdate {
-	bu.mutation.AddStatus(i)
-	return bu
+// AddStatus adds value to the "status" field.
+func (_u *BookUpdate) AddStatus(v int) *BookUpdate {
+	_u.mutation.AddStatus(v)
+	return _u
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (bu *BookUpdate) SetCreatedAt(t time.Time) *BookUpdate {
-	bu.mutation.SetCreatedAt(t)
-	return bu
+func (_u *BookUpdate) SetCreatedAt(v time.Time) *BookUpdate {
+	_u.mutation.SetCreatedAt(v)
+	return _u
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (bu *BookUpdate) SetNillableCreatedAt(t *time.Time) *BookUpdate {
-	if t != nil {
-		bu.SetCreatedAt(*t)
+func (_u *BookUpdate) SetNillableCreatedAt(v *time.Time) *BookUpdate {
+	if v != nil {
+		_u.SetCreatedAt(*v)
 	}
-	return bu
+	return _u
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (bu *BookUpdate) SetUpdatedAt(t time.Time) *BookUpdate {
-	bu.mutation.SetUpdatedAt(t)
-	return bu
+func (_u *BookUpdate) SetUpdatedAt(v time.Time) *BookUpdate {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
 }
 
 // SetOwnerID sets the "owner" edge to the User entity by ID.
-func (bu *BookUpdate) SetOwnerID(id uuid.UUID) *BookUpdate {
-	bu.mutation.SetOwnerID(id)
-	return bu
+func (_u *BookUpdate) SetOwnerID(id uuid.UUID) *BookUpdate {
+	_u.mutation.SetOwnerID(id)
+	return _u
 }
 
 // SetOwner sets the "owner" edge to the User entity.
-func (bu *BookUpdate) SetOwner(u *User) *BookUpdate {
-	return bu.SetOwnerID(u.ID)
+func (_u *BookUpdate) SetOwner(v *User) *BookUpdate {
+	return _u.SetOwnerID(v.ID)
 }
 
 // AddReviewIDs adds the "reviews" edge to the Review entity by IDs.
-func (bu *BookUpdate) AddReviewIDs(ids ...uuid.UUID) *BookUpdate {
-	bu.mutation.AddReviewIDs(ids...)
-	return bu
+func (_u *BookUpdate) AddReviewIDs(ids ...uuid.UUID) *BookUpdate {
+	_u.mutation.AddReviewIDs(ids...)
+	return _u
 }
 
 // AddReviews adds the "reviews" edges to the Review entity.
-func (bu *BookUpdate) AddReviews(r ...*Review) *BookUpdate {
-	ids := make([]uuid.UUID, len(r))
-	for i := range r {
-		ids[i] = r[i].ID
+func (_u *BookUpdate) AddReviews(v ...*Review) *BookUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return bu.AddReviewIDs(ids...)
+	return _u.AddReviewIDs(ids...)
 }
 
 // AddBookmarkIDs adds the "bookmarks" edge to the Bookmark entity by IDs.
-func (bu *BookUpdate) AddBookmarkIDs(ids ...uuid.UUID) *BookUpdate {
-	bu.mutation.AddBookmarkIDs(ids...)
-	return bu
+func (_u *BookUpdate) AddBookmarkIDs(ids ...uuid.UUID) *BookUpdate {
+	_u.mutation.AddBookmarkIDs(ids...)
+	return _u
 }
 
 // AddBookmarks adds the "bookmarks" edges to the Bookmark entity.
-func (bu *BookUpdate) AddBookmarks(b ...*Bookmark) *BookUpdate {
-	ids := make([]uuid.UUID, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
+func (_u *BookUpdate) AddBookmarks(v ...*Bookmark) *BookUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return bu.AddBookmarkIDs(ids...)
+	return _u.AddBookmarkIDs(ids...)
 }
 
 // Mutation returns the BookMutation object of the builder.
-func (bu *BookUpdate) Mutation() *BookMutation {
-	return bu.mutation
+func (_u *BookUpdate) Mutation() *BookMutation {
+	return _u.mutation
 }
 
 // ClearOwner clears the "owner" edge to the User entity.
-func (bu *BookUpdate) ClearOwner() *BookUpdate {
-	bu.mutation.ClearOwner()
-	return bu
+func (_u *BookUpdate) ClearOwner() *BookUpdate {
+	_u.mutation.ClearOwner()
+	return _u
 }
 
 // ClearReviews clears all "reviews" edges to the Review entity.
-func (bu *BookUpdate) ClearReviews() *BookUpdate {
-	bu.mutation.ClearReviews()
-	return bu
+func (_u *BookUpdate) ClearReviews() *BookUpdate {
+	_u.mutation.ClearReviews()
+	return _u
 }
 
 // RemoveReviewIDs removes the "reviews" edge to Review entities by IDs.
-func (bu *BookUpdate) RemoveReviewIDs(ids ...uuid.UUID) *BookUpdate {
-	bu.mutation.RemoveReviewIDs(ids...)
-	return bu
+func (_u *BookUpdate) RemoveReviewIDs(ids ...uuid.UUID) *BookUpdate {
+	_u.mutation.RemoveReviewIDs(ids...)
+	return _u
 }
 
 // RemoveReviews removes "reviews" edges to Review entities.
-func (bu *BookUpdate) RemoveReviews(r ...*Review) *BookUpdate {
-	ids := make([]uuid.UUID, len(r))
-	for i := range r {
-		ids[i] = r[i].ID
+func (_u *BookUpdate) RemoveReviews(v ...*Review) *BookUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return bu.RemoveReviewIDs(ids...)
+	return _u.RemoveReviewIDs(ids...)
 }
 
 // ClearBookmarks clears all "bookmarks" edges to the Bookmark entity.
-func (bu *BookUpdate) ClearBookmarks() *BookUpdate {
-	bu.mutation.ClearBookmarks()
-	return bu
+func (_u *BookUpdate) ClearBookmarks() *BookUpdate {
+	_u.mutation.ClearBookmarks()
+	return _u
 }
 
 // RemoveBookmarkIDs removes the "bookmarks" edge to Bookmark entities by IDs.
-func (bu *BookUpdate) RemoveBookmarkIDs(ids ...uuid.UUID) *BookUpdate {
-	bu.mutation.RemoveBookmarkIDs(ids...)
-	return bu
+func (_u *BookUpdate) RemoveBookmarkIDs(ids ...uuid.UUID) *BookUpdate {
+	_u.mutation.RemoveBookmarkIDs(ids...)
+	return _u
 }
 
 // RemoveBookmarks removes "bookmarks" edges to Bookmark entities.
-func (bu *BookUpdate) RemoveBookmarks(b ...*Bookmark) *BookUpdate {
-	ids := make([]uuid.UUID, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
+func (_u *BookUpdate) RemoveBookmarks(v ...*Bookmark) *BookUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return bu.RemoveBookmarkIDs(ids...)
+	return _u.RemoveBookmarkIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (bu *BookUpdate) Save(ctx context.Context) (int, error) {
-	bu.defaults()
-	return withHooks(ctx, bu.sqlSave, bu.mutation, bu.hooks)
+func (_u *BookUpdate) Save(ctx context.Context) (int, error) {
+	_u.defaults()
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (bu *BookUpdate) SaveX(ctx context.Context) int {
-	affected, err := bu.Save(ctx)
+func (_u *BookUpdate) SaveX(ctx context.Context) int {
+	affected, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -251,87 +251,87 @@ func (bu *BookUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (bu *BookUpdate) Exec(ctx context.Context) error {
-	_, err := bu.Save(ctx)
+func (_u *BookUpdate) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (bu *BookUpdate) ExecX(ctx context.Context) {
-	if err := bu.Exec(ctx); err != nil {
+func (_u *BookUpdate) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (bu *BookUpdate) defaults() {
-	if _, ok := bu.mutation.UpdatedAt(); !ok {
+func (_u *BookUpdate) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
 		v := book.UpdateDefaultUpdatedAt()
-		bu.mutation.SetUpdatedAt(v)
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (bu *BookUpdate) check() error {
-	if v, ok := bu.mutation.BookTitle(); ok {
+func (_u *BookUpdate) check() error {
+	if v, ok := _u.mutation.BookTitle(); ok {
 		if err := book.BookTitleValidator(v); err != nil {
 			return &ValidationError{Name: "book_title", err: fmt.Errorf(`ent: validator failed for field "Book.book_title": %w`, err)}
 		}
 	}
-	if v, ok := bu.mutation.Author(); ok {
+	if v, ok := _u.mutation.Author(); ok {
 		if err := book.AuthorValidator(v); err != nil {
 			return &ValidationError{Name: "author", err: fmt.Errorf(`ent: validator failed for field "Book.author": %w`, err)}
 		}
 	}
-	if bu.mutation.OwnerCleared() && len(bu.mutation.OwnerIDs()) > 0 {
+	if _u.mutation.OwnerCleared() && len(_u.mutation.OwnerIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Book.owner"`)
 	}
 	return nil
 }
 
-func (bu *BookUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := bu.check(); err != nil {
-		return n, err
+func (_u *BookUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(book.Table, book.Columns, sqlgraph.NewFieldSpec(book.FieldID, field.TypeUUID))
-	if ps := bu.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := bu.mutation.BookTitle(); ok {
+	if value, ok := _u.mutation.BookTitle(); ok {
 		_spec.SetField(book.FieldBookTitle, field.TypeString, value)
 	}
-	if value, ok := bu.mutation.Author(); ok {
+	if value, ok := _u.mutation.Author(); ok {
 		_spec.SetField(book.FieldAuthor, field.TypeString, value)
 	}
-	if value, ok := bu.mutation.BookIsbn(); ok {
+	if value, ok := _u.mutation.BookIsbn(); ok {
 		_spec.SetField(book.FieldBookIsbn, field.TypeString, value)
 	}
-	if bu.mutation.BookIsbnCleared() {
+	if _u.mutation.BookIsbnCleared() {
 		_spec.ClearField(book.FieldBookIsbn, field.TypeString)
 	}
-	if value, ok := bu.mutation.ThumbnailURL(); ok {
+	if value, ok := _u.mutation.ThumbnailURL(); ok {
 		_spec.SetField(book.FieldThumbnailURL, field.TypeString, value)
 	}
-	if bu.mutation.ThumbnailURLCleared() {
+	if _u.mutation.ThumbnailURLCleared() {
 		_spec.ClearField(book.FieldThumbnailURL, field.TypeString)
 	}
-	if value, ok := bu.mutation.Status(); ok {
+	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(book.FieldStatus, field.TypeInt, value)
 	}
-	if value, ok := bu.mutation.AddedStatus(); ok {
+	if value, ok := _u.mutation.AddedStatus(); ok {
 		_spec.AddField(book.FieldStatus, field.TypeInt, value)
 	}
-	if value, ok := bu.mutation.CreatedAt(); ok {
+	if value, ok := _u.mutation.CreatedAt(); ok {
 		_spec.SetField(book.FieldCreatedAt, field.TypeTime, value)
 	}
-	if value, ok := bu.mutation.UpdatedAt(); ok {
+	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(book.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if bu.mutation.OwnerCleared() {
+	if _u.mutation.OwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -344,7 +344,7 @@ func (bu *BookUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := bu.mutation.OwnerIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.OwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -360,7 +360,7 @@ func (bu *BookUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if bu.mutation.ReviewsCleared() {
+	if _u.mutation.ReviewsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -373,7 +373,7 @@ func (bu *BookUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := bu.mutation.RemovedReviewsIDs(); len(nodes) > 0 && !bu.mutation.ReviewsCleared() {
+	if nodes := _u.mutation.RemovedReviewsIDs(); len(nodes) > 0 && !_u.mutation.ReviewsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -389,7 +389,7 @@ func (bu *BookUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := bu.mutation.ReviewsIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.ReviewsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -405,7 +405,7 @@ func (bu *BookUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if bu.mutation.BookmarksCleared() {
+	if _u.mutation.BookmarksCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -418,7 +418,7 @@ func (bu *BookUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := bu.mutation.RemovedBookmarksIDs(); len(nodes) > 0 && !bu.mutation.BookmarksCleared() {
+	if nodes := _u.mutation.RemovedBookmarksIDs(); len(nodes) > 0 && !_u.mutation.BookmarksCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -434,7 +434,7 @@ func (bu *BookUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := bu.mutation.BookmarksIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.BookmarksIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -450,7 +450,7 @@ func (bu *BookUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, bu.driver, _spec); err != nil {
+	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{book.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -458,8 +458,8 @@ func (bu *BookUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
-	bu.mutation.done = true
-	return n, nil
+	_u.mutation.done = true
+	return _node, nil
 }
 
 // BookUpdateOne is the builder for updating a single Book entity.
@@ -471,230 +471,230 @@ type BookUpdateOne struct {
 }
 
 // SetBookTitle sets the "book_title" field.
-func (buo *BookUpdateOne) SetBookTitle(s string) *BookUpdateOne {
-	buo.mutation.SetBookTitle(s)
-	return buo
+func (_u *BookUpdateOne) SetBookTitle(v string) *BookUpdateOne {
+	_u.mutation.SetBookTitle(v)
+	return _u
 }
 
 // SetNillableBookTitle sets the "book_title" field if the given value is not nil.
-func (buo *BookUpdateOne) SetNillableBookTitle(s *string) *BookUpdateOne {
-	if s != nil {
-		buo.SetBookTitle(*s)
+func (_u *BookUpdateOne) SetNillableBookTitle(v *string) *BookUpdateOne {
+	if v != nil {
+		_u.SetBookTitle(*v)
 	}
-	return buo
+	return _u
 }
 
 // SetAuthor sets the "author" field.
-func (buo *BookUpdateOne) SetAuthor(s string) *BookUpdateOne {
-	buo.mutation.SetAuthor(s)
-	return buo
+func (_u *BookUpdateOne) SetAuthor(v string) *BookUpdateOne {
+	_u.mutation.SetAuthor(v)
+	return _u
 }
 
 // SetNillableAuthor sets the "author" field if the given value is not nil.
-func (buo *BookUpdateOne) SetNillableAuthor(s *string) *BookUpdateOne {
-	if s != nil {
-		buo.SetAuthor(*s)
+func (_u *BookUpdateOne) SetNillableAuthor(v *string) *BookUpdateOne {
+	if v != nil {
+		_u.SetAuthor(*v)
 	}
-	return buo
+	return _u
 }
 
 // SetBookIsbn sets the "book_isbn" field.
-func (buo *BookUpdateOne) SetBookIsbn(s string) *BookUpdateOne {
-	buo.mutation.SetBookIsbn(s)
-	return buo
+func (_u *BookUpdateOne) SetBookIsbn(v string) *BookUpdateOne {
+	_u.mutation.SetBookIsbn(v)
+	return _u
 }
 
 // SetNillableBookIsbn sets the "book_isbn" field if the given value is not nil.
-func (buo *BookUpdateOne) SetNillableBookIsbn(s *string) *BookUpdateOne {
-	if s != nil {
-		buo.SetBookIsbn(*s)
+func (_u *BookUpdateOne) SetNillableBookIsbn(v *string) *BookUpdateOne {
+	if v != nil {
+		_u.SetBookIsbn(*v)
 	}
-	return buo
+	return _u
 }
 
 // ClearBookIsbn clears the value of the "book_isbn" field.
-func (buo *BookUpdateOne) ClearBookIsbn() *BookUpdateOne {
-	buo.mutation.ClearBookIsbn()
-	return buo
+func (_u *BookUpdateOne) ClearBookIsbn() *BookUpdateOne {
+	_u.mutation.ClearBookIsbn()
+	return _u
 }
 
 // SetThumbnailURL sets the "thumbnail_url" field.
-func (buo *BookUpdateOne) SetThumbnailURL(s string) *BookUpdateOne {
-	buo.mutation.SetThumbnailURL(s)
-	return buo
+func (_u *BookUpdateOne) SetThumbnailURL(v string) *BookUpdateOne {
+	_u.mutation.SetThumbnailURL(v)
+	return _u
 }
 
 // SetNillableThumbnailURL sets the "thumbnail_url" field if the given value is not nil.
-func (buo *BookUpdateOne) SetNillableThumbnailURL(s *string) *BookUpdateOne {
-	if s != nil {
-		buo.SetThumbnailURL(*s)
+func (_u *BookUpdateOne) SetNillableThumbnailURL(v *string) *BookUpdateOne {
+	if v != nil {
+		_u.SetThumbnailURL(*v)
 	}
-	return buo
+	return _u
 }
 
 // ClearThumbnailURL clears the value of the "thumbnail_url" field.
-func (buo *BookUpdateOne) ClearThumbnailURL() *BookUpdateOne {
-	buo.mutation.ClearThumbnailURL()
-	return buo
+func (_u *BookUpdateOne) ClearThumbnailURL() *BookUpdateOne {
+	_u.mutation.ClearThumbnailURL()
+	return _u
 }
 
 // SetStatus sets the "status" field.
-func (buo *BookUpdateOne) SetStatus(i int) *BookUpdateOne {
-	buo.mutation.ResetStatus()
-	buo.mutation.SetStatus(i)
-	return buo
+func (_u *BookUpdateOne) SetStatus(v int) *BookUpdateOne {
+	_u.mutation.ResetStatus()
+	_u.mutation.SetStatus(v)
+	return _u
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (buo *BookUpdateOne) SetNillableStatus(i *int) *BookUpdateOne {
-	if i != nil {
-		buo.SetStatus(*i)
+func (_u *BookUpdateOne) SetNillableStatus(v *int) *BookUpdateOne {
+	if v != nil {
+		_u.SetStatus(*v)
 	}
-	return buo
+	return _u
 }
 
-// AddStatus adds i to the "status" field.
-func (buo *BookUpdateOne) AddStatus(i int) *BookUpdateOne {
-	buo.mutation.AddStatus(i)
-	return buo
+// AddStatus adds value to the "status" field.
+func (_u *BookUpdateOne) AddStatus(v int) *BookUpdateOne {
+	_u.mutation.AddStatus(v)
+	return _u
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (buo *BookUpdateOne) SetCreatedAt(t time.Time) *BookUpdateOne {
-	buo.mutation.SetCreatedAt(t)
-	return buo
+func (_u *BookUpdateOne) SetCreatedAt(v time.Time) *BookUpdateOne {
+	_u.mutation.SetCreatedAt(v)
+	return _u
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (buo *BookUpdateOne) SetNillableCreatedAt(t *time.Time) *BookUpdateOne {
-	if t != nil {
-		buo.SetCreatedAt(*t)
+func (_u *BookUpdateOne) SetNillableCreatedAt(v *time.Time) *BookUpdateOne {
+	if v != nil {
+		_u.SetCreatedAt(*v)
 	}
-	return buo
+	return _u
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (buo *BookUpdateOne) SetUpdatedAt(t time.Time) *BookUpdateOne {
-	buo.mutation.SetUpdatedAt(t)
-	return buo
+func (_u *BookUpdateOne) SetUpdatedAt(v time.Time) *BookUpdateOne {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
 }
 
 // SetOwnerID sets the "owner" edge to the User entity by ID.
-func (buo *BookUpdateOne) SetOwnerID(id uuid.UUID) *BookUpdateOne {
-	buo.mutation.SetOwnerID(id)
-	return buo
+func (_u *BookUpdateOne) SetOwnerID(id uuid.UUID) *BookUpdateOne {
+	_u.mutation.SetOwnerID(id)
+	return _u
 }
 
 // SetOwner sets the "owner" edge to the User entity.
-func (buo *BookUpdateOne) SetOwner(u *User) *BookUpdateOne {
-	return buo.SetOwnerID(u.ID)
+func (_u *BookUpdateOne) SetOwner(v *User) *BookUpdateOne {
+	return _u.SetOwnerID(v.ID)
 }
 
 // AddReviewIDs adds the "reviews" edge to the Review entity by IDs.
-func (buo *BookUpdateOne) AddReviewIDs(ids ...uuid.UUID) *BookUpdateOne {
-	buo.mutation.AddReviewIDs(ids...)
-	return buo
+func (_u *BookUpdateOne) AddReviewIDs(ids ...uuid.UUID) *BookUpdateOne {
+	_u.mutation.AddReviewIDs(ids...)
+	return _u
 }
 
 // AddReviews adds the "reviews" edges to the Review entity.
-func (buo *BookUpdateOne) AddReviews(r ...*Review) *BookUpdateOne {
-	ids := make([]uuid.UUID, len(r))
-	for i := range r {
-		ids[i] = r[i].ID
+func (_u *BookUpdateOne) AddReviews(v ...*Review) *BookUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return buo.AddReviewIDs(ids...)
+	return _u.AddReviewIDs(ids...)
 }
 
 // AddBookmarkIDs adds the "bookmarks" edge to the Bookmark entity by IDs.
-func (buo *BookUpdateOne) AddBookmarkIDs(ids ...uuid.UUID) *BookUpdateOne {
-	buo.mutation.AddBookmarkIDs(ids...)
-	return buo
+func (_u *BookUpdateOne) AddBookmarkIDs(ids ...uuid.UUID) *BookUpdateOne {
+	_u.mutation.AddBookmarkIDs(ids...)
+	return _u
 }
 
 // AddBookmarks adds the "bookmarks" edges to the Bookmark entity.
-func (buo *BookUpdateOne) AddBookmarks(b ...*Bookmark) *BookUpdateOne {
-	ids := make([]uuid.UUID, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
+func (_u *BookUpdateOne) AddBookmarks(v ...*Bookmark) *BookUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return buo.AddBookmarkIDs(ids...)
+	return _u.AddBookmarkIDs(ids...)
 }
 
 // Mutation returns the BookMutation object of the builder.
-func (buo *BookUpdateOne) Mutation() *BookMutation {
-	return buo.mutation
+func (_u *BookUpdateOne) Mutation() *BookMutation {
+	return _u.mutation
 }
 
 // ClearOwner clears the "owner" edge to the User entity.
-func (buo *BookUpdateOne) ClearOwner() *BookUpdateOne {
-	buo.mutation.ClearOwner()
-	return buo
+func (_u *BookUpdateOne) ClearOwner() *BookUpdateOne {
+	_u.mutation.ClearOwner()
+	return _u
 }
 
 // ClearReviews clears all "reviews" edges to the Review entity.
-func (buo *BookUpdateOne) ClearReviews() *BookUpdateOne {
-	buo.mutation.ClearReviews()
-	return buo
+func (_u *BookUpdateOne) ClearReviews() *BookUpdateOne {
+	_u.mutation.ClearReviews()
+	return _u
 }
 
 // RemoveReviewIDs removes the "reviews" edge to Review entities by IDs.
-func (buo *BookUpdateOne) RemoveReviewIDs(ids ...uuid.UUID) *BookUpdateOne {
-	buo.mutation.RemoveReviewIDs(ids...)
-	return buo
+func (_u *BookUpdateOne) RemoveReviewIDs(ids ...uuid.UUID) *BookUpdateOne {
+	_u.mutation.RemoveReviewIDs(ids...)
+	return _u
 }
 
 // RemoveReviews removes "reviews" edges to Review entities.
-func (buo *BookUpdateOne) RemoveReviews(r ...*Review) *BookUpdateOne {
-	ids := make([]uuid.UUID, len(r))
-	for i := range r {
-		ids[i] = r[i].ID
+func (_u *BookUpdateOne) RemoveReviews(v ...*Review) *BookUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return buo.RemoveReviewIDs(ids...)
+	return _u.RemoveReviewIDs(ids...)
 }
 
 // ClearBookmarks clears all "bookmarks" edges to the Bookmark entity.
-func (buo *BookUpdateOne) ClearBookmarks() *BookUpdateOne {
-	buo.mutation.ClearBookmarks()
-	return buo
+func (_u *BookUpdateOne) ClearBookmarks() *BookUpdateOne {
+	_u.mutation.ClearBookmarks()
+	return _u
 }
 
 // RemoveBookmarkIDs removes the "bookmarks" edge to Bookmark entities by IDs.
-func (buo *BookUpdateOne) RemoveBookmarkIDs(ids ...uuid.UUID) *BookUpdateOne {
-	buo.mutation.RemoveBookmarkIDs(ids...)
-	return buo
+func (_u *BookUpdateOne) RemoveBookmarkIDs(ids ...uuid.UUID) *BookUpdateOne {
+	_u.mutation.RemoveBookmarkIDs(ids...)
+	return _u
 }
 
 // RemoveBookmarks removes "bookmarks" edges to Bookmark entities.
-func (buo *BookUpdateOne) RemoveBookmarks(b ...*Bookmark) *BookUpdateOne {
-	ids := make([]uuid.UUID, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
+func (_u *BookUpdateOne) RemoveBookmarks(v ...*Bookmark) *BookUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return buo.RemoveBookmarkIDs(ids...)
+	return _u.RemoveBookmarkIDs(ids...)
 }
 
 // Where appends a list predicates to the BookUpdate builder.
-func (buo *BookUpdateOne) Where(ps ...predicate.Book) *BookUpdateOne {
-	buo.mutation.Where(ps...)
-	return buo
+func (_u *BookUpdateOne) Where(ps ...predicate.Book) *BookUpdateOne {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (buo *BookUpdateOne) Select(field string, fields ...string) *BookUpdateOne {
-	buo.fields = append([]string{field}, fields...)
-	return buo
+func (_u *BookUpdateOne) Select(field string, fields ...string) *BookUpdateOne {
+	_u.fields = append([]string{field}, fields...)
+	return _u
 }
 
 // Save executes the query and returns the updated Book entity.
-func (buo *BookUpdateOne) Save(ctx context.Context) (*Book, error) {
-	buo.defaults()
-	return withHooks(ctx, buo.sqlSave, buo.mutation, buo.hooks)
+func (_u *BookUpdateOne) Save(ctx context.Context) (*Book, error) {
+	_u.defaults()
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (buo *BookUpdateOne) SaveX(ctx context.Context) *Book {
-	node, err := buo.Save(ctx)
+func (_u *BookUpdateOne) SaveX(ctx context.Context) *Book {
+	node, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -702,55 +702,55 @@ func (buo *BookUpdateOne) SaveX(ctx context.Context) *Book {
 }
 
 // Exec executes the query on the entity.
-func (buo *BookUpdateOne) Exec(ctx context.Context) error {
-	_, err := buo.Save(ctx)
+func (_u *BookUpdateOne) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (buo *BookUpdateOne) ExecX(ctx context.Context) {
-	if err := buo.Exec(ctx); err != nil {
+func (_u *BookUpdateOne) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (buo *BookUpdateOne) defaults() {
-	if _, ok := buo.mutation.UpdatedAt(); !ok {
+func (_u *BookUpdateOne) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
 		v := book.UpdateDefaultUpdatedAt()
-		buo.mutation.SetUpdatedAt(v)
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (buo *BookUpdateOne) check() error {
-	if v, ok := buo.mutation.BookTitle(); ok {
+func (_u *BookUpdateOne) check() error {
+	if v, ok := _u.mutation.BookTitle(); ok {
 		if err := book.BookTitleValidator(v); err != nil {
 			return &ValidationError{Name: "book_title", err: fmt.Errorf(`ent: validator failed for field "Book.book_title": %w`, err)}
 		}
 	}
-	if v, ok := buo.mutation.Author(); ok {
+	if v, ok := _u.mutation.Author(); ok {
 		if err := book.AuthorValidator(v); err != nil {
 			return &ValidationError{Name: "author", err: fmt.Errorf(`ent: validator failed for field "Book.author": %w`, err)}
 		}
 	}
-	if buo.mutation.OwnerCleared() && len(buo.mutation.OwnerIDs()) > 0 {
+	if _u.mutation.OwnerCleared() && len(_u.mutation.OwnerIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Book.owner"`)
 	}
 	return nil
 }
 
-func (buo *BookUpdateOne) sqlSave(ctx context.Context) (_node *Book, err error) {
-	if err := buo.check(); err != nil {
+func (_u *BookUpdateOne) sqlSave(ctx context.Context) (_node *Book, err error) {
+	if err := _u.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(book.Table, book.Columns, sqlgraph.NewFieldSpec(book.FieldID, field.TypeUUID))
-	id, ok := buo.mutation.ID()
+	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Book.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := buo.fields; len(fields) > 0 {
+	if fields := _u.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, book.FieldID)
 		for _, f := range fields {
@@ -762,44 +762,44 @@ func (buo *BookUpdateOne) sqlSave(ctx context.Context) (_node *Book, err error) 
 			}
 		}
 	}
-	if ps := buo.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := buo.mutation.BookTitle(); ok {
+	if value, ok := _u.mutation.BookTitle(); ok {
 		_spec.SetField(book.FieldBookTitle, field.TypeString, value)
 	}
-	if value, ok := buo.mutation.Author(); ok {
+	if value, ok := _u.mutation.Author(); ok {
 		_spec.SetField(book.FieldAuthor, field.TypeString, value)
 	}
-	if value, ok := buo.mutation.BookIsbn(); ok {
+	if value, ok := _u.mutation.BookIsbn(); ok {
 		_spec.SetField(book.FieldBookIsbn, field.TypeString, value)
 	}
-	if buo.mutation.BookIsbnCleared() {
+	if _u.mutation.BookIsbnCleared() {
 		_spec.ClearField(book.FieldBookIsbn, field.TypeString)
 	}
-	if value, ok := buo.mutation.ThumbnailURL(); ok {
+	if value, ok := _u.mutation.ThumbnailURL(); ok {
 		_spec.SetField(book.FieldThumbnailURL, field.TypeString, value)
 	}
-	if buo.mutation.ThumbnailURLCleared() {
+	if _u.mutation.ThumbnailURLCleared() {
 		_spec.ClearField(book.FieldThumbnailURL, field.TypeString)
 	}
-	if value, ok := buo.mutation.Status(); ok {
+	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(book.FieldStatus, field.TypeInt, value)
 	}
-	if value, ok := buo.mutation.AddedStatus(); ok {
+	if value, ok := _u.mutation.AddedStatus(); ok {
 		_spec.AddField(book.FieldStatus, field.TypeInt, value)
 	}
-	if value, ok := buo.mutation.CreatedAt(); ok {
+	if value, ok := _u.mutation.CreatedAt(); ok {
 		_spec.SetField(book.FieldCreatedAt, field.TypeTime, value)
 	}
-	if value, ok := buo.mutation.UpdatedAt(); ok {
+	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(book.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if buo.mutation.OwnerCleared() {
+	if _u.mutation.OwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -812,7 +812,7 @@ func (buo *BookUpdateOne) sqlSave(ctx context.Context) (_node *Book, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := buo.mutation.OwnerIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.OwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -828,7 +828,7 @@ func (buo *BookUpdateOne) sqlSave(ctx context.Context) (_node *Book, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if buo.mutation.ReviewsCleared() {
+	if _u.mutation.ReviewsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -841,7 +841,7 @@ func (buo *BookUpdateOne) sqlSave(ctx context.Context) (_node *Book, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := buo.mutation.RemovedReviewsIDs(); len(nodes) > 0 && !buo.mutation.ReviewsCleared() {
+	if nodes := _u.mutation.RemovedReviewsIDs(); len(nodes) > 0 && !_u.mutation.ReviewsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -857,7 +857,7 @@ func (buo *BookUpdateOne) sqlSave(ctx context.Context) (_node *Book, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := buo.mutation.ReviewsIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.ReviewsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -873,7 +873,7 @@ func (buo *BookUpdateOne) sqlSave(ctx context.Context) (_node *Book, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if buo.mutation.BookmarksCleared() {
+	if _u.mutation.BookmarksCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -886,7 +886,7 @@ func (buo *BookUpdateOne) sqlSave(ctx context.Context) (_node *Book, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := buo.mutation.RemovedBookmarksIDs(); len(nodes) > 0 && !buo.mutation.BookmarksCleared() {
+	if nodes := _u.mutation.RemovedBookmarksIDs(); len(nodes) > 0 && !_u.mutation.BookmarksCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -902,7 +902,7 @@ func (buo *BookUpdateOne) sqlSave(ctx context.Context) (_node *Book, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := buo.mutation.BookmarksIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.BookmarksIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -918,10 +918,10 @@ func (buo *BookUpdateOne) sqlSave(ctx context.Context) (_node *Book, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_node = &Book{config: buo.config}
+	_node = &Book{config: _u.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, buo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{book.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -929,6 +929,6 @@ func (buo *BookUpdateOne) sqlSave(ctx context.Context) (_node *Book, err error) 
 		}
 		return nil, err
 	}
-	buo.mutation.done = true
+	_u.mutation.done = true
 	return _node, nil
 }

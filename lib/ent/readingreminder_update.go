@@ -25,104 +25,104 @@ type ReadingReminderUpdate struct {
 }
 
 // Where appends a list predicates to the ReadingReminderUpdate builder.
-func (rru *ReadingReminderUpdate) Where(ps ...predicate.ReadingReminder) *ReadingReminderUpdate {
-	rru.mutation.Where(ps...)
-	return rru
+func (_u *ReadingReminderUpdate) Where(ps ...predicate.ReadingReminder) *ReadingReminderUpdate {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // SetReminderTime sets the "reminder_time" field.
-func (rru *ReadingReminderUpdate) SetReminderTime(s string) *ReadingReminderUpdate {
-	rru.mutation.SetReminderTime(s)
-	return rru
+func (_u *ReadingReminderUpdate) SetReminderTime(v string) *ReadingReminderUpdate {
+	_u.mutation.SetReminderTime(v)
+	return _u
 }
 
 // SetNillableReminderTime sets the "reminder_time" field if the given value is not nil.
-func (rru *ReadingReminderUpdate) SetNillableReminderTime(s *string) *ReadingReminderUpdate {
-	if s != nil {
-		rru.SetReminderTime(*s)
+func (_u *ReadingReminderUpdate) SetNillableReminderTime(v *string) *ReadingReminderUpdate {
+	if v != nil {
+		_u.SetReminderTime(*v)
 	}
-	return rru
+	return _u
 }
 
 // SetDayOfWeek sets the "day_of_week" field.
-func (rru *ReadingReminderUpdate) SetDayOfWeek(row readingreminder.DayOfWeek) *ReadingReminderUpdate {
-	rru.mutation.SetDayOfWeek(row)
-	return rru
+func (_u *ReadingReminderUpdate) SetDayOfWeek(v readingreminder.DayOfWeek) *ReadingReminderUpdate {
+	_u.mutation.SetDayOfWeek(v)
+	return _u
 }
 
 // SetNillableDayOfWeek sets the "day_of_week" field if the given value is not nil.
-func (rru *ReadingReminderUpdate) SetNillableDayOfWeek(row *readingreminder.DayOfWeek) *ReadingReminderUpdate {
-	if row != nil {
-		rru.SetDayOfWeek(*row)
+func (_u *ReadingReminderUpdate) SetNillableDayOfWeek(v *readingreminder.DayOfWeek) *ReadingReminderUpdate {
+	if v != nil {
+		_u.SetDayOfWeek(*v)
 	}
-	return rru
+	return _u
 }
 
 // SetIsEnabled sets the "is_enabled" field.
-func (rru *ReadingReminderUpdate) SetIsEnabled(b bool) *ReadingReminderUpdate {
-	rru.mutation.SetIsEnabled(b)
-	return rru
+func (_u *ReadingReminderUpdate) SetIsEnabled(v bool) *ReadingReminderUpdate {
+	_u.mutation.SetIsEnabled(v)
+	return _u
 }
 
 // SetNillableIsEnabled sets the "is_enabled" field if the given value is not nil.
-func (rru *ReadingReminderUpdate) SetNillableIsEnabled(b *bool) *ReadingReminderUpdate {
-	if b != nil {
-		rru.SetIsEnabled(*b)
+func (_u *ReadingReminderUpdate) SetNillableIsEnabled(v *bool) *ReadingReminderUpdate {
+	if v != nil {
+		_u.SetIsEnabled(*v)
 	}
-	return rru
+	return _u
 }
 
 // SetMessage sets the "message" field.
-func (rru *ReadingReminderUpdate) SetMessage(s string) *ReadingReminderUpdate {
-	rru.mutation.SetMessage(s)
-	return rru
+func (_u *ReadingReminderUpdate) SetMessage(v string) *ReadingReminderUpdate {
+	_u.mutation.SetMessage(v)
+	return _u
 }
 
 // SetNillableMessage sets the "message" field if the given value is not nil.
-func (rru *ReadingReminderUpdate) SetNillableMessage(s *string) *ReadingReminderUpdate {
-	if s != nil {
-		rru.SetMessage(*s)
+func (_u *ReadingReminderUpdate) SetNillableMessage(v *string) *ReadingReminderUpdate {
+	if v != nil {
+		_u.SetMessage(*v)
 	}
-	return rru
+	return _u
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (rru *ReadingReminderUpdate) SetUpdatedAt(t time.Time) *ReadingReminderUpdate {
-	rru.mutation.SetUpdatedAt(t)
-	return rru
+func (_u *ReadingReminderUpdate) SetUpdatedAt(v time.Time) *ReadingReminderUpdate {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
 }
 
 // SetOwnerID sets the "owner" edge to the User entity by ID.
-func (rru *ReadingReminderUpdate) SetOwnerID(id uuid.UUID) *ReadingReminderUpdate {
-	rru.mutation.SetOwnerID(id)
-	return rru
+func (_u *ReadingReminderUpdate) SetOwnerID(id uuid.UUID) *ReadingReminderUpdate {
+	_u.mutation.SetOwnerID(id)
+	return _u
 }
 
 // SetOwner sets the "owner" edge to the User entity.
-func (rru *ReadingReminderUpdate) SetOwner(u *User) *ReadingReminderUpdate {
-	return rru.SetOwnerID(u.ID)
+func (_u *ReadingReminderUpdate) SetOwner(v *User) *ReadingReminderUpdate {
+	return _u.SetOwnerID(v.ID)
 }
 
 // Mutation returns the ReadingReminderMutation object of the builder.
-func (rru *ReadingReminderUpdate) Mutation() *ReadingReminderMutation {
-	return rru.mutation
+func (_u *ReadingReminderUpdate) Mutation() *ReadingReminderMutation {
+	return _u.mutation
 }
 
 // ClearOwner clears the "owner" edge to the User entity.
-func (rru *ReadingReminderUpdate) ClearOwner() *ReadingReminderUpdate {
-	rru.mutation.ClearOwner()
-	return rru
+func (_u *ReadingReminderUpdate) ClearOwner() *ReadingReminderUpdate {
+	_u.mutation.ClearOwner()
+	return _u
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (rru *ReadingReminderUpdate) Save(ctx context.Context) (int, error) {
-	rru.defaults()
-	return withHooks(ctx, rru.sqlSave, rru.mutation, rru.hooks)
+func (_u *ReadingReminderUpdate) Save(ctx context.Context) (int, error) {
+	_u.defaults()
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (rru *ReadingReminderUpdate) SaveX(ctx context.Context) int {
-	affected, err := rru.Save(ctx)
+func (_u *ReadingReminderUpdate) SaveX(ctx context.Context) int {
+	affected, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -130,72 +130,72 @@ func (rru *ReadingReminderUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (rru *ReadingReminderUpdate) Exec(ctx context.Context) error {
-	_, err := rru.Save(ctx)
+func (_u *ReadingReminderUpdate) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (rru *ReadingReminderUpdate) ExecX(ctx context.Context) {
-	if err := rru.Exec(ctx); err != nil {
+func (_u *ReadingReminderUpdate) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (rru *ReadingReminderUpdate) defaults() {
-	if _, ok := rru.mutation.UpdatedAt(); !ok {
+func (_u *ReadingReminderUpdate) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
 		v := readingreminder.UpdateDefaultUpdatedAt()
-		rru.mutation.SetUpdatedAt(v)
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (rru *ReadingReminderUpdate) check() error {
-	if v, ok := rru.mutation.ReminderTime(); ok {
+func (_u *ReadingReminderUpdate) check() error {
+	if v, ok := _u.mutation.ReminderTime(); ok {
 		if err := readingreminder.ReminderTimeValidator(v); err != nil {
 			return &ValidationError{Name: "reminder_time", err: fmt.Errorf(`ent: validator failed for field "ReadingReminder.reminder_time": %w`, err)}
 		}
 	}
-	if v, ok := rru.mutation.DayOfWeek(); ok {
+	if v, ok := _u.mutation.DayOfWeek(); ok {
 		if err := readingreminder.DayOfWeekValidator(v); err != nil {
 			return &ValidationError{Name: "day_of_week", err: fmt.Errorf(`ent: validator failed for field "ReadingReminder.day_of_week": %w`, err)}
 		}
 	}
-	if rru.mutation.OwnerCleared() && len(rru.mutation.OwnerIDs()) > 0 {
+	if _u.mutation.OwnerCleared() && len(_u.mutation.OwnerIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "ReadingReminder.owner"`)
 	}
 	return nil
 }
 
-func (rru *ReadingReminderUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := rru.check(); err != nil {
-		return n, err
+func (_u *ReadingReminderUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(readingreminder.Table, readingreminder.Columns, sqlgraph.NewFieldSpec(readingreminder.FieldID, field.TypeUUID))
-	if ps := rru.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := rru.mutation.ReminderTime(); ok {
+	if value, ok := _u.mutation.ReminderTime(); ok {
 		_spec.SetField(readingreminder.FieldReminderTime, field.TypeString, value)
 	}
-	if value, ok := rru.mutation.DayOfWeek(); ok {
+	if value, ok := _u.mutation.DayOfWeek(); ok {
 		_spec.SetField(readingreminder.FieldDayOfWeek, field.TypeEnum, value)
 	}
-	if value, ok := rru.mutation.IsEnabled(); ok {
+	if value, ok := _u.mutation.IsEnabled(); ok {
 		_spec.SetField(readingreminder.FieldIsEnabled, field.TypeBool, value)
 	}
-	if value, ok := rru.mutation.Message(); ok {
+	if value, ok := _u.mutation.Message(); ok {
 		_spec.SetField(readingreminder.FieldMessage, field.TypeString, value)
 	}
-	if value, ok := rru.mutation.UpdatedAt(); ok {
+	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(readingreminder.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if rru.mutation.OwnerCleared() {
+	if _u.mutation.OwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -208,7 +208,7 @@ func (rru *ReadingReminderUpdate) sqlSave(ctx context.Context) (n int, err error
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := rru.mutation.OwnerIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.OwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -224,7 +224,7 @@ func (rru *ReadingReminderUpdate) sqlSave(ctx context.Context) (n int, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, rru.driver, _spec); err != nil {
+	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{readingreminder.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -232,8 +232,8 @@ func (rru *ReadingReminderUpdate) sqlSave(ctx context.Context) (n int, err error
 		}
 		return 0, err
 	}
-	rru.mutation.done = true
-	return n, nil
+	_u.mutation.done = true
+	return _node, nil
 }
 
 // ReadingReminderUpdateOne is the builder for updating a single ReadingReminder entity.
@@ -245,111 +245,111 @@ type ReadingReminderUpdateOne struct {
 }
 
 // SetReminderTime sets the "reminder_time" field.
-func (rruo *ReadingReminderUpdateOne) SetReminderTime(s string) *ReadingReminderUpdateOne {
-	rruo.mutation.SetReminderTime(s)
-	return rruo
+func (_u *ReadingReminderUpdateOne) SetReminderTime(v string) *ReadingReminderUpdateOne {
+	_u.mutation.SetReminderTime(v)
+	return _u
 }
 
 // SetNillableReminderTime sets the "reminder_time" field if the given value is not nil.
-func (rruo *ReadingReminderUpdateOne) SetNillableReminderTime(s *string) *ReadingReminderUpdateOne {
-	if s != nil {
-		rruo.SetReminderTime(*s)
+func (_u *ReadingReminderUpdateOne) SetNillableReminderTime(v *string) *ReadingReminderUpdateOne {
+	if v != nil {
+		_u.SetReminderTime(*v)
 	}
-	return rruo
+	return _u
 }
 
 // SetDayOfWeek sets the "day_of_week" field.
-func (rruo *ReadingReminderUpdateOne) SetDayOfWeek(row readingreminder.DayOfWeek) *ReadingReminderUpdateOne {
-	rruo.mutation.SetDayOfWeek(row)
-	return rruo
+func (_u *ReadingReminderUpdateOne) SetDayOfWeek(v readingreminder.DayOfWeek) *ReadingReminderUpdateOne {
+	_u.mutation.SetDayOfWeek(v)
+	return _u
 }
 
 // SetNillableDayOfWeek sets the "day_of_week" field if the given value is not nil.
-func (rruo *ReadingReminderUpdateOne) SetNillableDayOfWeek(row *readingreminder.DayOfWeek) *ReadingReminderUpdateOne {
-	if row != nil {
-		rruo.SetDayOfWeek(*row)
+func (_u *ReadingReminderUpdateOne) SetNillableDayOfWeek(v *readingreminder.DayOfWeek) *ReadingReminderUpdateOne {
+	if v != nil {
+		_u.SetDayOfWeek(*v)
 	}
-	return rruo
+	return _u
 }
 
 // SetIsEnabled sets the "is_enabled" field.
-func (rruo *ReadingReminderUpdateOne) SetIsEnabled(b bool) *ReadingReminderUpdateOne {
-	rruo.mutation.SetIsEnabled(b)
-	return rruo
+func (_u *ReadingReminderUpdateOne) SetIsEnabled(v bool) *ReadingReminderUpdateOne {
+	_u.mutation.SetIsEnabled(v)
+	return _u
 }
 
 // SetNillableIsEnabled sets the "is_enabled" field if the given value is not nil.
-func (rruo *ReadingReminderUpdateOne) SetNillableIsEnabled(b *bool) *ReadingReminderUpdateOne {
-	if b != nil {
-		rruo.SetIsEnabled(*b)
+func (_u *ReadingReminderUpdateOne) SetNillableIsEnabled(v *bool) *ReadingReminderUpdateOne {
+	if v != nil {
+		_u.SetIsEnabled(*v)
 	}
-	return rruo
+	return _u
 }
 
 // SetMessage sets the "message" field.
-func (rruo *ReadingReminderUpdateOne) SetMessage(s string) *ReadingReminderUpdateOne {
-	rruo.mutation.SetMessage(s)
-	return rruo
+func (_u *ReadingReminderUpdateOne) SetMessage(v string) *ReadingReminderUpdateOne {
+	_u.mutation.SetMessage(v)
+	return _u
 }
 
 // SetNillableMessage sets the "message" field if the given value is not nil.
-func (rruo *ReadingReminderUpdateOne) SetNillableMessage(s *string) *ReadingReminderUpdateOne {
-	if s != nil {
-		rruo.SetMessage(*s)
+func (_u *ReadingReminderUpdateOne) SetNillableMessage(v *string) *ReadingReminderUpdateOne {
+	if v != nil {
+		_u.SetMessage(*v)
 	}
-	return rruo
+	return _u
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (rruo *ReadingReminderUpdateOne) SetUpdatedAt(t time.Time) *ReadingReminderUpdateOne {
-	rruo.mutation.SetUpdatedAt(t)
-	return rruo
+func (_u *ReadingReminderUpdateOne) SetUpdatedAt(v time.Time) *ReadingReminderUpdateOne {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
 }
 
 // SetOwnerID sets the "owner" edge to the User entity by ID.
-func (rruo *ReadingReminderUpdateOne) SetOwnerID(id uuid.UUID) *ReadingReminderUpdateOne {
-	rruo.mutation.SetOwnerID(id)
-	return rruo
+func (_u *ReadingReminderUpdateOne) SetOwnerID(id uuid.UUID) *ReadingReminderUpdateOne {
+	_u.mutation.SetOwnerID(id)
+	return _u
 }
 
 // SetOwner sets the "owner" edge to the User entity.
-func (rruo *ReadingReminderUpdateOne) SetOwner(u *User) *ReadingReminderUpdateOne {
-	return rruo.SetOwnerID(u.ID)
+func (_u *ReadingReminderUpdateOne) SetOwner(v *User) *ReadingReminderUpdateOne {
+	return _u.SetOwnerID(v.ID)
 }
 
 // Mutation returns the ReadingReminderMutation object of the builder.
-func (rruo *ReadingReminderUpdateOne) Mutation() *ReadingReminderMutation {
-	return rruo.mutation
+func (_u *ReadingReminderUpdateOne) Mutation() *ReadingReminderMutation {
+	return _u.mutation
 }
 
 // ClearOwner clears the "owner" edge to the User entity.
-func (rruo *ReadingReminderUpdateOne) ClearOwner() *ReadingReminderUpdateOne {
-	rruo.mutation.ClearOwner()
-	return rruo
+func (_u *ReadingReminderUpdateOne) ClearOwner() *ReadingReminderUpdateOne {
+	_u.mutation.ClearOwner()
+	return _u
 }
 
 // Where appends a list predicates to the ReadingReminderUpdate builder.
-func (rruo *ReadingReminderUpdateOne) Where(ps ...predicate.ReadingReminder) *ReadingReminderUpdateOne {
-	rruo.mutation.Where(ps...)
-	return rruo
+func (_u *ReadingReminderUpdateOne) Where(ps ...predicate.ReadingReminder) *ReadingReminderUpdateOne {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (rruo *ReadingReminderUpdateOne) Select(field string, fields ...string) *ReadingReminderUpdateOne {
-	rruo.fields = append([]string{field}, fields...)
-	return rruo
+func (_u *ReadingReminderUpdateOne) Select(field string, fields ...string) *ReadingReminderUpdateOne {
+	_u.fields = append([]string{field}, fields...)
+	return _u
 }
 
 // Save executes the query and returns the updated ReadingReminder entity.
-func (rruo *ReadingReminderUpdateOne) Save(ctx context.Context) (*ReadingReminder, error) {
-	rruo.defaults()
-	return withHooks(ctx, rruo.sqlSave, rruo.mutation, rruo.hooks)
+func (_u *ReadingReminderUpdateOne) Save(ctx context.Context) (*ReadingReminder, error) {
+	_u.defaults()
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (rruo *ReadingReminderUpdateOne) SaveX(ctx context.Context) *ReadingReminder {
-	node, err := rruo.Save(ctx)
+func (_u *ReadingReminderUpdateOne) SaveX(ctx context.Context) *ReadingReminder {
+	node, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -357,55 +357,55 @@ func (rruo *ReadingReminderUpdateOne) SaveX(ctx context.Context) *ReadingReminde
 }
 
 // Exec executes the query on the entity.
-func (rruo *ReadingReminderUpdateOne) Exec(ctx context.Context) error {
-	_, err := rruo.Save(ctx)
+func (_u *ReadingReminderUpdateOne) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (rruo *ReadingReminderUpdateOne) ExecX(ctx context.Context) {
-	if err := rruo.Exec(ctx); err != nil {
+func (_u *ReadingReminderUpdateOne) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (rruo *ReadingReminderUpdateOne) defaults() {
-	if _, ok := rruo.mutation.UpdatedAt(); !ok {
+func (_u *ReadingReminderUpdateOne) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
 		v := readingreminder.UpdateDefaultUpdatedAt()
-		rruo.mutation.SetUpdatedAt(v)
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (rruo *ReadingReminderUpdateOne) check() error {
-	if v, ok := rruo.mutation.ReminderTime(); ok {
+func (_u *ReadingReminderUpdateOne) check() error {
+	if v, ok := _u.mutation.ReminderTime(); ok {
 		if err := readingreminder.ReminderTimeValidator(v); err != nil {
 			return &ValidationError{Name: "reminder_time", err: fmt.Errorf(`ent: validator failed for field "ReadingReminder.reminder_time": %w`, err)}
 		}
 	}
-	if v, ok := rruo.mutation.DayOfWeek(); ok {
+	if v, ok := _u.mutation.DayOfWeek(); ok {
 		if err := readingreminder.DayOfWeekValidator(v); err != nil {
 			return &ValidationError{Name: "day_of_week", err: fmt.Errorf(`ent: validator failed for field "ReadingReminder.day_of_week": %w`, err)}
 		}
 	}
-	if rruo.mutation.OwnerCleared() && len(rruo.mutation.OwnerIDs()) > 0 {
+	if _u.mutation.OwnerCleared() && len(_u.mutation.OwnerIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "ReadingReminder.owner"`)
 	}
 	return nil
 }
 
-func (rruo *ReadingReminderUpdateOne) sqlSave(ctx context.Context) (_node *ReadingReminder, err error) {
-	if err := rruo.check(); err != nil {
+func (_u *ReadingReminderUpdateOne) sqlSave(ctx context.Context) (_node *ReadingReminder, err error) {
+	if err := _u.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(readingreminder.Table, readingreminder.Columns, sqlgraph.NewFieldSpec(readingreminder.FieldID, field.TypeUUID))
-	id, ok := rruo.mutation.ID()
+	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "ReadingReminder.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := rruo.fields; len(fields) > 0 {
+	if fields := _u.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, readingreminder.FieldID)
 		for _, f := range fields {
@@ -417,29 +417,29 @@ func (rruo *ReadingReminderUpdateOne) sqlSave(ctx context.Context) (_node *Readi
 			}
 		}
 	}
-	if ps := rruo.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := rruo.mutation.ReminderTime(); ok {
+	if value, ok := _u.mutation.ReminderTime(); ok {
 		_spec.SetField(readingreminder.FieldReminderTime, field.TypeString, value)
 	}
-	if value, ok := rruo.mutation.DayOfWeek(); ok {
+	if value, ok := _u.mutation.DayOfWeek(); ok {
 		_spec.SetField(readingreminder.FieldDayOfWeek, field.TypeEnum, value)
 	}
-	if value, ok := rruo.mutation.IsEnabled(); ok {
+	if value, ok := _u.mutation.IsEnabled(); ok {
 		_spec.SetField(readingreminder.FieldIsEnabled, field.TypeBool, value)
 	}
-	if value, ok := rruo.mutation.Message(); ok {
+	if value, ok := _u.mutation.Message(); ok {
 		_spec.SetField(readingreminder.FieldMessage, field.TypeString, value)
 	}
-	if value, ok := rruo.mutation.UpdatedAt(); ok {
+	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(readingreminder.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if rruo.mutation.OwnerCleared() {
+	if _u.mutation.OwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -452,7 +452,7 @@ func (rruo *ReadingReminderUpdateOne) sqlSave(ctx context.Context) (_node *Readi
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := rruo.mutation.OwnerIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.OwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -468,10 +468,10 @@ func (rruo *ReadingReminderUpdateOne) sqlSave(ctx context.Context) (_node *Readi
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_node = &ReadingReminder{config: rruo.config}
+	_node = &ReadingReminder{config: _u.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, rruo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{readingreminder.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -479,6 +479,6 @@ func (rruo *ReadingReminderUpdateOne) sqlSave(ctx context.Context) (_node *Readi
 		}
 		return nil, err
 	}
-	rruo.mutation.done = true
+	_u.mutation.done = true
 	return _node, nil
 }

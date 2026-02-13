@@ -101,7 +101,7 @@ func (*Review) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Review fields.
-func (r *Review) assignValues(columns []string, values []any) error {
+func (_m *Review) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -111,60 +111,60 @@ func (r *Review) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				r.ID = *value
+				_m.ID = *value
 			}
 		case review.FieldBookIsbn:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field book_isbn", values[i])
 			} else if value.Valid {
-				r.BookIsbn = value.String
+				_m.BookIsbn = value.String
 			}
 		case review.FieldContent:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field content", values[i])
 			} else if value.Valid {
-				r.Content = value.String
+				_m.Content = value.String
 			}
 		case review.FieldRating:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field rating", values[i])
 			} else if value.Valid {
-				r.Rating = int(value.Int64)
+				_m.Rating = int(value.Int64)
 			}
 		case review.FieldIsPublic:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field is_public", values[i])
 			} else if value.Valid {
-				r.IsPublic = value.Bool
+				_m.IsPublic = value.Bool
 			}
 		case review.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				r.CreatedAt = value.Time
+				_m.CreatedAt = value.Time
 			}
 		case review.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				r.UpdatedAt = value.Time
+				_m.UpdatedAt = value.Time
 			}
 		case review.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field book_reviews", values[i])
 			} else if value.Valid {
-				r.book_reviews = new(uuid.UUID)
-				*r.book_reviews = *value.S.(*uuid.UUID)
+				_m.book_reviews = new(uuid.UUID)
+				*_m.book_reviews = *value.S.(*uuid.UUID)
 			}
 		case review.ForeignKeys[1]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field user_reviews", values[i])
 			} else if value.Valid {
-				r.user_reviews = new(uuid.UUID)
-				*r.user_reviews = *value.S.(*uuid.UUID)
+				_m.user_reviews = new(uuid.UUID)
+				*_m.user_reviews = *value.S.(*uuid.UUID)
 			}
 		default:
-			r.selectValues.Set(columns[i], values[i])
+			_m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -172,60 +172,60 @@ func (r *Review) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the Review.
 // This includes values selected through modifiers, order, etc.
-func (r *Review) Value(name string) (ent.Value, error) {
-	return r.selectValues.Get(name)
+func (_m *Review) Value(name string) (ent.Value, error) {
+	return _m.selectValues.Get(name)
 }
 
 // QueryOwner queries the "owner" edge of the Review entity.
-func (r *Review) QueryOwner() *UserQuery {
-	return NewReviewClient(r.config).QueryOwner(r)
+func (_m *Review) QueryOwner() *UserQuery {
+	return NewReviewClient(_m.config).QueryOwner(_m)
 }
 
 // QueryBook queries the "book" edge of the Review entity.
-func (r *Review) QueryBook() *BookQuery {
-	return NewReviewClient(r.config).QueryBook(r)
+func (_m *Review) QueryBook() *BookQuery {
+	return NewReviewClient(_m.config).QueryBook(_m)
 }
 
 // Update returns a builder for updating this Review.
 // Note that you need to call Review.Unwrap() before calling this method if this Review
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (r *Review) Update() *ReviewUpdateOne {
-	return NewReviewClient(r.config).UpdateOne(r)
+func (_m *Review) Update() *ReviewUpdateOne {
+	return NewReviewClient(_m.config).UpdateOne(_m)
 }
 
 // Unwrap unwraps the Review entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (r *Review) Unwrap() *Review {
-	_tx, ok := r.config.driver.(*txDriver)
+func (_m *Review) Unwrap() *Review {
+	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: Review is not a transactional entity")
 	}
-	r.config.driver = _tx.drv
-	return r
+	_m.config.driver = _tx.drv
+	return _m
 }
 
 // String implements the fmt.Stringer.
-func (r *Review) String() string {
+func (_m *Review) String() string {
 	var builder strings.Builder
 	builder.WriteString("Review(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", r.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("book_isbn=")
-	builder.WriteString(r.BookIsbn)
+	builder.WriteString(_m.BookIsbn)
 	builder.WriteString(", ")
 	builder.WriteString("content=")
-	builder.WriteString(r.Content)
+	builder.WriteString(_m.Content)
 	builder.WriteString(", ")
 	builder.WriteString("rating=")
-	builder.WriteString(fmt.Sprintf("%v", r.Rating))
+	builder.WriteString(fmt.Sprintf("%v", _m.Rating))
 	builder.WriteString(", ")
 	builder.WriteString("is_public=")
-	builder.WriteString(fmt.Sprintf("%v", r.IsPublic))
+	builder.WriteString(fmt.Sprintf("%v", _m.IsPublic))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
-	builder.WriteString(r.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
-	builder.WriteString(r.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

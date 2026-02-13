@@ -29,40 +29,40 @@ type EmailVerificationQuery struct {
 }
 
 // Where adds a new predicate for the EmailVerificationQuery builder.
-func (evq *EmailVerificationQuery) Where(ps ...predicate.EmailVerification) *EmailVerificationQuery {
-	evq.predicates = append(evq.predicates, ps...)
-	return evq
+func (_q *EmailVerificationQuery) Where(ps ...predicate.EmailVerification) *EmailVerificationQuery {
+	_q.predicates = append(_q.predicates, ps...)
+	return _q
 }
 
 // Limit the number of records to be returned by this query.
-func (evq *EmailVerificationQuery) Limit(limit int) *EmailVerificationQuery {
-	evq.ctx.Limit = &limit
-	return evq
+func (_q *EmailVerificationQuery) Limit(limit int) *EmailVerificationQuery {
+	_q.ctx.Limit = &limit
+	return _q
 }
 
 // Offset to start from.
-func (evq *EmailVerificationQuery) Offset(offset int) *EmailVerificationQuery {
-	evq.ctx.Offset = &offset
-	return evq
+func (_q *EmailVerificationQuery) Offset(offset int) *EmailVerificationQuery {
+	_q.ctx.Offset = &offset
+	return _q
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (evq *EmailVerificationQuery) Unique(unique bool) *EmailVerificationQuery {
-	evq.ctx.Unique = &unique
-	return evq
+func (_q *EmailVerificationQuery) Unique(unique bool) *EmailVerificationQuery {
+	_q.ctx.Unique = &unique
+	return _q
 }
 
 // Order specifies how the records should be ordered.
-func (evq *EmailVerificationQuery) Order(o ...emailverification.OrderOption) *EmailVerificationQuery {
-	evq.order = append(evq.order, o...)
-	return evq
+func (_q *EmailVerificationQuery) Order(o ...emailverification.OrderOption) *EmailVerificationQuery {
+	_q.order = append(_q.order, o...)
+	return _q
 }
 
 // First returns the first EmailVerification entity from the query.
 // Returns a *NotFoundError when no EmailVerification was found.
-func (evq *EmailVerificationQuery) First(ctx context.Context) (*EmailVerification, error) {
-	nodes, err := evq.Limit(1).All(setContextOp(ctx, evq.ctx, ent.OpQueryFirst))
+func (_q *EmailVerificationQuery) First(ctx context.Context) (*EmailVerification, error) {
+	nodes, err := _q.Limit(1).All(setContextOp(ctx, _q.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -73,8 +73,8 @@ func (evq *EmailVerificationQuery) First(ctx context.Context) (*EmailVerificatio
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (evq *EmailVerificationQuery) FirstX(ctx context.Context) *EmailVerification {
-	node, err := evq.First(ctx)
+func (_q *EmailVerificationQuery) FirstX(ctx context.Context) *EmailVerification {
+	node, err := _q.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
 	}
@@ -83,9 +83,9 @@ func (evq *EmailVerificationQuery) FirstX(ctx context.Context) *EmailVerificatio
 
 // FirstID returns the first EmailVerification ID from the query.
 // Returns a *NotFoundError when no EmailVerification ID was found.
-func (evq *EmailVerificationQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+func (_q *EmailVerificationQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = evq.Limit(1).IDs(setContextOp(ctx, evq.ctx, ent.OpQueryFirstID)); err != nil {
+	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -96,8 +96,8 @@ func (evq *EmailVerificationQuery) FirstID(ctx context.Context) (id uuid.UUID, e
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (evq *EmailVerificationQuery) FirstIDX(ctx context.Context) uuid.UUID {
-	id, err := evq.FirstID(ctx)
+func (_q *EmailVerificationQuery) FirstIDX(ctx context.Context) uuid.UUID {
+	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
 	}
@@ -107,8 +107,8 @@ func (evq *EmailVerificationQuery) FirstIDX(ctx context.Context) uuid.UUID {
 // Only returns a single EmailVerification entity found by the query, ensuring it only returns one.
 // Returns a *NotSingularError when more than one EmailVerification entity is found.
 // Returns a *NotFoundError when no EmailVerification entities are found.
-func (evq *EmailVerificationQuery) Only(ctx context.Context) (*EmailVerification, error) {
-	nodes, err := evq.Limit(2).All(setContextOp(ctx, evq.ctx, ent.OpQueryOnly))
+func (_q *EmailVerificationQuery) Only(ctx context.Context) (*EmailVerification, error) {
+	nodes, err := _q.Limit(2).All(setContextOp(ctx, _q.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -123,8 +123,8 @@ func (evq *EmailVerificationQuery) Only(ctx context.Context) (*EmailVerification
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (evq *EmailVerificationQuery) OnlyX(ctx context.Context) *EmailVerification {
-	node, err := evq.Only(ctx)
+func (_q *EmailVerificationQuery) OnlyX(ctx context.Context) *EmailVerification {
+	node, err := _q.Only(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -134,9 +134,9 @@ func (evq *EmailVerificationQuery) OnlyX(ctx context.Context) *EmailVerification
 // OnlyID is like Only, but returns the only EmailVerification ID in the query.
 // Returns a *NotSingularError when more than one EmailVerification ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (evq *EmailVerificationQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+func (_q *EmailVerificationQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = evq.Limit(2).IDs(setContextOp(ctx, evq.ctx, ent.OpQueryOnlyID)); err != nil {
+	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -151,8 +151,8 @@ func (evq *EmailVerificationQuery) OnlyID(ctx context.Context) (id uuid.UUID, er
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (evq *EmailVerificationQuery) OnlyIDX(ctx context.Context) uuid.UUID {
-	id, err := evq.OnlyID(ctx)
+func (_q *EmailVerificationQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -160,18 +160,18 @@ func (evq *EmailVerificationQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 }
 
 // All executes the query and returns a list of EmailVerifications.
-func (evq *EmailVerificationQuery) All(ctx context.Context) ([]*EmailVerification, error) {
-	ctx = setContextOp(ctx, evq.ctx, ent.OpQueryAll)
-	if err := evq.prepareQuery(ctx); err != nil {
+func (_q *EmailVerificationQuery) All(ctx context.Context) ([]*EmailVerification, error) {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryAll)
+	if err := _q.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
 	qr := querierAll[[]*EmailVerification, *EmailVerificationQuery]()
-	return withInterceptors[[]*EmailVerification](ctx, evq, qr, evq.inters)
+	return withInterceptors[[]*EmailVerification](ctx, _q, qr, _q.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
-func (evq *EmailVerificationQuery) AllX(ctx context.Context) []*EmailVerification {
-	nodes, err := evq.All(ctx)
+func (_q *EmailVerificationQuery) AllX(ctx context.Context) []*EmailVerification {
+	nodes, err := _q.All(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -179,20 +179,20 @@ func (evq *EmailVerificationQuery) AllX(ctx context.Context) []*EmailVerificatio
 }
 
 // IDs executes the query and returns a list of EmailVerification IDs.
-func (evq *EmailVerificationQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
-	if evq.ctx.Unique == nil && evq.path != nil {
-		evq.Unique(true)
+func (_q *EmailVerificationQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
+	if _q.ctx.Unique == nil && _q.path != nil {
+		_q.Unique(true)
 	}
-	ctx = setContextOp(ctx, evq.ctx, ent.OpQueryIDs)
-	if err = evq.Select(emailverification.FieldID).Scan(ctx, &ids); err != nil {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryIDs)
+	if err = _q.Select(emailverification.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (evq *EmailVerificationQuery) IDsX(ctx context.Context) []uuid.UUID {
-	ids, err := evq.IDs(ctx)
+func (_q *EmailVerificationQuery) IDsX(ctx context.Context) []uuid.UUID {
+	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -200,17 +200,17 @@ func (evq *EmailVerificationQuery) IDsX(ctx context.Context) []uuid.UUID {
 }
 
 // Count returns the count of the given query.
-func (evq *EmailVerificationQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, evq.ctx, ent.OpQueryCount)
-	if err := evq.prepareQuery(ctx); err != nil {
+func (_q *EmailVerificationQuery) Count(ctx context.Context) (int, error) {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryCount)
+	if err := _q.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return withInterceptors[int](ctx, evq, querierCount[*EmailVerificationQuery](), evq.inters)
+	return withInterceptors[int](ctx, _q, querierCount[*EmailVerificationQuery](), _q.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (evq *EmailVerificationQuery) CountX(ctx context.Context) int {
-	count, err := evq.Count(ctx)
+func (_q *EmailVerificationQuery) CountX(ctx context.Context) int {
+	count, err := _q.Count(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -218,9 +218,9 @@ func (evq *EmailVerificationQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (evq *EmailVerificationQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, evq.ctx, ent.OpQueryExist)
-	switch _, err := evq.FirstID(ctx); {
+func (_q *EmailVerificationQuery) Exist(ctx context.Context) (bool, error) {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryExist)
+	switch _, err := _q.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
@@ -231,8 +231,8 @@ func (evq *EmailVerificationQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (evq *EmailVerificationQuery) ExistX(ctx context.Context) bool {
-	exist, err := evq.Exist(ctx)
+func (_q *EmailVerificationQuery) ExistX(ctx context.Context) bool {
+	exist, err := _q.Exist(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -241,19 +241,19 @@ func (evq *EmailVerificationQuery) ExistX(ctx context.Context) bool {
 
 // Clone returns a duplicate of the EmailVerificationQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (evq *EmailVerificationQuery) Clone() *EmailVerificationQuery {
-	if evq == nil {
+func (_q *EmailVerificationQuery) Clone() *EmailVerificationQuery {
+	if _q == nil {
 		return nil
 	}
 	return &EmailVerificationQuery{
-		config:     evq.config,
-		ctx:        evq.ctx.Clone(),
-		order:      append([]emailverification.OrderOption{}, evq.order...),
-		inters:     append([]Interceptor{}, evq.inters...),
-		predicates: append([]predicate.EmailVerification{}, evq.predicates...),
+		config:     _q.config,
+		ctx:        _q.ctx.Clone(),
+		order:      append([]emailverification.OrderOption{}, _q.order...),
+		inters:     append([]Interceptor{}, _q.inters...),
+		predicates: append([]predicate.EmailVerification{}, _q.predicates...),
 		// clone intermediate query.
-		sql:  evq.sql.Clone(),
-		path: evq.path,
+		sql:  _q.sql.Clone(),
+		path: _q.path,
 	}
 }
 
@@ -271,10 +271,10 @@ func (evq *EmailVerificationQuery) Clone() *EmailVerificationQuery {
 //		GroupBy(emailverification.FieldEmail).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-func (evq *EmailVerificationQuery) GroupBy(field string, fields ...string) *EmailVerificationGroupBy {
-	evq.ctx.Fields = append([]string{field}, fields...)
-	grbuild := &EmailVerificationGroupBy{build: evq}
-	grbuild.flds = &evq.ctx.Fields
+func (_q *EmailVerificationQuery) GroupBy(field string, fields ...string) *EmailVerificationGroupBy {
+	_q.ctx.Fields = append([]string{field}, fields...)
+	grbuild := &EmailVerificationGroupBy{build: _q}
+	grbuild.flds = &_q.ctx.Fields
 	grbuild.label = emailverification.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -292,62 +292,62 @@ func (evq *EmailVerificationQuery) GroupBy(field string, fields ...string) *Emai
 //	client.EmailVerification.Query().
 //		Select(emailverification.FieldEmail).
 //		Scan(ctx, &v)
-func (evq *EmailVerificationQuery) Select(fields ...string) *EmailVerificationSelect {
-	evq.ctx.Fields = append(evq.ctx.Fields, fields...)
-	sbuild := &EmailVerificationSelect{EmailVerificationQuery: evq}
+func (_q *EmailVerificationQuery) Select(fields ...string) *EmailVerificationSelect {
+	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
+	sbuild := &EmailVerificationSelect{EmailVerificationQuery: _q}
 	sbuild.label = emailverification.Label
-	sbuild.flds, sbuild.scan = &evq.ctx.Fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &_q.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
 // Aggregate returns a EmailVerificationSelect configured with the given aggregations.
-func (evq *EmailVerificationQuery) Aggregate(fns ...AggregateFunc) *EmailVerificationSelect {
-	return evq.Select().Aggregate(fns...)
+func (_q *EmailVerificationQuery) Aggregate(fns ...AggregateFunc) *EmailVerificationSelect {
+	return _q.Select().Aggregate(fns...)
 }
 
-func (evq *EmailVerificationQuery) prepareQuery(ctx context.Context) error {
-	for _, inter := range evq.inters {
+func (_q *EmailVerificationQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range _q.inters {
 		if inter == nil {
 			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
-			if err := trv.Traverse(ctx, evq); err != nil {
+			if err := trv.Traverse(ctx, _q); err != nil {
 				return err
 			}
 		}
 	}
-	for _, f := range evq.ctx.Fields {
+	for _, f := range _q.ctx.Fields {
 		if !emailverification.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
-	if evq.path != nil {
-		prev, err := evq.path(ctx)
+	if _q.path != nil {
+		prev, err := _q.path(ctx)
 		if err != nil {
 			return err
 		}
-		evq.sql = prev
+		_q.sql = prev
 	}
 	return nil
 }
 
-func (evq *EmailVerificationQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*EmailVerification, error) {
+func (_q *EmailVerificationQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*EmailVerification, error) {
 	var (
 		nodes = []*EmailVerification{}
-		_spec = evq.querySpec()
+		_spec = _q.querySpec()
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*EmailVerification).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
-		node := &EmailVerification{config: evq.config}
+		node := &EmailVerification{config: _q.config}
 		nodes = append(nodes, node)
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
 		hooks[i](ctx, _spec)
 	}
-	if err := sqlgraph.QueryNodes(ctx, evq.driver, _spec); err != nil {
+	if err := sqlgraph.QueryNodes(ctx, _q.driver, _spec); err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
@@ -356,24 +356,24 @@ func (evq *EmailVerificationQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 	return nodes, nil
 }
 
-func (evq *EmailVerificationQuery) sqlCount(ctx context.Context) (int, error) {
-	_spec := evq.querySpec()
-	_spec.Node.Columns = evq.ctx.Fields
-	if len(evq.ctx.Fields) > 0 {
-		_spec.Unique = evq.ctx.Unique != nil && *evq.ctx.Unique
+func (_q *EmailVerificationQuery) sqlCount(ctx context.Context) (int, error) {
+	_spec := _q.querySpec()
+	_spec.Node.Columns = _q.ctx.Fields
+	if len(_q.ctx.Fields) > 0 {
+		_spec.Unique = _q.ctx.Unique != nil && *_q.ctx.Unique
 	}
-	return sqlgraph.CountNodes(ctx, evq.driver, _spec)
+	return sqlgraph.CountNodes(ctx, _q.driver, _spec)
 }
 
-func (evq *EmailVerificationQuery) querySpec() *sqlgraph.QuerySpec {
+func (_q *EmailVerificationQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := sqlgraph.NewQuerySpec(emailverification.Table, emailverification.Columns, sqlgraph.NewFieldSpec(emailverification.FieldID, field.TypeUUID))
-	_spec.From = evq.sql
-	if unique := evq.ctx.Unique; unique != nil {
+	_spec.From = _q.sql
+	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
-	} else if evq.path != nil {
+	} else if _q.path != nil {
 		_spec.Unique = true
 	}
-	if fields := evq.ctx.Fields; len(fields) > 0 {
+	if fields := _q.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, emailverification.FieldID)
 		for i := range fields {
@@ -382,20 +382,20 @@ func (evq *EmailVerificationQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if ps := evq.predicates; len(ps) > 0 {
+	if ps := _q.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if limit := evq.ctx.Limit; limit != nil {
+	if limit := _q.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := evq.ctx.Offset; offset != nil {
+	if offset := _q.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
-	if ps := evq.order; len(ps) > 0 {
+	if ps := _q.order; len(ps) > 0 {
 		_spec.Order = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
@@ -405,33 +405,33 @@ func (evq *EmailVerificationQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (evq *EmailVerificationQuery) sqlQuery(ctx context.Context) *sql.Selector {
-	builder := sql.Dialect(evq.driver.Dialect())
+func (_q *EmailVerificationQuery) sqlQuery(ctx context.Context) *sql.Selector {
+	builder := sql.Dialect(_q.driver.Dialect())
 	t1 := builder.Table(emailverification.Table)
-	columns := evq.ctx.Fields
+	columns := _q.ctx.Fields
 	if len(columns) == 0 {
 		columns = emailverification.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
-	if evq.sql != nil {
-		selector = evq.sql
+	if _q.sql != nil {
+		selector = _q.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if evq.ctx.Unique != nil && *evq.ctx.Unique {
+	if _q.ctx.Unique != nil && *_q.ctx.Unique {
 		selector.Distinct()
 	}
-	for _, p := range evq.predicates {
+	for _, p := range _q.predicates {
 		p(selector)
 	}
-	for _, p := range evq.order {
+	for _, p := range _q.order {
 		p(selector)
 	}
-	if offset := evq.ctx.Offset; offset != nil {
+	if offset := _q.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := evq.ctx.Limit; limit != nil {
+	if limit := _q.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -444,41 +444,41 @@ type EmailVerificationGroupBy struct {
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (evgb *EmailVerificationGroupBy) Aggregate(fns ...AggregateFunc) *EmailVerificationGroupBy {
-	evgb.fns = append(evgb.fns, fns...)
-	return evgb
+func (_g *EmailVerificationGroupBy) Aggregate(fns ...AggregateFunc) *EmailVerificationGroupBy {
+	_g.fns = append(_g.fns, fns...)
+	return _g
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (evgb *EmailVerificationGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, evgb.build.ctx, ent.OpQueryGroupBy)
-	if err := evgb.build.prepareQuery(ctx); err != nil {
+func (_g *EmailVerificationGroupBy) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, _g.build.ctx, ent.OpQueryGroupBy)
+	if err := _g.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*EmailVerificationQuery, *EmailVerificationGroupBy](ctx, evgb.build, evgb, evgb.build.inters, v)
+	return scanWithInterceptors[*EmailVerificationQuery, *EmailVerificationGroupBy](ctx, _g.build, _g, _g.build.inters, v)
 }
 
-func (evgb *EmailVerificationGroupBy) sqlScan(ctx context.Context, root *EmailVerificationQuery, v any) error {
+func (_g *EmailVerificationGroupBy) sqlScan(ctx context.Context, root *EmailVerificationQuery, v any) error {
 	selector := root.sqlQuery(ctx).Select()
-	aggregation := make([]string, 0, len(evgb.fns))
-	for _, fn := range evgb.fns {
+	aggregation := make([]string, 0, len(_g.fns))
+	for _, fn := range _g.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
 	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(*evgb.flds)+len(evgb.fns))
-		for _, f := range *evgb.flds {
+		columns := make([]string, 0, len(*_g.flds)+len(_g.fns))
+		for _, f := range *_g.flds {
 			columns = append(columns, selector.C(f))
 		}
 		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
-	selector.GroupBy(selector.Columns(*evgb.flds...)...)
+	selector.GroupBy(selector.Columns(*_g.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := evgb.build.driver.Query(ctx, query, args, rows); err != nil {
+	if err := _g.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
@@ -492,27 +492,27 @@ type EmailVerificationSelect struct {
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
-func (evs *EmailVerificationSelect) Aggregate(fns ...AggregateFunc) *EmailVerificationSelect {
-	evs.fns = append(evs.fns, fns...)
-	return evs
+func (_s *EmailVerificationSelect) Aggregate(fns ...AggregateFunc) *EmailVerificationSelect {
+	_s.fns = append(_s.fns, fns...)
+	return _s
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (evs *EmailVerificationSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, evs.ctx, ent.OpQuerySelect)
-	if err := evs.prepareQuery(ctx); err != nil {
+func (_s *EmailVerificationSelect) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, _s.ctx, ent.OpQuerySelect)
+	if err := _s.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*EmailVerificationQuery, *EmailVerificationSelect](ctx, evs.EmailVerificationQuery, evs, evs.inters, v)
+	return scanWithInterceptors[*EmailVerificationQuery, *EmailVerificationSelect](ctx, _s.EmailVerificationQuery, _s, _s.inters, v)
 }
 
-func (evs *EmailVerificationSelect) sqlScan(ctx context.Context, root *EmailVerificationQuery, v any) error {
+func (_s *EmailVerificationSelect) sqlScan(ctx context.Context, root *EmailVerificationQuery, v any) error {
 	selector := root.sqlQuery(ctx)
-	aggregation := make([]string, 0, len(evs.fns))
-	for _, fn := range evs.fns {
+	aggregation := make([]string, 0, len(_s.fns))
+	for _, fn := range _s.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
-	switch n := len(*evs.selector.flds); {
+	switch n := len(*_s.selector.flds); {
 	case n == 0 && len(aggregation) > 0:
 		selector.Select(aggregation...)
 	case n != 0 && len(aggregation) > 0:
@@ -520,7 +520,7 @@ func (evs *EmailVerificationSelect) sqlScan(ctx context.Context, root *EmailVeri
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := evs.driver.Query(ctx, query, args, rows); err != nil {
+	if err := _s.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()

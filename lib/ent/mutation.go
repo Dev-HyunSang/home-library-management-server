@@ -4209,6 +4209,7 @@ type UserMutation struct {
 	password                 *string
 	is_published             *bool
 	is_terms_agreed          *bool
+	is_privacy_agreed        *bool
 	fcm_token                *string
 	timezone                 *string
 	created_at               *time.Time
@@ -4526,6 +4527,42 @@ func (m *UserMutation) OldIsTermsAgreed(ctx context.Context) (v bool, err error)
 // ResetIsTermsAgreed resets all changes to the "is_terms_agreed" field.
 func (m *UserMutation) ResetIsTermsAgreed() {
 	m.is_terms_agreed = nil
+}
+
+// SetIsPrivacyAgreed sets the "is_privacy_agreed" field.
+func (m *UserMutation) SetIsPrivacyAgreed(b bool) {
+	m.is_privacy_agreed = &b
+}
+
+// IsPrivacyAgreed returns the value of the "is_privacy_agreed" field in the mutation.
+func (m *UserMutation) IsPrivacyAgreed() (r bool, exists bool) {
+	v := m.is_privacy_agreed
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsPrivacyAgreed returns the old "is_privacy_agreed" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldIsPrivacyAgreed(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsPrivacyAgreed is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsPrivacyAgreed requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsPrivacyAgreed: %w", err)
+	}
+	return oldValue.IsPrivacyAgreed, nil
+}
+
+// ResetIsPrivacyAgreed resets all changes to the "is_privacy_agreed" field.
+func (m *UserMutation) ResetIsPrivacyAgreed() {
+	m.is_privacy_agreed = nil
 }
 
 // SetFcmToken sets the "fcm_token" field.
@@ -4935,7 +4972,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
 	if m.nick_name != nil {
 		fields = append(fields, user.FieldNickName)
 	}
@@ -4950,6 +4987,9 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.is_terms_agreed != nil {
 		fields = append(fields, user.FieldIsTermsAgreed)
+	}
+	if m.is_privacy_agreed != nil {
+		fields = append(fields, user.FieldIsPrivacyAgreed)
 	}
 	if m.fcm_token != nil {
 		fields = append(fields, user.FieldFcmToken)
@@ -4981,6 +5021,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.IsPublished()
 	case user.FieldIsTermsAgreed:
 		return m.IsTermsAgreed()
+	case user.FieldIsPrivacyAgreed:
+		return m.IsPrivacyAgreed()
 	case user.FieldFcmToken:
 		return m.FcmToken()
 	case user.FieldTimezone:
@@ -5008,6 +5050,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldIsPublished(ctx)
 	case user.FieldIsTermsAgreed:
 		return m.OldIsTermsAgreed(ctx)
+	case user.FieldIsPrivacyAgreed:
+		return m.OldIsPrivacyAgreed(ctx)
 	case user.FieldFcmToken:
 		return m.OldFcmToken(ctx)
 	case user.FieldTimezone:
@@ -5059,6 +5103,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIsTermsAgreed(v)
+		return nil
+	case user.FieldIsPrivacyAgreed:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsPrivacyAgreed(v)
 		return nil
 	case user.FieldFcmToken:
 		v, ok := value.(string)
@@ -5166,6 +5217,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldIsTermsAgreed:
 		m.ResetIsTermsAgreed()
+		return nil
+	case user.FieldIsPrivacyAgreed:
+		m.ResetIsPrivacyAgreed()
 		return nil
 	case user.FieldFcmToken:
 		m.ResetFcmToken()

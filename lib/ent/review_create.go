@@ -24,123 +24,123 @@ type ReviewCreate struct {
 }
 
 // SetBookIsbn sets the "book_isbn" field.
-func (rc *ReviewCreate) SetBookIsbn(s string) *ReviewCreate {
-	rc.mutation.SetBookIsbn(s)
-	return rc
+func (_c *ReviewCreate) SetBookIsbn(v string) *ReviewCreate {
+	_c.mutation.SetBookIsbn(v)
+	return _c
 }
 
 // SetContent sets the "content" field.
-func (rc *ReviewCreate) SetContent(s string) *ReviewCreate {
-	rc.mutation.SetContent(s)
-	return rc
+func (_c *ReviewCreate) SetContent(v string) *ReviewCreate {
+	_c.mutation.SetContent(v)
+	return _c
 }
 
 // SetRating sets the "rating" field.
-func (rc *ReviewCreate) SetRating(i int) *ReviewCreate {
-	rc.mutation.SetRating(i)
-	return rc
+func (_c *ReviewCreate) SetRating(v int) *ReviewCreate {
+	_c.mutation.SetRating(v)
+	return _c
 }
 
 // SetIsPublic sets the "is_public" field.
-func (rc *ReviewCreate) SetIsPublic(b bool) *ReviewCreate {
-	rc.mutation.SetIsPublic(b)
-	return rc
+func (_c *ReviewCreate) SetIsPublic(v bool) *ReviewCreate {
+	_c.mutation.SetIsPublic(v)
+	return _c
 }
 
 // SetNillableIsPublic sets the "is_public" field if the given value is not nil.
-func (rc *ReviewCreate) SetNillableIsPublic(b *bool) *ReviewCreate {
-	if b != nil {
-		rc.SetIsPublic(*b)
+func (_c *ReviewCreate) SetNillableIsPublic(v *bool) *ReviewCreate {
+	if v != nil {
+		_c.SetIsPublic(*v)
 	}
-	return rc
+	return _c
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (rc *ReviewCreate) SetCreatedAt(t time.Time) *ReviewCreate {
-	rc.mutation.SetCreatedAt(t)
-	return rc
+func (_c *ReviewCreate) SetCreatedAt(v time.Time) *ReviewCreate {
+	_c.mutation.SetCreatedAt(v)
+	return _c
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (rc *ReviewCreate) SetNillableCreatedAt(t *time.Time) *ReviewCreate {
-	if t != nil {
-		rc.SetCreatedAt(*t)
+func (_c *ReviewCreate) SetNillableCreatedAt(v *time.Time) *ReviewCreate {
+	if v != nil {
+		_c.SetCreatedAt(*v)
 	}
-	return rc
+	return _c
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (rc *ReviewCreate) SetUpdatedAt(t time.Time) *ReviewCreate {
-	rc.mutation.SetUpdatedAt(t)
-	return rc
+func (_c *ReviewCreate) SetUpdatedAt(v time.Time) *ReviewCreate {
+	_c.mutation.SetUpdatedAt(v)
+	return _c
 }
 
 // SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (rc *ReviewCreate) SetNillableUpdatedAt(t *time.Time) *ReviewCreate {
-	if t != nil {
-		rc.SetUpdatedAt(*t)
+func (_c *ReviewCreate) SetNillableUpdatedAt(v *time.Time) *ReviewCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
 	}
-	return rc
+	return _c
 }
 
 // SetID sets the "id" field.
-func (rc *ReviewCreate) SetID(u uuid.UUID) *ReviewCreate {
-	rc.mutation.SetID(u)
-	return rc
+func (_c *ReviewCreate) SetID(v uuid.UUID) *ReviewCreate {
+	_c.mutation.SetID(v)
+	return _c
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (rc *ReviewCreate) SetNillableID(u *uuid.UUID) *ReviewCreate {
-	if u != nil {
-		rc.SetID(*u)
+func (_c *ReviewCreate) SetNillableID(v *uuid.UUID) *ReviewCreate {
+	if v != nil {
+		_c.SetID(*v)
 	}
-	return rc
+	return _c
 }
 
 // SetOwnerID sets the "owner" edge to the User entity by ID.
-func (rc *ReviewCreate) SetOwnerID(id uuid.UUID) *ReviewCreate {
-	rc.mutation.SetOwnerID(id)
-	return rc
+func (_c *ReviewCreate) SetOwnerID(id uuid.UUID) *ReviewCreate {
+	_c.mutation.SetOwnerID(id)
+	return _c
 }
 
 // SetOwner sets the "owner" edge to the User entity.
-func (rc *ReviewCreate) SetOwner(u *User) *ReviewCreate {
-	return rc.SetOwnerID(u.ID)
+func (_c *ReviewCreate) SetOwner(v *User) *ReviewCreate {
+	return _c.SetOwnerID(v.ID)
 }
 
 // SetBookID sets the "book" edge to the Book entity by ID.
-func (rc *ReviewCreate) SetBookID(id uuid.UUID) *ReviewCreate {
-	rc.mutation.SetBookID(id)
-	return rc
+func (_c *ReviewCreate) SetBookID(id uuid.UUID) *ReviewCreate {
+	_c.mutation.SetBookID(id)
+	return _c
 }
 
 // SetNillableBookID sets the "book" edge to the Book entity by ID if the given value is not nil.
-func (rc *ReviewCreate) SetNillableBookID(id *uuid.UUID) *ReviewCreate {
+func (_c *ReviewCreate) SetNillableBookID(id *uuid.UUID) *ReviewCreate {
 	if id != nil {
-		rc = rc.SetBookID(*id)
+		_c = _c.SetBookID(*id)
 	}
-	return rc
+	return _c
 }
 
 // SetBook sets the "book" edge to the Book entity.
-func (rc *ReviewCreate) SetBook(b *Book) *ReviewCreate {
-	return rc.SetBookID(b.ID)
+func (_c *ReviewCreate) SetBook(v *Book) *ReviewCreate {
+	return _c.SetBookID(v.ID)
 }
 
 // Mutation returns the ReviewMutation object of the builder.
-func (rc *ReviewCreate) Mutation() *ReviewMutation {
-	return rc.mutation
+func (_c *ReviewCreate) Mutation() *ReviewMutation {
+	return _c.mutation
 }
 
 // Save creates the Review in the database.
-func (rc *ReviewCreate) Save(ctx context.Context) (*Review, error) {
-	rc.defaults()
-	return withHooks(ctx, rc.sqlSave, rc.mutation, rc.hooks)
+func (_c *ReviewCreate) Save(ctx context.Context) (*Review, error) {
+	_c.defaults()
+	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (rc *ReviewCreate) SaveX(ctx context.Context) *Review {
-	v, err := rc.Save(ctx)
+func (_c *ReviewCreate) SaveX(ctx context.Context) *Review {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -148,85 +148,85 @@ func (rc *ReviewCreate) SaveX(ctx context.Context) *Review {
 }
 
 // Exec executes the query.
-func (rc *ReviewCreate) Exec(ctx context.Context) error {
-	_, err := rc.Save(ctx)
+func (_c *ReviewCreate) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (rc *ReviewCreate) ExecX(ctx context.Context) {
-	if err := rc.Exec(ctx); err != nil {
+func (_c *ReviewCreate) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (rc *ReviewCreate) defaults() {
-	if _, ok := rc.mutation.IsPublic(); !ok {
+func (_c *ReviewCreate) defaults() {
+	if _, ok := _c.mutation.IsPublic(); !ok {
 		v := review.DefaultIsPublic
-		rc.mutation.SetIsPublic(v)
+		_c.mutation.SetIsPublic(v)
 	}
-	if _, ok := rc.mutation.CreatedAt(); !ok {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := review.DefaultCreatedAt()
-		rc.mutation.SetCreatedAt(v)
+		_c.mutation.SetCreatedAt(v)
 	}
-	if _, ok := rc.mutation.UpdatedAt(); !ok {
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		v := review.DefaultUpdatedAt()
-		rc.mutation.SetUpdatedAt(v)
+		_c.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := rc.mutation.ID(); !ok {
+	if _, ok := _c.mutation.ID(); !ok {
 		v := review.DefaultID()
-		rc.mutation.SetID(v)
+		_c.mutation.SetID(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (rc *ReviewCreate) check() error {
-	if _, ok := rc.mutation.BookIsbn(); !ok {
+func (_c *ReviewCreate) check() error {
+	if _, ok := _c.mutation.BookIsbn(); !ok {
 		return &ValidationError{Name: "book_isbn", err: errors.New(`ent: missing required field "Review.book_isbn"`)}
 	}
-	if v, ok := rc.mutation.BookIsbn(); ok {
+	if v, ok := _c.mutation.BookIsbn(); ok {
 		if err := review.BookIsbnValidator(v); err != nil {
 			return &ValidationError{Name: "book_isbn", err: fmt.Errorf(`ent: validator failed for field "Review.book_isbn": %w`, err)}
 		}
 	}
-	if _, ok := rc.mutation.Content(); !ok {
+	if _, ok := _c.mutation.Content(); !ok {
 		return &ValidationError{Name: "content", err: errors.New(`ent: missing required field "Review.content"`)}
 	}
-	if v, ok := rc.mutation.Content(); ok {
+	if v, ok := _c.mutation.Content(); ok {
 		if err := review.ContentValidator(v); err != nil {
 			return &ValidationError{Name: "content", err: fmt.Errorf(`ent: validator failed for field "Review.content": %w`, err)}
 		}
 	}
-	if _, ok := rc.mutation.Rating(); !ok {
+	if _, ok := _c.mutation.Rating(); !ok {
 		return &ValidationError{Name: "rating", err: errors.New(`ent: missing required field "Review.rating"`)}
 	}
-	if v, ok := rc.mutation.Rating(); ok {
+	if v, ok := _c.mutation.Rating(); ok {
 		if err := review.RatingValidator(v); err != nil {
 			return &ValidationError{Name: "rating", err: fmt.Errorf(`ent: validator failed for field "Review.rating": %w`, err)}
 		}
 	}
-	if _, ok := rc.mutation.IsPublic(); !ok {
+	if _, ok := _c.mutation.IsPublic(); !ok {
 		return &ValidationError{Name: "is_public", err: errors.New(`ent: missing required field "Review.is_public"`)}
 	}
-	if _, ok := rc.mutation.CreatedAt(); !ok {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Review.created_at"`)}
 	}
-	if _, ok := rc.mutation.UpdatedAt(); !ok {
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Review.updated_at"`)}
 	}
-	if len(rc.mutation.OwnerIDs()) == 0 {
+	if len(_c.mutation.OwnerIDs()) == 0 {
 		return &ValidationError{Name: "owner", err: errors.New(`ent: missing required edge "Review.owner"`)}
 	}
 	return nil
 }
 
-func (rc *ReviewCreate) sqlSave(ctx context.Context) (*Review, error) {
-	if err := rc.check(); err != nil {
+func (_c *ReviewCreate) sqlSave(ctx context.Context) (*Review, error) {
+	if err := _c.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := rc.createSpec()
-	if err := sqlgraph.CreateNode(ctx, rc.driver, _spec); err != nil {
+	_node, _spec := _c.createSpec()
+	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -239,45 +239,45 @@ func (rc *ReviewCreate) sqlSave(ctx context.Context) (*Review, error) {
 			return nil, err
 		}
 	}
-	rc.mutation.id = &_node.ID
-	rc.mutation.done = true
+	_c.mutation.id = &_node.ID
+	_c.mutation.done = true
 	return _node, nil
 }
 
-func (rc *ReviewCreate) createSpec() (*Review, *sqlgraph.CreateSpec) {
+func (_c *ReviewCreate) createSpec() (*Review, *sqlgraph.CreateSpec) {
 	var (
-		_node = &Review{config: rc.config}
+		_node = &Review{config: _c.config}
 		_spec = sqlgraph.NewCreateSpec(review.Table, sqlgraph.NewFieldSpec(review.FieldID, field.TypeUUID))
 	)
-	if id, ok := rc.mutation.ID(); ok {
+	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
-	if value, ok := rc.mutation.BookIsbn(); ok {
+	if value, ok := _c.mutation.BookIsbn(); ok {
 		_spec.SetField(review.FieldBookIsbn, field.TypeString, value)
 		_node.BookIsbn = value
 	}
-	if value, ok := rc.mutation.Content(); ok {
+	if value, ok := _c.mutation.Content(); ok {
 		_spec.SetField(review.FieldContent, field.TypeString, value)
 		_node.Content = value
 	}
-	if value, ok := rc.mutation.Rating(); ok {
+	if value, ok := _c.mutation.Rating(); ok {
 		_spec.SetField(review.FieldRating, field.TypeInt, value)
 		_node.Rating = value
 	}
-	if value, ok := rc.mutation.IsPublic(); ok {
+	if value, ok := _c.mutation.IsPublic(); ok {
 		_spec.SetField(review.FieldIsPublic, field.TypeBool, value)
 		_node.IsPublic = value
 	}
-	if value, ok := rc.mutation.CreatedAt(); ok {
+	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(review.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
-	if value, ok := rc.mutation.UpdatedAt(); ok {
+	if value, ok := _c.mutation.UpdatedAt(); ok {
 		_spec.SetField(review.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if nodes := rc.mutation.OwnerIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.OwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -294,7 +294,7 @@ func (rc *ReviewCreate) createSpec() (*Review, *sqlgraph.CreateSpec) {
 		_node.user_reviews = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := rc.mutation.BookIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.BookIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -322,16 +322,16 @@ type ReviewCreateBulk struct {
 }
 
 // Save creates the Review entities in the database.
-func (rcb *ReviewCreateBulk) Save(ctx context.Context) ([]*Review, error) {
-	if rcb.err != nil {
-		return nil, rcb.err
+func (_c *ReviewCreateBulk) Save(ctx context.Context) ([]*Review, error) {
+	if _c.err != nil {
+		return nil, _c.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(rcb.builders))
-	nodes := make([]*Review, len(rcb.builders))
-	mutators := make([]Mutator, len(rcb.builders))
-	for i := range rcb.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
+	nodes := make([]*Review, len(_c.builders))
+	mutators := make([]Mutator, len(_c.builders))
+	for i := range _c.builders {
 		func(i int, root context.Context) {
-			builder := rcb.builders[i]
+			builder := _c.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*ReviewMutation)
@@ -345,11 +345,11 @@ func (rcb *ReviewCreateBulk) Save(ctx context.Context) ([]*Review, error) {
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, rcb.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, rcb.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -369,7 +369,7 @@ func (rcb *ReviewCreateBulk) Save(ctx context.Context) ([]*Review, error) {
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, rcb.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -377,8 +377,8 @@ func (rcb *ReviewCreateBulk) Save(ctx context.Context) ([]*Review, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (rcb *ReviewCreateBulk) SaveX(ctx context.Context) []*Review {
-	v, err := rcb.Save(ctx)
+func (_c *ReviewCreateBulk) SaveX(ctx context.Context) []*Review {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -386,14 +386,14 @@ func (rcb *ReviewCreateBulk) SaveX(ctx context.Context) []*Review {
 }
 
 // Exec executes the query.
-func (rcb *ReviewCreateBulk) Exec(ctx context.Context) error {
-	_, err := rcb.Save(ctx)
+func (_c *ReviewCreateBulk) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (rcb *ReviewCreateBulk) ExecX(ctx context.Context) {
-	if err := rcb.Exec(ctx); err != nil {
+func (_c *ReviewCreateBulk) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

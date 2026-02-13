@@ -9,16 +9,17 @@ import (
 )
 
 type User struct {
-	ID            uuid.UUID `json:"id"`
-	NickName      string    `json:"nick_name"`
-	Email         string    `json:"email"`
-	Password      string    `json:"password,omitempty"`
-	IsPublished   bool      `json:"is_published"`
-	IsTermsAgreed bool      `json:"is_terms_agreed"`
-	FCMToken      string    `json:"fcm_token,omitempty"`
-	Timezone      string    `json:"timezone"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
+	ID              uuid.UUID `json:"id"`
+	NickName        string    `json:"nick_name"`
+	Email           string    `json:"email"`
+	Password        string    `json:"password,omitempty"`
+	IsPublished     bool      `json:"is_published"`
+	IsTermsAgreed   bool      `json:"is_terms_agreed"`
+	IsPrivacyAgreed bool      `json:"is_privacy_agreed"`
+	FCMToken        string    `json:"fcm_token,omitempty"`
+	Timezone        string    `json:"timezone"`
+	CreatedAt       time.Time `json:"created_at"`
+	UpdatedAt       time.Time `json:"updated_at"`
 }
 
 type UserRepository interface {

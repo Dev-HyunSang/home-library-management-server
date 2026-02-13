@@ -35,6 +35,9 @@ func (User) Fields() []ent.Field {
 		field.Bool("is_terms_agreed").
 			Default(false).
 			Comment("사용자 이용약관 동의 여부"),
+		field.Bool("is_privacy_agreed").
+			Default(false).
+			Comment("사용자 개인정보 수집 이용 동의 여부"),
 		field.String("fcm_token").
 			Optional().
 			Comment("FCM 디바이스 토큰"),

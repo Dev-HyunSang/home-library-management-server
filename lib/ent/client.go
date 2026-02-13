@@ -311,8 +311,8 @@ func (c *AdminAPIKeyClient) Update() *AdminAPIKeyUpdate {
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *AdminAPIKeyClient) UpdateOne(aak *AdminAPIKey) *AdminAPIKeyUpdateOne {
-	mutation := newAdminAPIKeyMutation(c.config, OpUpdateOne, withAdminAPIKey(aak))
+func (c *AdminAPIKeyClient) UpdateOne(_m *AdminAPIKey) *AdminAPIKeyUpdateOne {
+	mutation := newAdminAPIKeyMutation(c.config, OpUpdateOne, withAdminAPIKey(_m))
 	return &AdminAPIKeyUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
@@ -329,8 +329,8 @@ func (c *AdminAPIKeyClient) Delete() *AdminAPIKeyDelete {
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *AdminAPIKeyClient) DeleteOne(aak *AdminAPIKey) *AdminAPIKeyDeleteOne {
-	return c.DeleteOneID(aak.ID)
+func (c *AdminAPIKeyClient) DeleteOne(_m *AdminAPIKey) *AdminAPIKeyDeleteOne {
+	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
@@ -444,8 +444,8 @@ func (c *BookClient) Update() *BookUpdate {
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *BookClient) UpdateOne(b *Book) *BookUpdateOne {
-	mutation := newBookMutation(c.config, OpUpdateOne, withBook(b))
+func (c *BookClient) UpdateOne(_m *Book) *BookUpdateOne {
+	mutation := newBookMutation(c.config, OpUpdateOne, withBook(_m))
 	return &BookUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
@@ -462,8 +462,8 @@ func (c *BookClient) Delete() *BookDelete {
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *BookClient) DeleteOne(b *Book) *BookDeleteOne {
-	return c.DeleteOneID(b.ID)
+func (c *BookClient) DeleteOne(_m *Book) *BookDeleteOne {
+	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
@@ -498,48 +498,48 @@ func (c *BookClient) GetX(ctx context.Context, id uuid.UUID) *Book {
 }
 
 // QueryOwner queries the owner edge of a Book.
-func (c *BookClient) QueryOwner(b *Book) *UserQuery {
+func (c *BookClient) QueryOwner(_m *Book) *UserQuery {
 	query := (&UserClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := b.ID
+		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(book.Table, book.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, book.OwnerTable, book.OwnerColumn),
 		)
-		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
 // QueryReviews queries the reviews edge of a Book.
-func (c *BookClient) QueryReviews(b *Book) *ReviewQuery {
+func (c *BookClient) QueryReviews(_m *Book) *ReviewQuery {
 	query := (&ReviewClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := b.ID
+		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(book.Table, book.FieldID, id),
 			sqlgraph.To(review.Table, review.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, book.ReviewsTable, book.ReviewsColumn),
 		)
-		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
 // QueryBookmarks queries the bookmarks edge of a Book.
-func (c *BookClient) QueryBookmarks(b *Book) *BookmarkQuery {
+func (c *BookClient) QueryBookmarks(_m *Book) *BookmarkQuery {
 	query := (&BookmarkClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := b.ID
+		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(book.Table, book.FieldID, id),
 			sqlgraph.To(bookmark.Table, bookmark.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, book.BookmarksTable, book.BookmarksColumn),
 		)
-		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
@@ -625,8 +625,8 @@ func (c *BookmarkClient) Update() *BookmarkUpdate {
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *BookmarkClient) UpdateOne(b *Bookmark) *BookmarkUpdateOne {
-	mutation := newBookmarkMutation(c.config, OpUpdateOne, withBookmark(b))
+func (c *BookmarkClient) UpdateOne(_m *Bookmark) *BookmarkUpdateOne {
+	mutation := newBookmarkMutation(c.config, OpUpdateOne, withBookmark(_m))
 	return &BookmarkUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
@@ -643,8 +643,8 @@ func (c *BookmarkClient) Delete() *BookmarkDelete {
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *BookmarkClient) DeleteOne(b *Bookmark) *BookmarkDeleteOne {
-	return c.DeleteOneID(b.ID)
+func (c *BookmarkClient) DeleteOne(_m *Bookmark) *BookmarkDeleteOne {
+	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
@@ -679,32 +679,32 @@ func (c *BookmarkClient) GetX(ctx context.Context, id uuid.UUID) *Bookmark {
 }
 
 // QueryOwner queries the owner edge of a Bookmark.
-func (c *BookmarkClient) QueryOwner(b *Bookmark) *UserQuery {
+func (c *BookmarkClient) QueryOwner(_m *Bookmark) *UserQuery {
 	query := (&UserClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := b.ID
+		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(bookmark.Table, bookmark.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, bookmark.OwnerTable, bookmark.OwnerColumn),
 		)
-		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
 // QueryBook queries the book edge of a Bookmark.
-func (c *BookmarkClient) QueryBook(b *Bookmark) *BookQuery {
+func (c *BookmarkClient) QueryBook(_m *Bookmark) *BookQuery {
 	query := (&BookClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := b.ID
+		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(bookmark.Table, bookmark.FieldID, id),
 			sqlgraph.To(book.Table, book.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, bookmark.BookTable, bookmark.BookColumn),
 		)
-		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
@@ -790,8 +790,8 @@ func (c *EmailVerificationClient) Update() *EmailVerificationUpdate {
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *EmailVerificationClient) UpdateOne(ev *EmailVerification) *EmailVerificationUpdateOne {
-	mutation := newEmailVerificationMutation(c.config, OpUpdateOne, withEmailVerification(ev))
+func (c *EmailVerificationClient) UpdateOne(_m *EmailVerification) *EmailVerificationUpdateOne {
+	mutation := newEmailVerificationMutation(c.config, OpUpdateOne, withEmailVerification(_m))
 	return &EmailVerificationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
@@ -808,8 +808,8 @@ func (c *EmailVerificationClient) Delete() *EmailVerificationDelete {
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *EmailVerificationClient) DeleteOne(ev *EmailVerification) *EmailVerificationDeleteOne {
-	return c.DeleteOneID(ev.ID)
+func (c *EmailVerificationClient) DeleteOne(_m *EmailVerification) *EmailVerificationDeleteOne {
+	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
@@ -923,8 +923,8 @@ func (c *ReadingReminderClient) Update() *ReadingReminderUpdate {
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *ReadingReminderClient) UpdateOne(rr *ReadingReminder) *ReadingReminderUpdateOne {
-	mutation := newReadingReminderMutation(c.config, OpUpdateOne, withReadingReminder(rr))
+func (c *ReadingReminderClient) UpdateOne(_m *ReadingReminder) *ReadingReminderUpdateOne {
+	mutation := newReadingReminderMutation(c.config, OpUpdateOne, withReadingReminder(_m))
 	return &ReadingReminderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
@@ -941,8 +941,8 @@ func (c *ReadingReminderClient) Delete() *ReadingReminderDelete {
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *ReadingReminderClient) DeleteOne(rr *ReadingReminder) *ReadingReminderDeleteOne {
-	return c.DeleteOneID(rr.ID)
+func (c *ReadingReminderClient) DeleteOne(_m *ReadingReminder) *ReadingReminderDeleteOne {
+	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
@@ -977,16 +977,16 @@ func (c *ReadingReminderClient) GetX(ctx context.Context, id uuid.UUID) *Reading
 }
 
 // QueryOwner queries the owner edge of a ReadingReminder.
-func (c *ReadingReminderClient) QueryOwner(rr *ReadingReminder) *UserQuery {
+func (c *ReadingReminderClient) QueryOwner(_m *ReadingReminder) *UserQuery {
 	query := (&UserClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := rr.ID
+		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(readingreminder.Table, readingreminder.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, readingreminder.OwnerTable, readingreminder.OwnerColumn),
 		)
-		fromV = sqlgraph.Neighbors(rr.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
@@ -1072,8 +1072,8 @@ func (c *ReviewClient) Update() *ReviewUpdate {
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *ReviewClient) UpdateOne(r *Review) *ReviewUpdateOne {
-	mutation := newReviewMutation(c.config, OpUpdateOne, withReview(r))
+func (c *ReviewClient) UpdateOne(_m *Review) *ReviewUpdateOne {
+	mutation := newReviewMutation(c.config, OpUpdateOne, withReview(_m))
 	return &ReviewUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
@@ -1090,8 +1090,8 @@ func (c *ReviewClient) Delete() *ReviewDelete {
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *ReviewClient) DeleteOne(r *Review) *ReviewDeleteOne {
-	return c.DeleteOneID(r.ID)
+func (c *ReviewClient) DeleteOne(_m *Review) *ReviewDeleteOne {
+	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
@@ -1126,32 +1126,32 @@ func (c *ReviewClient) GetX(ctx context.Context, id uuid.UUID) *Review {
 }
 
 // QueryOwner queries the owner edge of a Review.
-func (c *ReviewClient) QueryOwner(r *Review) *UserQuery {
+func (c *ReviewClient) QueryOwner(_m *Review) *UserQuery {
 	query := (&UserClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := r.ID
+		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(review.Table, review.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, review.OwnerTable, review.OwnerColumn),
 		)
-		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
 // QueryBook queries the book edge of a Review.
-func (c *ReviewClient) QueryBook(r *Review) *BookQuery {
+func (c *ReviewClient) QueryBook(_m *Review) *BookQuery {
 	query := (&BookClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := r.ID
+		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(review.Table, review.FieldID, id),
 			sqlgraph.To(book.Table, book.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, review.BookTable, review.BookColumn),
 		)
-		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
@@ -1237,8 +1237,8 @@ func (c *UserClient) Update() *UserUpdate {
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *UserClient) UpdateOne(u *User) *UserUpdateOne {
-	mutation := newUserMutation(c.config, OpUpdateOne, withUser(u))
+func (c *UserClient) UpdateOne(_m *User) *UserUpdateOne {
+	mutation := newUserMutation(c.config, OpUpdateOne, withUser(_m))
 	return &UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
@@ -1255,8 +1255,8 @@ func (c *UserClient) Delete() *UserDelete {
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *UserClient) DeleteOne(u *User) *UserDeleteOne {
-	return c.DeleteOneID(u.ID)
+func (c *UserClient) DeleteOne(_m *User) *UserDeleteOne {
+	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
@@ -1291,64 +1291,64 @@ func (c *UserClient) GetX(ctx context.Context, id uuid.UUID) *User {
 }
 
 // QueryBooks queries the books edge of a User.
-func (c *UserClient) QueryBooks(u *User) *BookQuery {
+func (c *UserClient) QueryBooks(_m *User) *BookQuery {
 	query := (&BookClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := u.ID
+		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(book.Table, book.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.BooksTable, user.BooksColumn),
 		)
-		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
 // QueryReviews queries the reviews edge of a User.
-func (c *UserClient) QueryReviews(u *User) *ReviewQuery {
+func (c *UserClient) QueryReviews(_m *User) *ReviewQuery {
 	query := (&ReviewClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := u.ID
+		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(review.Table, review.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.ReviewsTable, user.ReviewsColumn),
 		)
-		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
 // QueryBookmarks queries the bookmarks edge of a User.
-func (c *UserClient) QueryBookmarks(u *User) *BookmarkQuery {
+func (c *UserClient) QueryBookmarks(_m *User) *BookmarkQuery {
 	query := (&BookmarkClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := u.ID
+		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(bookmark.Table, bookmark.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.BookmarksTable, user.BookmarksColumn),
 		)
-		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
 // QueryReadingReminders queries the reading_reminders edge of a User.
-func (c *UserClient) QueryReadingReminders(u *User) *ReadingReminderQuery {
+func (c *UserClient) QueryReadingReminders(_m *User) *ReadingReminderQuery {
 	query := (&ReadingReminderClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := u.ID
+		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(readingreminder.Table, readingreminder.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.ReadingRemindersTable, user.ReadingRemindersColumn),
 		)
-		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query

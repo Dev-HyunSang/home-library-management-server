@@ -26,195 +26,209 @@ type UserCreate struct {
 }
 
 // SetNickName sets the "nick_name" field.
-func (uc *UserCreate) SetNickName(s string) *UserCreate {
-	uc.mutation.SetNickName(s)
-	return uc
+func (_c *UserCreate) SetNickName(v string) *UserCreate {
+	_c.mutation.SetNickName(v)
+	return _c
 }
 
 // SetEmail sets the "email" field.
-func (uc *UserCreate) SetEmail(s string) *UserCreate {
-	uc.mutation.SetEmail(s)
-	return uc
+func (_c *UserCreate) SetEmail(v string) *UserCreate {
+	_c.mutation.SetEmail(v)
+	return _c
 }
 
 // SetPassword sets the "password" field.
-func (uc *UserCreate) SetPassword(s string) *UserCreate {
-	uc.mutation.SetPassword(s)
-	return uc
+func (_c *UserCreate) SetPassword(v string) *UserCreate {
+	_c.mutation.SetPassword(v)
+	return _c
 }
 
 // SetNillablePassword sets the "password" field if the given value is not nil.
-func (uc *UserCreate) SetNillablePassword(s *string) *UserCreate {
-	if s != nil {
-		uc.SetPassword(*s)
+func (_c *UserCreate) SetNillablePassword(v *string) *UserCreate {
+	if v != nil {
+		_c.SetPassword(*v)
 	}
-	return uc
+	return _c
 }
 
 // SetIsPublished sets the "is_published" field.
-func (uc *UserCreate) SetIsPublished(b bool) *UserCreate {
-	uc.mutation.SetIsPublished(b)
-	return uc
+func (_c *UserCreate) SetIsPublished(v bool) *UserCreate {
+	_c.mutation.SetIsPublished(v)
+	return _c
 }
 
 // SetNillableIsPublished sets the "is_published" field if the given value is not nil.
-func (uc *UserCreate) SetNillableIsPublished(b *bool) *UserCreate {
-	if b != nil {
-		uc.SetIsPublished(*b)
+func (_c *UserCreate) SetNillableIsPublished(v *bool) *UserCreate {
+	if v != nil {
+		_c.SetIsPublished(*v)
 	}
-	return uc
+	return _c
 }
 
 // SetIsTermsAgreed sets the "is_terms_agreed" field.
-func (uc *UserCreate) SetIsTermsAgreed(b bool) *UserCreate {
-	uc.mutation.SetIsTermsAgreed(b)
-	return uc
+func (_c *UserCreate) SetIsTermsAgreed(v bool) *UserCreate {
+	_c.mutation.SetIsTermsAgreed(v)
+	return _c
 }
 
 // SetNillableIsTermsAgreed sets the "is_terms_agreed" field if the given value is not nil.
-func (uc *UserCreate) SetNillableIsTermsAgreed(b *bool) *UserCreate {
-	if b != nil {
-		uc.SetIsTermsAgreed(*b)
+func (_c *UserCreate) SetNillableIsTermsAgreed(v *bool) *UserCreate {
+	if v != nil {
+		_c.SetIsTermsAgreed(*v)
 	}
-	return uc
+	return _c
+}
+
+// SetIsPrivacyAgreed sets the "is_privacy_agreed" field.
+func (_c *UserCreate) SetIsPrivacyAgreed(v bool) *UserCreate {
+	_c.mutation.SetIsPrivacyAgreed(v)
+	return _c
+}
+
+// SetNillableIsPrivacyAgreed sets the "is_privacy_agreed" field if the given value is not nil.
+func (_c *UserCreate) SetNillableIsPrivacyAgreed(v *bool) *UserCreate {
+	if v != nil {
+		_c.SetIsPrivacyAgreed(*v)
+	}
+	return _c
 }
 
 // SetFcmToken sets the "fcm_token" field.
-func (uc *UserCreate) SetFcmToken(s string) *UserCreate {
-	uc.mutation.SetFcmToken(s)
-	return uc
+func (_c *UserCreate) SetFcmToken(v string) *UserCreate {
+	_c.mutation.SetFcmToken(v)
+	return _c
 }
 
 // SetNillableFcmToken sets the "fcm_token" field if the given value is not nil.
-func (uc *UserCreate) SetNillableFcmToken(s *string) *UserCreate {
-	if s != nil {
-		uc.SetFcmToken(*s)
+func (_c *UserCreate) SetNillableFcmToken(v *string) *UserCreate {
+	if v != nil {
+		_c.SetFcmToken(*v)
 	}
-	return uc
+	return _c
 }
 
 // SetTimezone sets the "timezone" field.
-func (uc *UserCreate) SetTimezone(s string) *UserCreate {
-	uc.mutation.SetTimezone(s)
-	return uc
+func (_c *UserCreate) SetTimezone(v string) *UserCreate {
+	_c.mutation.SetTimezone(v)
+	return _c
 }
 
 // SetNillableTimezone sets the "timezone" field if the given value is not nil.
-func (uc *UserCreate) SetNillableTimezone(s *string) *UserCreate {
-	if s != nil {
-		uc.SetTimezone(*s)
+func (_c *UserCreate) SetNillableTimezone(v *string) *UserCreate {
+	if v != nil {
+		_c.SetTimezone(*v)
 	}
-	return uc
+	return _c
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (uc *UserCreate) SetCreatedAt(t time.Time) *UserCreate {
-	uc.mutation.SetCreatedAt(t)
-	return uc
+func (_c *UserCreate) SetCreatedAt(v time.Time) *UserCreate {
+	_c.mutation.SetCreatedAt(v)
+	return _c
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (uc *UserCreate) SetNillableCreatedAt(t *time.Time) *UserCreate {
-	if t != nil {
-		uc.SetCreatedAt(*t)
+func (_c *UserCreate) SetNillableCreatedAt(v *time.Time) *UserCreate {
+	if v != nil {
+		_c.SetCreatedAt(*v)
 	}
-	return uc
+	return _c
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (uc *UserCreate) SetUpdatedAt(t time.Time) *UserCreate {
-	uc.mutation.SetUpdatedAt(t)
-	return uc
+func (_c *UserCreate) SetUpdatedAt(v time.Time) *UserCreate {
+	_c.mutation.SetUpdatedAt(v)
+	return _c
 }
 
 // SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (uc *UserCreate) SetNillableUpdatedAt(t *time.Time) *UserCreate {
-	if t != nil {
-		uc.SetUpdatedAt(*t)
+func (_c *UserCreate) SetNillableUpdatedAt(v *time.Time) *UserCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
 	}
-	return uc
+	return _c
 }
 
 // SetID sets the "id" field.
-func (uc *UserCreate) SetID(u uuid.UUID) *UserCreate {
-	uc.mutation.SetID(u)
-	return uc
+func (_c *UserCreate) SetID(v uuid.UUID) *UserCreate {
+	_c.mutation.SetID(v)
+	return _c
 }
 
 // AddBookIDs adds the "books" edge to the Book entity by IDs.
-func (uc *UserCreate) AddBookIDs(ids ...uuid.UUID) *UserCreate {
-	uc.mutation.AddBookIDs(ids...)
-	return uc
+func (_c *UserCreate) AddBookIDs(ids ...uuid.UUID) *UserCreate {
+	_c.mutation.AddBookIDs(ids...)
+	return _c
 }
 
 // AddBooks adds the "books" edges to the Book entity.
-func (uc *UserCreate) AddBooks(b ...*Book) *UserCreate {
-	ids := make([]uuid.UUID, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
+func (_c *UserCreate) AddBooks(v ...*Book) *UserCreate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return uc.AddBookIDs(ids...)
+	return _c.AddBookIDs(ids...)
 }
 
 // AddReviewIDs adds the "reviews" edge to the Review entity by IDs.
-func (uc *UserCreate) AddReviewIDs(ids ...uuid.UUID) *UserCreate {
-	uc.mutation.AddReviewIDs(ids...)
-	return uc
+func (_c *UserCreate) AddReviewIDs(ids ...uuid.UUID) *UserCreate {
+	_c.mutation.AddReviewIDs(ids...)
+	return _c
 }
 
 // AddReviews adds the "reviews" edges to the Review entity.
-func (uc *UserCreate) AddReviews(r ...*Review) *UserCreate {
-	ids := make([]uuid.UUID, len(r))
-	for i := range r {
-		ids[i] = r[i].ID
+func (_c *UserCreate) AddReviews(v ...*Review) *UserCreate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return uc.AddReviewIDs(ids...)
+	return _c.AddReviewIDs(ids...)
 }
 
 // AddBookmarkIDs adds the "bookmarks" edge to the Bookmark entity by IDs.
-func (uc *UserCreate) AddBookmarkIDs(ids ...uuid.UUID) *UserCreate {
-	uc.mutation.AddBookmarkIDs(ids...)
-	return uc
+func (_c *UserCreate) AddBookmarkIDs(ids ...uuid.UUID) *UserCreate {
+	_c.mutation.AddBookmarkIDs(ids...)
+	return _c
 }
 
 // AddBookmarks adds the "bookmarks" edges to the Bookmark entity.
-func (uc *UserCreate) AddBookmarks(b ...*Bookmark) *UserCreate {
-	ids := make([]uuid.UUID, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
+func (_c *UserCreate) AddBookmarks(v ...*Bookmark) *UserCreate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return uc.AddBookmarkIDs(ids...)
+	return _c.AddBookmarkIDs(ids...)
 }
 
 // AddReadingReminderIDs adds the "reading_reminders" edge to the ReadingReminder entity by IDs.
-func (uc *UserCreate) AddReadingReminderIDs(ids ...uuid.UUID) *UserCreate {
-	uc.mutation.AddReadingReminderIDs(ids...)
-	return uc
+func (_c *UserCreate) AddReadingReminderIDs(ids ...uuid.UUID) *UserCreate {
+	_c.mutation.AddReadingReminderIDs(ids...)
+	return _c
 }
 
 // AddReadingReminders adds the "reading_reminders" edges to the ReadingReminder entity.
-func (uc *UserCreate) AddReadingReminders(r ...*ReadingReminder) *UserCreate {
-	ids := make([]uuid.UUID, len(r))
-	for i := range r {
-		ids[i] = r[i].ID
+func (_c *UserCreate) AddReadingReminders(v ...*ReadingReminder) *UserCreate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return uc.AddReadingReminderIDs(ids...)
+	return _c.AddReadingReminderIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
-func (uc *UserCreate) Mutation() *UserMutation {
-	return uc.mutation
+func (_c *UserCreate) Mutation() *UserMutation {
+	return _c.mutation
 }
 
 // Save creates the User in the database.
-func (uc *UserCreate) Save(ctx context.Context) (*User, error) {
-	uc.defaults()
-	return withHooks(ctx, uc.sqlSave, uc.mutation, uc.hooks)
+func (_c *UserCreate) Save(ctx context.Context) (*User, error) {
+	_c.defaults()
+	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (uc *UserCreate) SaveX(ctx context.Context) *User {
-	v, err := uc.Save(ctx)
+func (_c *UserCreate) SaveX(ctx context.Context) *User {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -222,84 +236,91 @@ func (uc *UserCreate) SaveX(ctx context.Context) *User {
 }
 
 // Exec executes the query.
-func (uc *UserCreate) Exec(ctx context.Context) error {
-	_, err := uc.Save(ctx)
+func (_c *UserCreate) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (uc *UserCreate) ExecX(ctx context.Context) {
-	if err := uc.Exec(ctx); err != nil {
+func (_c *UserCreate) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (uc *UserCreate) defaults() {
-	if _, ok := uc.mutation.IsPublished(); !ok {
+func (_c *UserCreate) defaults() {
+	if _, ok := _c.mutation.IsPublished(); !ok {
 		v := user.DefaultIsPublished
-		uc.mutation.SetIsPublished(v)
+		_c.mutation.SetIsPublished(v)
 	}
-	if _, ok := uc.mutation.IsTermsAgreed(); !ok {
+	if _, ok := _c.mutation.IsTermsAgreed(); !ok {
 		v := user.DefaultIsTermsAgreed
-		uc.mutation.SetIsTermsAgreed(v)
+		_c.mutation.SetIsTermsAgreed(v)
 	}
-	if _, ok := uc.mutation.Timezone(); !ok {
+	if _, ok := _c.mutation.IsPrivacyAgreed(); !ok {
+		v := user.DefaultIsPrivacyAgreed
+		_c.mutation.SetIsPrivacyAgreed(v)
+	}
+	if _, ok := _c.mutation.Timezone(); !ok {
 		v := user.DefaultTimezone
-		uc.mutation.SetTimezone(v)
+		_c.mutation.SetTimezone(v)
 	}
-	if _, ok := uc.mutation.CreatedAt(); !ok {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := user.DefaultCreatedAt()
-		uc.mutation.SetCreatedAt(v)
+		_c.mutation.SetCreatedAt(v)
 	}
-	if _, ok := uc.mutation.UpdatedAt(); !ok {
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		v := user.DefaultUpdatedAt()
-		uc.mutation.SetUpdatedAt(v)
+		_c.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (uc *UserCreate) check() error {
-	if _, ok := uc.mutation.NickName(); !ok {
+func (_c *UserCreate) check() error {
+	if _, ok := _c.mutation.NickName(); !ok {
 		return &ValidationError{Name: "nick_name", err: errors.New(`ent: missing required field "User.nick_name"`)}
 	}
-	if v, ok := uc.mutation.NickName(); ok {
+	if v, ok := _c.mutation.NickName(); ok {
 		if err := user.NickNameValidator(v); err != nil {
 			return &ValidationError{Name: "nick_name", err: fmt.Errorf(`ent: validator failed for field "User.nick_name": %w`, err)}
 		}
 	}
-	if _, ok := uc.mutation.Email(); !ok {
+	if _, ok := _c.mutation.Email(); !ok {
 		return &ValidationError{Name: "email", err: errors.New(`ent: missing required field "User.email"`)}
 	}
-	if v, ok := uc.mutation.Email(); ok {
+	if v, ok := _c.mutation.Email(); ok {
 		if err := user.EmailValidator(v); err != nil {
 			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "User.email": %w`, err)}
 		}
 	}
-	if _, ok := uc.mutation.IsPublished(); !ok {
+	if _, ok := _c.mutation.IsPublished(); !ok {
 		return &ValidationError{Name: "is_published", err: errors.New(`ent: missing required field "User.is_published"`)}
 	}
-	if _, ok := uc.mutation.IsTermsAgreed(); !ok {
+	if _, ok := _c.mutation.IsTermsAgreed(); !ok {
 		return &ValidationError{Name: "is_terms_agreed", err: errors.New(`ent: missing required field "User.is_terms_agreed"`)}
 	}
-	if _, ok := uc.mutation.Timezone(); !ok {
+	if _, ok := _c.mutation.IsPrivacyAgreed(); !ok {
+		return &ValidationError{Name: "is_privacy_agreed", err: errors.New(`ent: missing required field "User.is_privacy_agreed"`)}
+	}
+	if _, ok := _c.mutation.Timezone(); !ok {
 		return &ValidationError{Name: "timezone", err: errors.New(`ent: missing required field "User.timezone"`)}
 	}
-	if _, ok := uc.mutation.CreatedAt(); !ok {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "User.created_at"`)}
 	}
-	if _, ok := uc.mutation.UpdatedAt(); !ok {
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "User.updated_at"`)}
 	}
 	return nil
 }
 
-func (uc *UserCreate) sqlSave(ctx context.Context) (*User, error) {
-	if err := uc.check(); err != nil {
+func (_c *UserCreate) sqlSave(ctx context.Context) (*User, error) {
+	if err := _c.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := uc.createSpec()
-	if err := sqlgraph.CreateNode(ctx, uc.driver, _spec); err != nil {
+	_node, _spec := _c.createSpec()
+	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -312,57 +333,61 @@ func (uc *UserCreate) sqlSave(ctx context.Context) (*User, error) {
 			return nil, err
 		}
 	}
-	uc.mutation.id = &_node.ID
-	uc.mutation.done = true
+	_c.mutation.id = &_node.ID
+	_c.mutation.done = true
 	return _node, nil
 }
 
-func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
+func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	var (
-		_node = &User{config: uc.config}
+		_node = &User{config: _c.config}
 		_spec = sqlgraph.NewCreateSpec(user.Table, sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID))
 	)
-	if id, ok := uc.mutation.ID(); ok {
+	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
-	if value, ok := uc.mutation.NickName(); ok {
+	if value, ok := _c.mutation.NickName(); ok {
 		_spec.SetField(user.FieldNickName, field.TypeString, value)
 		_node.NickName = value
 	}
-	if value, ok := uc.mutation.Email(); ok {
+	if value, ok := _c.mutation.Email(); ok {
 		_spec.SetField(user.FieldEmail, field.TypeString, value)
 		_node.Email = value
 	}
-	if value, ok := uc.mutation.Password(); ok {
+	if value, ok := _c.mutation.Password(); ok {
 		_spec.SetField(user.FieldPassword, field.TypeString, value)
 		_node.Password = value
 	}
-	if value, ok := uc.mutation.IsPublished(); ok {
+	if value, ok := _c.mutation.IsPublished(); ok {
 		_spec.SetField(user.FieldIsPublished, field.TypeBool, value)
 		_node.IsPublished = value
 	}
-	if value, ok := uc.mutation.IsTermsAgreed(); ok {
+	if value, ok := _c.mutation.IsTermsAgreed(); ok {
 		_spec.SetField(user.FieldIsTermsAgreed, field.TypeBool, value)
 		_node.IsTermsAgreed = value
 	}
-	if value, ok := uc.mutation.FcmToken(); ok {
+	if value, ok := _c.mutation.IsPrivacyAgreed(); ok {
+		_spec.SetField(user.FieldIsPrivacyAgreed, field.TypeBool, value)
+		_node.IsPrivacyAgreed = value
+	}
+	if value, ok := _c.mutation.FcmToken(); ok {
 		_spec.SetField(user.FieldFcmToken, field.TypeString, value)
 		_node.FcmToken = value
 	}
-	if value, ok := uc.mutation.Timezone(); ok {
+	if value, ok := _c.mutation.Timezone(); ok {
 		_spec.SetField(user.FieldTimezone, field.TypeString, value)
 		_node.Timezone = value
 	}
-	if value, ok := uc.mutation.CreatedAt(); ok {
+	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
-	if value, ok := uc.mutation.UpdatedAt(); ok {
+	if value, ok := _c.mutation.UpdatedAt(); ok {
 		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if nodes := uc.mutation.BooksIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.BooksIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -378,7 +403,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := uc.mutation.ReviewsIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.ReviewsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -394,7 +419,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := uc.mutation.BookmarksIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.BookmarksIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -410,7 +435,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := uc.mutation.ReadingRemindersIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.ReadingRemindersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -437,16 +462,16 @@ type UserCreateBulk struct {
 }
 
 // Save creates the User entities in the database.
-func (ucb *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
-	if ucb.err != nil {
-		return nil, ucb.err
+func (_c *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
+	if _c.err != nil {
+		return nil, _c.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(ucb.builders))
-	nodes := make([]*User, len(ucb.builders))
-	mutators := make([]Mutator, len(ucb.builders))
-	for i := range ucb.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
+	nodes := make([]*User, len(_c.builders))
+	mutators := make([]Mutator, len(_c.builders))
+	for i := range _c.builders {
 		func(i int, root context.Context) {
-			builder := ucb.builders[i]
+			builder := _c.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*UserMutation)
@@ -460,11 +485,11 @@ func (ucb *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, ucb.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, ucb.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -484,7 +509,7 @@ func (ucb *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, ucb.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -492,8 +517,8 @@ func (ucb *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (ucb *UserCreateBulk) SaveX(ctx context.Context) []*User {
-	v, err := ucb.Save(ctx)
+func (_c *UserCreateBulk) SaveX(ctx context.Context) []*User {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -501,14 +526,14 @@ func (ucb *UserCreateBulk) SaveX(ctx context.Context) []*User {
 }
 
 // Exec executes the query.
-func (ucb *UserCreateBulk) Exec(ctx context.Context) error {
-	_, err := ucb.Save(ctx)
+func (_c *UserCreateBulk) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ucb *UserCreateBulk) ExecX(ctx context.Context) {
-	if err := ucb.Exec(ctx); err != nil {
+func (_c *UserCreateBulk) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
