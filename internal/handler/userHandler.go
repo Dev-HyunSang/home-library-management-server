@@ -23,30 +23,6 @@ type UserHandler struct {
 	emailVerificationRepo domain.EmailVerificationRepository
 }
 
-type RegisterationRequest struct {
-	NickName      string `json:"nick_name"`
-	Email         string `json:"email"`
-	Password      string `json:"password"`
-	IsPublished   bool   `json:"is_published"`
-	IsTermsAgreed bool   `json:"is_terms_agreed"`
-}
-
-type UpdateUserRequest struct {
-	NickName    string  `json:"nick_name"`
-	Email       string  `json:"email"`
-	Password    *string `json:"password,omitempty"` // 포인터로 설정하여 nil일 때 비밀번호 변경 안함
-	IsPublished bool    `json:"is_published"`
-}
-
-type LoginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-type ForgotPasswordRequest struct {
-	Email string `json:"email"`
-}
-
 func NewUserHandler(userUseCase domain.UserUseCase, authUseCase domain.AuthUseCase, emailVerificationRepo domain.EmailVerificationRepository) *UserHandler {
 	return &UserHandler{
 		userUseCase:           userUseCase,
@@ -78,7 +54,7 @@ func generateVerificationCode() string {
 }
 
 func (h *UserHandler) UserSignUpHandler(ctx *fiber.Ctx) error {
-	user := new(RegisterationRequest)
+	user := new(request.RegistrationRequest)
 	if err := ctx.BodyParser(user); err != nil {
 		logger.Sugar().Errorf("올바르지 않은 요청입니다: %v", err)
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
@@ -148,7 +124,7 @@ func (h *UserHandler) UserSignUpHandler(ctx *fiber.Ctx) error {
 }
 
 func (h *UserHandler) UserSignInHandler(ctx *fiber.Ctx) error {
-	user := new(LoginRequest)
+	user := new(request.LoginRequest)
 	if err := ctx.BodyParser(user); err != nil {
 		logger.Sugar().Errorf("올바르지 않은 요청입니다: %v", err)
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
@@ -235,7 +211,7 @@ func (h *UserHandler) UserSignOutHandler(ctx *fiber.Ctx) error {
 
 // 가입된 메일을 통해서 사용자를 찾고, 임시 비밀번호를 생성하여 이메일로 발송하는 핸들러
 func (h *UserHandler) UserRestPasswordHandler(ctx *fiber.Ctx) error {
-	user := new(ForgotPasswordRequest)
+	user := new(request.ForgotPasswordRequest)
 	if err := ctx.BodyParser(user); err != nil {
 		logger.Sugar().Errorf("올바르지 않은 요청입니다: %v", err)
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
@@ -535,7 +511,7 @@ func (h *UserHandler) UserEditHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(domain.ErrInternal))
 	}
 
-	updateReq := new(UpdateUserRequest)
+	updateReq := new(request.UpdateUserRequest)
 	if err := ctx.BodyParser(updateReq); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
 	}
@@ -625,14 +601,6 @@ func (h *UserHandler) UserDeleteHandler(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusNoContent).JSON("successfully deleted")
 }
 
-type UpdateFCMTokenRequest struct {
-	FCMToken string `json:"fcm_token"`
-}
-
-type UpdateTimezoneRequest struct {
-	Timezone string `json:"timezone"`
-}
-
 func (h *UserHandler) UpdateFCMTokenHandler(ctx *fiber.Ctx) error {
 	userID, err := h.AuthHandler.GetUserIDFromToken(ctx)
 	if err != nil {
@@ -640,7 +608,7 @@ func (h *UserHandler) UpdateFCMTokenHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
 	}
 
-	req := new(UpdateFCMTokenRequest)
+	req := new(request.UpdateFCMTokenRequest)
 	if err := ctx.BodyParser(req); err != nil {
 		logger.Sugar().Errorf("요청 바디 파싱 실패: %v", err)
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
@@ -669,7 +637,7 @@ func (h *UserHandler) UpdateTimezoneHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
 	}
 
-	req := new(UpdateTimezoneRequest)
+	req := new(request.UpdateTimezoneRequest)
 	if err := ctx.BodyParser(req); err != nil {
 		logger.Sugar().Errorf("요청 바디 파싱 실패: %v", err)
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
