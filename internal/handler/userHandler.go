@@ -31,7 +31,7 @@ func NewUserHandler(userUseCase domain.UserUseCase, authUseCase domain.AuthUseCa
 	}
 }
 func IsValidNickname(nickname string) bool {
-	matched, _ := regexp.MatchString(`^[a-z0-9_]+$`, nickname)
+	matched, _ := regexp.MatchString(`^[a-z0-9_.]+$`, nickname)
 	return matched
 }
 
