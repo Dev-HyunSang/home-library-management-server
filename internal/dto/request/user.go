@@ -28,6 +28,12 @@ type ForgotPasswordRequest struct {
 	Email string `json:"email"`
 }
 
+type ChangePasswordRequest struct {
+	CurrentPassword    string `json:"current_password"`
+	NewPassword        string `json:"new_password"`
+	NewPasswordConfirm string `json:"new_password_confirm"`
+}
+
 // VerifyCodeRequest is the request body for email verification
 type VerifyCodeRequest struct {
 	Email string `json:"email"`

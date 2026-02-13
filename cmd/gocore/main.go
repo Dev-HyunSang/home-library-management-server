@@ -64,22 +64,6 @@ func main() {
 
 	logger.Sugar().Info("성공적으로 Redis 클라이언트가 초기화되었습니다.")
 
-	// csrfConfig := csrf.Config{
-	// 	Session:        store,
-	// 	KeyLookup:      "json:csrf",
-	// 	CookieName:     "__Host-csrf",
-	// 	CookieSameSite: "Lax",
-	// 	CookieSecure:   true,
-	// 	CookieHTTPOnly: true,
-	// 	ContextKey:     "csrf",
-	// 	ErrorHandler: func(c *fiber.Ctx, err error) error {
-	// 		return c.Status(fiber.StatusForbidden).JSON(handler.ErrorHandler(domain.ErrInvalidCSRFToken))
-	// 	},
-	// 	Expiration: time.Minute * 30,
-	// }
-
-	// _ := csrf.New(csrfConfig)
-
 	// FCM 초기화
 	fcmService, err := fcm.NewFCMService(cfg.FCM.ServiceAccountPath)
 	if err != nil {
@@ -140,6 +124,7 @@ func main() {
 	user.Post("/signin", userHandler.UserSignInHandler)
 	user.Post("/signout", middleware.JWTAuthMiddleware(authUseCase), userHandler.UserSignOutHandler)
 	user.Post("/forgot-password", userHandler.UserRestPasswordHandler)
+	user.Put("/change-password", middleware.JWTAuthMiddleware(authUseCase), userHandler.UserChangePasswordHandler)
 	user.Post("/me", middleware.JWTAuthMiddleware(authUseCase), userHandler.UserVerifyHandler)
 	user.Get("/:id", middleware.JWTAuthMiddleware(authUseCase), userHandler.UserGetByIdHandler)
 	user.Put("/update/:id", middleware.JWTAuthMiddleware(authUseCase), userHandler.UserEditHandler)

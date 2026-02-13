@@ -9,6 +9,7 @@ import (
 
 	"github.com/dev-hyunsang/my-own-library-backend/internal/config"
 	"github.com/dev-hyunsang/my-own-library-backend/internal/domain"
+	"github.com/dev-hyunsang/my-own-library-backend/internal/dto/request"
 	"github.com/dev-hyunsang/my-own-library-backend/lib/ent"
 	"github.com/dev-hyunsang/my-own-library-backend/logger"
 	"github.com/gofiber/fiber/v2"
@@ -371,14 +372,9 @@ func (h *UserHandler) UserVerifyByEmailHandler(ctx *fiber.Ctx) error {
 	})
 }
 
-type VerifyCodeRequest struct {
-	Email string `json:"email"`
-	Code  string `json:"code"`
-}
-
 // 이메일과 인증번호를 받아 유효성을 확인
 func (h *UserHandler) UserVerifyCodeHandler(ctx *fiber.Ctx) error {
-	req := new(VerifyCodeRequest)
+	req := new(request.VerifyCodeRequest)
 	if err := ctx.BodyParser(req); err != nil {
 		logger.Sugar().Errorf("올바르지 않은 요청입니다: %v", err)
 		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
@@ -439,6 +435,77 @@ func (h *UserHandler) UserVerifyByNicknameHandler(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(err))
+}
+
+// 사용자 비밀번호 변경 핸들러
+// 현재 비밀번호를 확인하고, 새 비밀번호와 새 비밀번호 확인이 일치하는지 검증 후 비밀번호를 변경합니다.
+func (h *UserHandler) UserChangePasswordHandler(ctx *fiber.Ctx) error {
+	// JWT 토큰에서 사용자 ID 추출
+	userID, err := h.AuthHandler.GetUserIDFromToken(ctx)
+	if err != nil {
+		logger.Sugar().Errorf("JWT 토큰을 통한 사용자 인증에 실패했습니다: %v", err)
+		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
+	}
+
+	req := new(request.ChangePasswordRequest)
+	if err := ctx.BodyParser(req); err != nil {
+		logger.Sugar().Errorf("올바르지 않은 요청입니다: %v", err)
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+
+	// 필수 필드 검증
+	if len(req.CurrentPassword) == 0 || len(req.NewPassword) == 0 || len(req.NewPasswordConfirm) == 0 {
+		logger.Sugar().Warn("비밀번호 변경에 필수적인 필드에 입력값이 없습니다.")
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+
+	// 새 비밀번호 확인 일치 검증
+	if req.NewPassword != req.NewPasswordConfirm {
+		logger.Sugar().Warn("새 비밀번호와 새 비밀번호 확인이 일치하지 않습니다.")
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrPasswordMismatch))
+	}
+
+	// 사용자 정보 조회
+	user, err := h.userUseCase.GetByID(userID)
+	if err != nil {
+		logger.Sugar().Errorf("사용자 정보를 조회하는 도중 오류가 발생했습니다: %v", err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(domain.ErrInternal))
+	}
+
+	// 현재 비밀번호 검증
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.CurrentPassword))
+	if err != nil {
+		logger.Sugar().Warn("현재 비밀번호가 일치하지 않습니다.")
+		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrInvalidCredentials))
+	}
+
+	// 새 비밀번호 해시화
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		logger.Sugar().Errorf("새 비밀번호 해시화 중 오류가 발생했습니다: %v", err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(domain.ErrInternal))
+	}
+
+	// 비밀번호 업데이트
+	err = h.userUseCase.Update(&domain.User{
+		ID:          user.ID,
+		NickName:    user.NickName,
+		Email:       user.Email,
+		Password:    string(hashedPassword),
+		IsPublished: user.IsPublished,
+		CreatedAt:   user.CreatedAt,
+		UpdatedAt:   time.Now(),
+	})
+	if err != nil {
+		logger.Sugar().Errorf("비밀번호 업데이트 중 오류가 발생했습니다: %v", err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(domain.ErrInternal))
+	}
+
+	logger.Sugar().Infof("사용자 비밀번호가 성공적으로 변경되었습니다 / 사용자ID: %s", userID.String())
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "비밀번호가 성공적으로 변경되었습니다.",
+	})
 }
 
 func (h *UserHandler) UserEditHandler(ctx *fiber.Ctx) error {
