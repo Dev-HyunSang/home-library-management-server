@@ -34,6 +34,11 @@ type ChangePasswordRequest struct {
 	NewPasswordConfirm string `json:"new_password_confirm"`
 }
 
+// ChangeNicknameRequest is the request body for nickname change
+type ChangeNicknameRequest struct {
+	NewNickname string `json:"new_nickname"`
+}
+
 // VerifyCodeRequest is the request body for email verification
 type VerifyCodeRequest struct {
 	Email string `json:"email"`

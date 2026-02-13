@@ -484,6 +484,71 @@ func (h *UserHandler) UserChangePasswordHandler(ctx *fiber.Ctx) error {
 	})
 }
 
+// 사용자 닉네임 변경 핸들러
+// 닉네임 유효성 검사 및 중복 확인 후 닉네임을 변경합니다.
+func (h *UserHandler) UserChangeNicknameHandler(ctx *fiber.Ctx) error {
+	// JWT 토큰에서 사용자 ID 추출
+	userID, err := h.AuthHandler.GetUserIDFromToken(ctx)
+	if err != nil {
+		logger.Sugar().Errorf("JWT 토큰을 통한 사용자 인증에 실패했습니다: %v", err)
+		return ctx.Status(fiber.StatusUnauthorized).JSON(ErrorHandler(domain.ErrUserNotLoggedIn))
+	}
+
+	req := new(request.ChangeNicknameRequest)
+	if err := ctx.BodyParser(req); err != nil {
+		logger.Sugar().Errorf("올바르지 않은 요청입니다: %v", err)
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+
+	// 필수 필드 검증
+	if len(req.NewNickname) == 0 {
+		logger.Sugar().Warn("닉네임이 입력되지 않았습니다.")
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidInput))
+	}
+
+	// 닉네임 유효성 검사
+	if !IsValidNickname(req.NewNickname) {
+		logger.Sugar().Warn("사용자가 유효하지 않은 닉네임을 입력했습니다")
+		return ctx.Status(fiber.StatusBadRequest).JSON(ErrorHandler(domain.ErrInvalidNickname))
+	}
+
+	// 닉네임 중복 확인
+	_, err = h.userUseCase.GetByNickname(req.NewNickname)
+	if err == nil {
+		logger.Sugar().Warn("이미 존재하는 닉네임으로 변경 시도")
+		return ctx.Status(fiber.StatusConflict).JSON(ErrorHandler(domain.ErrAlreadyNickname))
+	}
+
+	// 사용자 정보 조회
+	user, err := h.userUseCase.GetByID(userID)
+	if err != nil {
+		logger.Sugar().Errorf("사용자 정보를 조회하는 도중 오류가 발생했습니다: %v", err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(domain.ErrInternal))
+	}
+
+	// 닉네임 업데이트
+	err = h.userUseCase.Update(&domain.User{
+		ID:          user.ID,
+		NickName:    req.NewNickname,
+		Email:       user.Email,
+		Password:    user.Password,
+		IsPublished: user.IsPublished,
+		CreatedAt:   user.CreatedAt,
+		UpdatedAt:   time.Now(),
+	})
+	if err != nil {
+		logger.Sugar().Errorf("닉네임 업데이트 중 오류가 발생했습니다: %v", err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(ErrorHandler(domain.ErrInternal))
+	}
+
+	logger.Sugar().Infof("사용자 닉네임이 성공적으로 변경되었습니다 / 사용자ID: %s, 새 닉네임: %s", userID.String(), req.NewNickname)
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message":      "닉네임이 성공적으로 변경되었습니다.",
+		"new_nickname": req.NewNickname,
+	})
+}
+
 func (h *UserHandler) UserEditHandler(ctx *fiber.Ctx) error {
 	id := ctx.Params("id")
 	if len(id) == 0 {

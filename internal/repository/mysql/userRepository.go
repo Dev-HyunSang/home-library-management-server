@@ -8,6 +8,9 @@ import (
 	"github.com/dev-hyunsang/my-own-library-backend/internal/domain"
 	"github.com/dev-hyunsang/my-own-library-backend/lib/ent"
 	"github.com/dev-hyunsang/my-own-library-backend/lib/ent/book"
+	"github.com/dev-hyunsang/my-own-library-backend/lib/ent/bookmark"
+	"github.com/dev-hyunsang/my-own-library-backend/lib/ent/readingreminder"
+	"github.com/dev-hyunsang/my-own-library-backend/lib/ent/review"
 	"github.com/dev-hyunsang/my-own-library-backend/lib/ent/user"
 	"github.com/dev-hyunsang/my-own-library-backend/logger"
 	"github.com/gofiber/fiber/v2/middleware/session"
@@ -183,19 +186,37 @@ func (r *UserRepository) Update(user *domain.User) error {
 func (r *UserRepository) Delete(id uuid.UUID) error {
 	client := r.client
 
-	// 사용자가 등록한 책을 먼저 삭제합니다.
-	_, err := client.Book.Delete().Where(book.HasOwnerWith(user.ID(id))).Exec(context.Background())
+	// 사용자가 작성한 리뷰를 삭제합니다.
+	_, err := client.Review.Delete().Where(review.HasOwnerWith(user.ID(id))).Exec(context.Background())
+	if err != nil {
+		return fmt.Errorf("해당하는 사용자의 리뷰를 삭제하던 도중 오류가 발생했습니다: %w", err)
+	}
+
+	// 사용자가 등록한 북마크를 삭제합니다.
+	_, err = client.Bookmark.Delete().Where(bookmark.HasOwnerWith(user.ID(id))).Exec(context.Background())
+	if err != nil {
+		return fmt.Errorf("해당하는 사용자의 북마크를 삭제하던 도중 오류가 발생했습니다: %w", err)
+	}
+
+	// 사용자의 읽기 리마인더를 삭제합니다.
+	_, err = client.ReadingReminder.Delete().Where(readingreminder.HasOwnerWith(user.ID(id))).Exec(context.Background())
+	if err != nil {
+		return fmt.Errorf("해당하는 사용자의 읽기 리마인더를 삭제하던 도중 오류가 발생했습니다: %w", err)
+	}
+
+	// 사용자가 등록한 책을 삭제합니다.
+	_, err = client.Book.Delete().Where(book.HasOwnerWith(user.ID(id))).Exec(context.Background())
 	if err != nil {
 		return fmt.Errorf("해당하는 사용자의 등록된 책을 삭제하던 도중 오류가 발생했습니다: %w", err)
 	}
 
-	// 책이 성공적으로 삭제되었다면, 사용자를 삭제합니다.
+	// 사용자를 삭제합니다.
 	err = client.User.DeleteOneID(id).Exec(context.Background())
 	if err != nil {
 		return fmt.Errorf("사용자를 삭제하는 도중 오류가 발생했습니다: %w", err)
 	}
 
-	logger.Sugar().Infof("해당하는 사용자를 삭제하였습니다: %s", id.String())
+	logger.Sugar().Infof("해당하는 사용자와 관련 데이터를 모두 삭제하였습니다: %s", id.String())
 
 	return nil
 }

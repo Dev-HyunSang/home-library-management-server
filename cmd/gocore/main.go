@@ -125,6 +125,7 @@ func main() {
 	user.Post("/signout", middleware.JWTAuthMiddleware(authUseCase), userHandler.UserSignOutHandler)
 	user.Post("/forgot-password", userHandler.UserRestPasswordHandler)
 	user.Put("/change-password", middleware.JWTAuthMiddleware(authUseCase), userHandler.UserChangePasswordHandler)
+	user.Put("/change-nickname", middleware.JWTAuthMiddleware(authUseCase), userHandler.UserChangeNicknameHandler)
 	user.Post("/me", middleware.JWTAuthMiddleware(authUseCase), userHandler.UserVerifyHandler)
 	user.Get("/:id", middleware.JWTAuthMiddleware(authUseCase), userHandler.UserGetByIdHandler)
 	user.Put("/update/:id", middleware.JWTAuthMiddleware(authUseCase), userHandler.UserEditHandler)
