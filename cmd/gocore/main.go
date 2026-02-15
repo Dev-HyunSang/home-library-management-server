@@ -22,18 +22,6 @@ import (
 )
 
 func main() {
-	app := fiber.New()
-
-	// 안전한 쿠키 사용을 위해 쿠키를 암호화 함.
-	// Key는 32자의 문자열이며, 무작위 값으로 생성됨.
-	app.Use(encryptcookie.New(encryptcookie.Config{
-		Key: encryptcookie.GenerateKey(),
-	}))
-
-	app.Use(fiberzap.New(fiberzap.Config{
-		Logger: logger.Init(),
-	}))
-
 	env := flag.String("env", "dev", "Environment (dev, qa, stg, prod)")
 	flag.Parse()
 
@@ -41,6 +29,25 @@ func main() {
 	if !validEnvs[*env] {
 		log.Fatalf("Invalid environment: %s. Valid environments are: dev, qa, stg, prod", *env)
 	}
+
+	zapLogger := logger.InitWithConfig(logger.LogConfig{
+		Service:     "home-library",
+		Environment: *env,
+	})
+
+	app := fiber.New()
+
+	// Request ID middleware must be registered before fiberzap
+	app.Use(middleware.RequestIDMiddleware())
+
+	app.Use(encryptcookie.New(encryptcookie.Config{
+		Key: encryptcookie.GenerateKey(),
+	}))
+
+	app.Use(fiberzap.New(fiberzap.Config{
+		Logger: zapLogger,
+		Fields: []string{"requestID"},
+	}))
 
 	cfg, err := config.LoadConfig(*env)
 	if err != nil {
